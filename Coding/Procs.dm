@@ -157,7 +157,7 @@ mob/proc/Respec(/**/)
 	src.DoubleStrikeBonus=0;src.ShieldBonus=0;src.ImmunityBonus=0
 	//stat resets
 	src.SkillPoints=src.Level-1;src.StatPoints=(src.Level-1)*3;src.TraitPoints=src.Level-1
-	src.MaxREI=200;src.MaxSTM=300;src.STR=10;src.VIT=1;src.AGI=1;src.LCK=1;src.MGC=1;src.MGCDEF=1
+	src.MaxREI=200;src.MaxSTM=300;src.STR=10;src.VIT=1;src.AGI=1;src.LCK=1;src.MGC=10;src.MGCDEF=1
 	src.MaxSTM+=(src.Level-1)*10;src.MaxREI+=(src.Level-1)*5
 	for(var/obj/Items/Equipment/E in src.EquipmentList)
 		for(var/Stat in E.StatBoosts)	src.vars["[Stat]"]+=E.StatBoosts[Stat]
@@ -348,8 +348,8 @@ mob/proc/GiveExp(var/ExpGain,var/Reason="Unknown")
 	src.Exp+=ExpGain
 	if(src.ExpDisplay=="Orb" || src.ExpDisplay=="Both")
 		var/xoff=12
-		if(ExpGain>=10)	xoff=8
-		if(ExpGain>=100)	xoff=4
+		if(ExpGain>=100)	xoff=8
+		if(ExpGain>=1000)	xoff=4
 		for(var/obj/HUD/ExpOrb/O in src.client.screen)
 			O.icon_state="[src.GetExpBar()]"
 			//MyFlick("ExpFlash",O)
@@ -432,11 +432,11 @@ mob/proc/LevelCheck(/**/)
 		src.MaxREI+=5
 		src.STM=src.MaxSTM
 		src.REI=src.MaxREI
-		src.StatPoints+=3
-		src.SkillPoints+=1
+		src.StatPoints+=4
+		src.SkillPoints+=2
 		src.TraitPoints+=1
 		src.Exp=src.Exp-src.Nexp
-		src.Nexp+=src.Level*100
+		src.Nexp+=src.Level*20
 		var/Phours=round(src.PlayTime/60/60)
 		var/Pminutes=round(src.PlayTime/60-(60*Phours))
 		src.LevelLog="<tr><td><center><font color=gray><b>[src.Level]<td><center><font color=gray><b>[Phours]h [Pminutes]m[src.LevelLog]"

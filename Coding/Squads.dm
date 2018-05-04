@@ -1000,7 +1000,7 @@ obj/NPC
 
 mob/Squad_Captain
 	verb
-		/*Squad_Invite()
+		Squad_Invite()
 			set category = "Squad"
 			var/list/Menu = list()
 			for(var/mob/Player/M in world)
@@ -1018,7 +1018,7 @@ mob/Squad_Captain
 						world << "<b><font color = yellow>Squad Info: [M] has joined Squad [usr.Squad]!"
 					if("No")
 						usr << "[M] has declined!"
-						return*/
+						return
 		Squad_Mute()
 			set category = "Squad"
 			set name="Mute/Unmute Member"

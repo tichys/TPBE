@@ -195,7 +195,9 @@ mob/verb
 	MOTD()
 		set hidden=1
 		var/motdd={"<html><title>Message of the Day</title>
-					[MOTD]
+					Welcome to The Players' Bleach Eternity<br>
+					Our Github is at https://github.com/tichys/TPBE open to public pull requests<br>
+					Discord is at https://discord.gg/Kw5qRV<br>
 					<p><center>
 					<a href='?src=\ref[src];action=CloseMOTD'>Close</a></html>"}
 		usr<<browse(motdd,"window=MOTD;can_close=No;size=300x300")

@@ -7,6 +7,10 @@ mob/verb
 			Post any Bugs you Find on the Forums</b><br>
 			<a href="http://www.byond.com/members/Falacy/forum" target="Z">Report A Bug</a><p>
 
+			5/4/2018<br>
+			Changed Management to Lestatanderson as Owner and Lead Developer
+			Went open source for public assistance in production at https://github.com/tichys/TPBE
+
 			10-07-10<br>
 			-Version 11.3<br>
 			-Disabled Multi-Server Login Restrictions<p>
