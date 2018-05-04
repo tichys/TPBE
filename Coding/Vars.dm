@@ -1,18 +1,19 @@
 var
+	Serverxp = 0
 	list/Players=list()
 	PlayerCount=0
 	PlayerLimit=99
 	EnemyHuntRange=4
 	IsRouted
 	CanMultiKey="Disable"
-	MOTD="<html><body bgcolor=black><font color=yellow><b><center>Welcome to Bleach Eternity"
+	MOTD="<html><body bgcolor=black><font color=yellow><b><center>Welcome to The Players' Bleach Eternity"
 	list/ChargeableSkills=list("Spirit Charge","Getsuga Tenshou","White Lightning","Petal Stream",\
 		"Roaring Thunder Burn","Black Getsuga Tenshou","Syphon Health")
 	list/AllSpecials=list()
 	list/ShikaiSkillNames=list()
 	list/BankaiSkillNames=list()
 	list/HollowTypes=list()
-	GameVersion=11.3
+	GameVersion=0.1
 	StatusNote
 	RebootTime	//auto reboot setting
 	Rebooting

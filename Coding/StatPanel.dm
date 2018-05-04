@@ -34,6 +34,7 @@ mob
 		stat("Host:", "[world.host]")
 		stat("Version:", "[GameVersion]")
 		stat("Up Time:","[hours]:[minutes]:[seconds]")
+		stat("Server XP Multipler:", "[Serverxp]  **(0: Normal, 1: Double XP)")
 		stat("Time Zone:","[time2text(world.timeofday,"hh:mm")]")
 		if(PlayerLimit)	stat("Players:", "[PlayerCount] / [PlayerLimit]")
 		else	stat("Players:", "[PlayerCount]")
@@ -41,11 +42,11 @@ mob
 		stat("Link:","[world.internet_address]:[world.port] [IsRouted]")
 		stat("Tag:", "[StatusNote]")
 
-		/*statpanel("Vote")
+		statpanel("Vote")
 		stat("<b>Click to Interact")
 		stat(VoteTypes)
 		stat("<b>[Votes.len] Votes Currently Underway")
-		stat(Votes)*/
+		stat(Votes)
 
 		statpanel("Parties")
 		stat("Double Click a Party for Details")

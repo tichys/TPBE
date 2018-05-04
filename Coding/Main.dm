@@ -1,8 +1,8 @@
 #define DEBUG
 world
 	hub="Falacy.BleachEternity"
-	name="The Players Bleach Eternity"
-	status="Loading Server Configuration..."
+	name="The Players Bleach"
+	status="Regularly Updated"
 	map_format=TILED_ICON_MAP
 	mob=/mob/Player
 	view=9
@@ -35,6 +35,7 @@ world
 			var/LastVersion
 			if(fexists("config.sav"))
 				var/savefile/F = new("config.sav")
+				F["Serverxp"]>>Serverxp
 				F["OverallScores"]>>OverallScores
 				F["PlayerLimit"]>>PlayerLimit
 				F["LastVersion"]>>LastVersion
@@ -104,6 +105,7 @@ mob/Player
 
 proc/SaveConfig(/**/)
 	var/savefile/F = new("config.sav")
+	F["Serverxp"]<<Serverxp
 	F["OverallScores"]<<OverallScores
 	F["PlayerLimit"]<<PlayerLimit
 	F["LastVersion"]<<GameVersion

@@ -287,3 +287,14 @@ mob/GM/verb
 				O.vars[Var2Edit] = input("Pick file:","File",O.vars[Var2Edit]) as file
 			if("icon")
 				O.vars[Var2Edit] = input("Pick icon:","Icon",O.vars[Var2Edit]) as icon
+
+	Double_XP()
+		set category="Admin"
+		set name ="Turn on/off Double Exp"
+		if(Serverxp ==0)
+			world <<"<b><font color=green>GM: </font>[usr] has enabled Double XP! All enemies will now reward you more experience!"
+			Serverxp =1
+			return
+		else
+			Serverxp =0
+			world <<"<b><font color=green>GM: </font>[usr] has disabled Double XP! All enemies will now reward normal experience!"
