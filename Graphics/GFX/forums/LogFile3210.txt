@@ -1,0 +1,441 @@
+
+** 19:21:45 Aug, 03 2011 Running Bleach Eternity: Zeus Version 1.03 **
+ ~ Mute List Reset ~ 
+runtime error: Cannot execute null.Add().
+proc name: Login (/mob/Login)
+  source file: Main.dm,323
+  usr: Millamber (/mob/Player)
+  src: Millamber (/mob/Player)
+  call stack:
+Millamber (/mob/Player): Login()
+Millamber (/mob/Player): Login()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click(null, "MainWindow.MapMain", "icon-x=24;icon-y=13;left=1;scr...")
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Arthraz (/mob/Player)
+  src: Arthraz (/mob/Player)
+  call stack:
+Arthraz (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click(null, "MainWindow.MapMain", "icon-x=14;icon-y=12;left=1;scr...")
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplaySell(Item Merchant (/obj/NPC/Shops/Item_Merchant))
+Item Merchant (/obj/NPC/Shops/Item_Merchant): DblClick(Mastermosess2 (/mob/Player))
+Mastermosess2 (/mob/Player): HighAttack()
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplaySell(Item Merchant (/obj/NPC/Shops/Item_Merchant))
+Mastermosess2 (/mob/Player): DisplayInventory()
+Mastermosess2 (/mob/Player): GiveGold(0, 0, 38)
+Flaming Crystal (/obj/Items/EnemySpoils/Flaming_Crystal): Sell(Mastermosess2 (/mob/Player))
+Flaming Crystal (/obj/Items/EnemySpoils/Flaming_Crystal): Click(null, "MainWindow.MapMain", "icon-x=15;icon-y=20;left=1;scr...")
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplaySell(Item Merchant (/obj/NPC/Shops/Item_Merchant))
+Mastermosess2 (/mob/Player): DisplayInventory()
+Mastermosess2 (/mob/Player): GiveGold(0, 0, 13)
+Shattered Hollow Mask (/obj/Items/EnemySpoils/Shattered_Hollow_Mask): Sell(Mastermosess2 (/mob/Player))
+Shattered Hollow Mask (/obj/Items/EnemySpoils/Shattered_Hollow_Mask): Click(null, "MainWindow.MapMain", "icon-x=23;icon-y=14;left=1;scr...")
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Arthraz (/mob/Player)
+  src: Arthraz (/mob/Player)
+  call stack:
+Arthraz (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click(null, "MainWindow.MapMain", "icon-x=19;icon-y=16;left=1;scr...")
+runtime error: type mismatch: Arthraz (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: Avarice (/mob/Player)
+  src: Arthraz (/mob/Player)
+  call stack:
+Arthraz (/mob/Player): DeathCheck(Fly Trap (/mob/Pets/BountPets/Fly_Trap))
+Fly Trap (/mob/Pets/BountPets/Fly_Trap): Damage(Arthraz (/mob/Player), 173, null, 1, "Melee")
+Fly Trap (/mob/Pets/BountPets/Fly_Trap): Attack(3)
+Attack (/datum/Gambits/Actions/Attack): RunGambit(Arthraz (/mob/Player), Avarice (/mob/Player), Fly Trap (/mob/Pets/BountPets/Fly_Trap))
+Command 1 (/datum/Gambits/GambitHolder): ActivateGambit(Avarice (/mob/Player), Fly Trap (/mob/Pets/BountPets/Fly_Trap))
+Fly Trap (/mob/Pets/BountPets/Fly_Trap): ActivateAI()
+Avarice (/mob/Player): MidAttack()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click()
+Mastermosess2 (/mob/Player): InventoryToggle()
+runtime error: type mismatch: Mastermosess2 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: Kuzatorn (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DeathCheck(Kuzatorn (/mob/Player))
+Kuzatorn (/mob/Player): Damage(Mastermosess2 (/mob/Player), 307, "Petal", 1, "Mystic")
+Kuzatorn (/mob/Player): SkillProcs()
+Kuzatorn (/mob/Player): SecondLoop()
+Kuzatorn (/mob/Player): SecondLoop()
+runtime error: type mismatch: Koyuki (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: Kuzatorn (/mob/Player)
+  src: Koyuki (/mob/Player)
+  call stack:
+Koyuki (/mob/Player): DeathCheck(Kuzatorn (/mob/Player))
+Kuzatorn (/mob/Player): Damage(Koyuki (/mob/Player), 197, "Petal", 1, "Mystic")
+Petal Stream (/obj/Damaging/Petal_Stream): New(4, Floor (15,151,13) (/turf/Arena/Floor), Kuzatorn (/mob/Player), 346)
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click(null, "MainWindow.MapMain", "icon-x=5;icon-y=24;left=1;scre...")
+runtime error: type mismatch: Urth (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: Willowk (/mob/Player)
+  src: Urth (/mob/Player)
+  call stack:
+Urth (/mob/Player): DeathCheck(Willowk (/mob/Player))
+Willowk (/mob/Player): Damage(Urth (/mob/Player), 580, "Lightning", 1, "Melee")
+Willowk (/mob/Player): Attack(3)
+Willowk (/mob/Player): HighAttack()
+runtime error: type mismatch: Avarice (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: 0
+  src: Avarice (/mob/Player)
+  call stack:
+Avarice (/mob/Player): DeathCheck(Kazuo (/mob/Player))
+Kazuo (/mob/Player): Damage(Avarice (/mob/Player), 198, "Lightning", 1, "Mystic")
+FireDragon (/obj/Projectile/Dragons/FireDragon): Bump(Avarice (/mob/Player))
+FireDragon (/obj/Projectile/Dragons/FireDragon): New(432, 10, 4, Floor (20,152,13) (/turf/Arena/Floor), Kazuo (/mob/Player), null, null)
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click()
+Mastermosess2 (/mob/Player): InventoryToggle()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+Mastermosess2 (/client): MouseDrop(Cross Sword (/obj/Items/Equipment/Hand/Weapons/Cross_Sword), null, null, null, "MainWindow.MapMain", "MainWindow.MapMain", "icon-x=18;icon-y=18;left=1;scr...")
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+Mastermosess2 (/client): MouseDrop(Cross Sword (/obj/Items/Equipment/Hand/Weapons/Cross_Sword), null, null, null, "MainWindow.MapMain", "MainWindow.MapMain", "icon-x=14;icon-y=12;left=1;scr...")
+runtime error: type mismatch: Arthrax (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+  usr: Mastermosess2 (/mob/Player)
+  src: Arthrax (/mob/Player)
+  call stack:
+Arthrax (/mob/Player): DeathCheck(Mastermosess2 (/mob/Player))
+Mastermosess2 (/mob/Player): Damage(Arthrax (/mob/Player), 76, "Fire", 1, "Melee")
+Mastermosess2 (/mob/Player): Attack(3)
+Mastermosess2 (/mob/Player): HighAttack()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click()
+Mastermosess2 (/mob/Player): InventoryToggle()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Kuzatorn (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Mastermosess2 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Koyuki (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Mastermosess2 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Willowk (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: Cannot read null.screen
+proc name: SecondLoop (/mob/proc/SecondLoop)
+  source file: StatPanel.dm,102
+runtime error: type mismatch: Kuzatorn (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Koyuki (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Jdl78 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Taka (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Sai (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Kitsu (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Shoda (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Arthrax (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Kuzatorn (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Cloud (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Kwf (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Willowk (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Kuzatorn (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Urth (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Sai (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+runtime error: list index out of bounds
+proc name: DisplaySell (/mob/proc/DisplaySell)
+  source file: Inventory.dm,156
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+Wed Aug  3 20:23:58 2011
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Cloud (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Avarice (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Taka (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Willowk (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Mastermosess2 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: Cannot execute null.Remove().
+proc name: Demote Silent (/mob/HeadGM/verb/Demote_Silent)
+  source file: GM.dm,749
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Avarice (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Urth (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: Cannot read null.STM
+proc name: Fight (/proc/Fight)
+  source file: Tourny System.dm,294
+runtime error: type mismatch: Mastermosess2 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: type mismatch: Jdl78 (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+runtime error: type mismatch: Sai (/mob/Player) -= /list (/list)
+proc name: DeathCheck (/mob/proc/DeathCheck)
+  source file: Procs.dm,320
+
+** 21:09:42 Aug, 03 2011 Running Bleach Eternity: Zeus Version 1.03 **
+ ~ Mute List Reset ~ 
+runtime error: Cannot execute null.Add().
+proc name: Login (/mob/Login)
+  source file: Main.dm,323
+  usr: Millamber (/mob/Player)
+  src: Millamber (/mob/Player)
+  call stack:
+Millamber (/mob/Player): Login()
+Millamber (/mob/Player): Login()
+runtime error: list index out of bounds
+proc name: DisplayInventory (/mob/proc/DisplayInventory)
+  source file: Inventory.dm,191
+  usr: Mastermosess2 (/mob/Player)
+  src: Mastermosess2 (/mob/Player)
+  call stack:
+Mastermosess2 (/mob/Player): DisplayInventory()
+InventoryToggle (/obj/HUD/InventoryToggle): Click()
+Mastermosess2 (/mob/Player): InventoryToggle()
+runtime error: Cannot execute null.Add().
+proc name: Login (/mob/Login)
+  source file: Main.dm,323
+  usr: Millamber (/mob/Player)
+  src: Millamber (/mob/Player)
+  call stack:
+Millamber (/mob/Player): Login()
+Millamber (/mob/Player): Login()
+runtime error: Cannot execute null.Add().
+proc name: Create Guild (/mob/verb/Create_Guild)
+  source file: guild.dm,81
+  usr: TorrentialWin (/mob/Player)
+  src: TorrentialWin (/mob/Player)
+  call stack:
+TorrentialWin (/mob/Player): Create Guild()
+runtime error: Cannot execute null.Add().
+proc name: Declare War (/mob/verb/Declare_War)
+  source file: Guildwars.dm,46
+  usr: Willowk (/mob/Player)
+  src: Willowk (/mob/Player)
+  call stack:
+Willowk (/mob/Player): Declare War()
+runtime error: Cannot execute null.Add().
+proc name: Declare War (/mob/verb/Declare_War)
+  source file: Guildwars.dm,46
+  usr: Willowk (/mob/Player)
+  src: Willowk (/mob/Player)
+  call stack:
+Willowk (/mob/Player): Declare War()
+runtime error: Cannot execute null.Add().
+proc name: Declare War (/mob/verb/Declare_War)
+  source file: Guildwars.dm,53
+  usr: Willowk (/mob/Player)
+  src: Willowk (/mob/Player)
+  call stack:
+Willowk (/mob/Player): Declare War()
+runtime error: Cannot execute null.Add().
+proc name: Declare War (/mob/verb/Declare_War)
+  source file: Guildwars.dm,53
+  usr: Willowk (/mob/Player)
+  src: Willowk (/mob/Player)
+  call stack:
+Willowk (/mob/Player): Declare War()
+runtime error: Cannot execute null.Add().
+proc name: Create Guild (/mob/verb/Create_Guild)
+  source file: guild.dm,81
+  usr: TorrentialWin (/mob/Player)
+  src: TorrentialWin (/mob/Player)
+  call stack:
+TorrentialWin (/mob/Player): Create Guild()
+runtime error: Cannot execute null.Add().
+proc name: Create Guild (/mob/verb/Create_Guild)
+  source file: guild.dm,81
+  usr: Willowk (/mob/Player)
+  src: Willowk (/mob/Player)
+  call stack:
+Willowk (/mob/Player): Create Guild()
