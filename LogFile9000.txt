@@ -1,0 +1,8 @@
+
+** 19:36:41 May, 03 2018 Running Bleach Eternity 2 Version 11.3 **
+Invalid network address in transmission ()
+
+Webclient users can visit this address to play:
+http://www.byond.com/play/72.178.74.24:9000
+
+Thu May 03 19:36:55 2018
