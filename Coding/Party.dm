@@ -8,7 +8,6 @@ obj/Supplemental
 			src.loc=L.contents
 			src.InvitedBy=M;return ..()
 		Click()
-			if(usr.ezcheck2==1)	return
 			if(usr.Chatting)	return
 			var/mob/M=usr;var/mob/S=src.InvitedBy
 			PlayMenuSound(M,'OOT_MainMenu_Select.wav')
@@ -18,7 +17,6 @@ obj/Supplemental
 			if(CustAlert(M,"[S.name] has Invited you to Join their Party",list("Accept","Decline"),0,10,5,12)=="Accept")
 				if(!S || !M)	goto DelSrc
 				if(!S.Party || M.Party)	goto DelSrc
-				if(S.ezcheck2==1)	{QuestShow(M,"[S] is penalized for EZ'ing and can not invite you.");goto DelSrc}
 				if(S.Party.Members[1]!=S)	{QuestShow(M,"[S] is no longer leading");goto DelSrc}
 				if(S.Party.Members.len>=5)	{QuestShow(M,"Party Full");goto DelSrc}
 				S.Party.Members+=M;M.Party=S.Party;M.overlays+=M.Party.PartyIcon
@@ -98,12 +96,6 @@ mob/proc
 	PartyInvite(var/mob/M)
 		spawn()
 			if(!src || !M)	return
-			if(src.ezcheck2==1)
-				QuestShow(src,"You can't party with a person when you are penalized for EZ'ing.");return
-			if(M.ezcheck2==1)
-				QuestShow(src,"You can't party with a person who has been penalized for EZ'ing.");return
-			if(src in M.IgnoreList)
-				QuestShow(src,"You can't party with a person when an Ignore is involved.");return
 			if(M.PendingRequest)
 				QuestShow(src,"[M] already Pending an Invite");return
 			if(M.Party)

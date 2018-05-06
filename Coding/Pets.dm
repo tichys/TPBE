@@ -47,12 +47,15 @@ mob/Pets
 		Nibblet
 			icon='Nibblet.dmi'
 	BountPets
+		Hollow_Doll
+			icon='TadPoleHollow.dmi'
+
+		Origami_Doll
+			icon='PlaceHolderEnemy.dmi'
+
+
 		Fly_Trap
-			icon='BountPlantPet.dmi'
-		Sun_Flower
-			icon='BountPlantPet2.dmi'
-		Evo_Sun_Flower
-			icon='BountPlantPet3.dmi'
+			icon='BountPet.dmi'
 
 obj/Items/PetItems
 	Nibblet_Flute

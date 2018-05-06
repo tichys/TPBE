@@ -58,21 +58,16 @@ obj/Votes
 		WonVote()	return
 		LostVote()	return
 	Click()
-		if(DisableMute==1)
-			QuestShow(usr,"Vote Muting has been disabled by a GM!");return
-			return
 		if(src.name==initial(src.name))
 			if((usr.key in GlobalVoters)||(usr.client.address in GlobalVoters))
 				QuestShow(usr,"Limit One Vote Start per Hour!");return
 			if(usr.IsMuted())//Checks to see if starter is already muted
 				QuestShow(usr,"Cannot Start Votes while Muted");return
 			var/list/Mobs=list()
-			for(var/mob/M in world)
-				if(M.client && M.LastSays.len)	Mobs+=M
+			for(var/mob/M in world)	if(M.client && M.LastSays.len)	Mobs+=M
 			var/mob/M=input("Select a Player to Start the Vote Against","Vote [src.name]") as null|anything in Mobs-usr
 			if(!M)	return
-			if(M.key=="Millamber")	return
-			if(M.GM>=1)	return
+			if(M.key=="Dragonzues")	return
 			var/NewReason=input("Select the Message to Mute for:","Vote Mute Reason") as null|anything in M.LastSays
 			if(!M || !usr || !NewReason)	return
 			if((usr.key in GlobalVoters)||(usr.client.address in GlobalVoters))

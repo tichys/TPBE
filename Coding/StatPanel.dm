@@ -2,7 +2,6 @@ var/bleachsymbol = new/obj/Supplemental/Symbol
 var/GoldIcon=new/obj/Supplemental/GoldIcon
 var/SilverIcon=new/obj/Supplemental/SilverIcon
 var/CopperIcon=new/obj/Supplemental/CopperIcon
-var/PlatIcon=new/obj/Supplemental/PlatIcon
 var/GC="<font color=yellow>"
 var/SC="<font color=gray>"
 var/CC="<font color=#CC9933>"
@@ -22,10 +21,6 @@ obj
 		SilverIcon
 			icon='Main.dmi'
 			icon_state="Silver"
-		PlatIcon
-			icon='Main.dmi'
-			icon_state="Platinum"
-
 		CopperIcon
 			icon='Main.dmi'
 			icon_state="Copper"
@@ -36,7 +31,7 @@ obj
 mob
 	Stat()
 		statpanel("Server")
-		stat("Host:", "Dedicated Server")
+		stat("Host:", "[world.host]")
 		stat("Version:", "[GameVersion]")
 		stat("Up Time:","[hours]:[minutes]:[seconds]")
 		stat("Time Zone:","[time2text(world.timeofday,"hh:mm")]")
@@ -44,17 +39,17 @@ mob
 		else	stat("Players:", "[PlayerCount]")
 		stat("Usage:", "[world.cpu]%")
 		stat("Link:","[world.internet_address]:[world.port] [IsRouted]")
-		stat("Server XP Multipler:", "[Serverxp]  **(0: Normal, 1: Double XP)")
 		stat("Tag:", "[StatusNote]")
-		stat("NPC Badge Price:", "[BadgeCost]")
-		stat("Unbound Badges:","[num2text(round(usr.Badges),100000)]")
-		stat("Bound Badges:","[num2text(round(usr.bBadges),100000)]")
+		stat("Exp Rate :","[ServerExpRate]")
+		stat("Mining Level :","[src.Mining_Level]")
+		stat("Mining Exp :","[src.Mining_Exp]/[src.Mining_Nexp]")
 
-		statpanel("Vote")
+
+		/*statpanel("Vote")
 		stat("<b>Click to Interact")
 		stat(VoteTypes)
 		stat("<b>[Votes.len] Votes Currently Underway")
-		stat(Votes)
+		stat(Votes)*/
 
 		statpanel("Parties")
 		stat("Double Click a Party for Details")
@@ -78,8 +73,8 @@ mob
 		stat("Z","Spiritual Overdrive")
 		stat("Tab","Return to Body")
 		stat("Enter","Chat")
-		//stat("E","Role Play/Emote")
-		//stat("M","Toggle Map")
+		stat("E","Role Play/Emote")
+		stat("M","Toggle Map")
 		stat("I","Toggle Inventory")
 		stat("W","View Who")
 		stat("?","View Help")
@@ -88,35 +83,6 @@ mob
 		stat("L","View Quest Log")
 		stat("F2","ScreenShot")
 		stat("F8","View Buddy List")
-		stat("CTRL-A","Squad Chat")
-
-		statpanel("Commodities")
-		stat("<b><u>Type","<b><u>Amount")
-		stat("Leather","[src.Leather]")
-		stat("Bones","[src.Bones]")
-		stat("Thread","[src.Thread]")
-		stat("Adhesive","[src.Adhesive]")
-		stat("Iron","[src.Iron]")
-		stat("Mithril","[src.Mithril]")
-		stat("<font color=blue>Enchanted Ore</font>","[src.EnchantedOre]")
-		stat("<font color=red>Meteor Fragment</font>","[src.MeteorFragment]")
-		stat("Gems","[src.Gems]")
-		stat("<font color=#B93B8F>Divine Ore</font>","[src.DivineOre]")
-		stat("")
-		stat("<b><u>Refine Protection","<b><u>Amount")
-		stat("Uses","[src.hassafe]")
-
-		statpanel("Lottery")
-		stat("<b><u>Purchased")
-		for(var/Lt in src.Tickets)
-			stat("Ticket Number","[Lt]")
-
-
-
-
-
-
-
 
 	proc/RelocateWindows()
 		return
@@ -138,7 +104,6 @@ mob
 		if(!src.QuestClear)
 			for(var/i=0;i<=6;i++)	src<<output("","QuestShowWindow.Output")
 		src.CheckAFK()
-		src.Check_PVPAll()
 		src.SkillProcs()
 		src.QuestDuration()
 		src.StatusDuration()
@@ -156,14 +121,14 @@ mob
 						else	{src.REI-=src.StmRegenCost;src.ReiBar()}
 					if(Ok2Go)
 						var/StmBonus=src.StmRegenBonus
-						if(!src.SpiritForm)	StmBonus+=1
+						StmBonus+=1
 						if(src.STM<src.MaxSTM)
 							src.STM=min(src.MaxSTM,src.STM+(10*StmBonus));src.StmBar()
 				if(src.ReiRegenWait<0 && !src.SkillBeingCharged)
 					var/Ok2Go=1
 					if(Ok2Go)
 						var/ReiBonus=src.ReiRegenBonus
-						if(!src.SpiritForm)	ReiBonus+=1
+						ReiBonus+=1
 						if(src.REI<src.MaxREI)
 							src.REI=min(src.MaxREI,src.REI+(10*ReiBonus));src.ReiBar()
 		if(src.SkillBeingCharged)
@@ -196,11 +161,11 @@ obj/Supplemental/AFK
 	icon='Other.dmi';icon_state="AFK"
 
 mob/proc/CheckAFK()
-	if(src.client.inactivity>=9000 && src.GM==0)//15 Minutes
-		if(!src.Subscriber)
+	if(src.client.inactivity>=3000)//15 Minutes
+		/*if(!src.Subscriber)
 			world<<"<b><font color=red><font size=1>[src] has been AFK Booted"
-			src<<"<font size=1>You must be a Donator to Bypass AFK Booter"
-			del src.client;return
+			src<<"<font size=1>Subscription required to Bypass AFK Booter"
+			del src.client;return*/
 		if(!src.AFK)
 			src.overlays-=AFKicon;src.overlays+=AFKicon
 			src.AFK=1;world<<"[PlayerInfoTag][src] has been Switched to AFK Mode"
@@ -208,22 +173,24 @@ mob/proc/CheckAFK()
 		src.overlays-=AFKicon
 		src.AFK=0;world<<"[PlayerInfoTag][src] has Returned from AFK Mode"
 
-mob/proc/Check_PVPAll()
-	if(!src.key=="Millamber")
-		if(src.PVPAll==1)
-			src.PVPAll=0
-			src<<"Your not allowed to have PVP All on."
-		else	return
-
 mob/proc/SkillProcs()
 	if(!usr.invisibility)
-		if("Leaf Storm" in src.ToggledSkills)
-			if(!src.Fused)	src.Leaf_Storm()
-			var/Damage;for(var/obj/Skills/Fuses/Leaf_Storm/S in src.Skills)
-				Damage=(S.Level-1+50+src.MGC)*((0.25*(S.Level-1))+1)
-			for(var/mob/M in oview(1,src))	src.Damage(M,Damage-round(M.REI/100),"Earth",1,"Mystic")
 		if("Scatter" in src.ToggledSkills)
 			if(!src.Shikai && !src.Bankai)	src.Scatter()
 			var/Damage;for(var/obj/Skills/Shikais/Light_Dragon/Scatter/S in src.Skills)
-				Damage=(S.Level-1+150+src.MGC+src.Kidou)*((0.25*(S.Level-1))+1)
+				Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
 			for(var/mob/M in oview(1,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")
+
+		if(src.Bankai)
+			if("Bankai Scatter" in src.ToggledSkills)
+				if(!src.Shikai && !src.Bankai)	src.Scatter()
+				var/Damage;for(var/obj/Skills/Shikais/Light_Dragon/Scatter/S in src.Skills)
+					Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
+				for(var/mob/M in view(2,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")
+
+
+//		if("Bankai Scatter" in src.ToggledSkills)
+//			if(!src.Shikai && !src.Bankai)	src.BankaiScatter()
+//			var/Damage;for(var/obj/Skills/Bankais/Light_Dragon/Bankai_Scatter/S in src.Skills)
+//				Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
+//			for(var/mob/M in oview(1,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")

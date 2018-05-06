@@ -6,10 +6,8 @@ mob/proc/Emote(var/T)
 		usr<<"Available Commands:	/Help	/Music	/Sit	/Stand	/Wave	/Follow	/Me"
 		return
 	if(T=="/wave")
-		if(src.Class=="Bount" && src.Fused)	return
 		usr.dir=SOUTH;MyFlick("Wave",usr)
 	if(T=="/sit" && usr.icon_state=="")
-		if(src.Class=="Bount" && src.Fused)	return
 		usr.dir=SOUTH;usr.icon_state="Sitting"
 	if(T=="/stand" && usr.icon_state=="Sitting")
 		usr.icon_state=""
@@ -17,7 +15,6 @@ mob/proc/Emote(var/T)
 		if(usr.Target)	walk_to(usr,usr.Target,1,2)
 		else	QuestShow(usr,"Invalid Target")
 	if(T=="/music")
-		if(src.Class=="Bount" && src.Fused)	return
 		if(!usr.SpiritForm)	{QuestShow(usr,"Spirit Form Required");return}
 		usr.MusicMode=!usr.MusicMode
 		if(usr.MusicMode)
@@ -49,12 +46,7 @@ mob/verb/ActivateOverDrive()
 	set hidden=1
 	if(usr.OverDriveOn || usr.OverDriveStr<32)	return
 	usr.OverDriveOn=1
-	if(!usr.icon_state && usr.Class!="Quincy")
-		if(src.Zanpakuto && src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeStance"
-			else	src.icon_state="Stance"
+	if(!usr.icon_state && usr.Class!="Quincy")	usr.icon_state="Stance"
 	usr.overlays-=OverDriveAura;usr.overlays+=OverDriveAura
 	PlayTimedSound(view(usr,9),'Energy.wav',32)
 	while(usr && usr.OverDriveStr>0)
@@ -139,19 +131,19 @@ proc/ArtSetup()
 	WriteMapLine(62,4,28,12,2,"Spells: Generic Magic available to Everyone")
 
 proc/StatSetup()
-	WriteMapLine(5,4,53,12,2,"Stamina Increases your Maximum Health")
-	WriteMapLine(5,4,52,17,2,"Reiatsu Increases your Maximum Spirit Energy")
-	WriteMapLine(5,4,52,6,2,"Also Effects Spiritual Pressure")
-	WriteMapLine(5,4,50,17,2,"Strength Increases the Damage done by Melee Attacks")
-	WriteMapLine(5,4,50,6,2,"Figures Directly into Soul Reaper's Normal Attacks")
-	WriteMapLine(5,4,49,12,2,"Vitality Increases your Defense Against Melee Attacks")
-	WriteMapLine(5,4,47,17,2,"Magic Increases the Damage done by Mystic Attacks")
-	WriteMapLine(5,4,47,6,2,"Figures Directly into Quincy's Normal Attacks")
-	WriteMapLine(5,4,46,12,2,"Magic Defense Increases your Defense Against Mystic Attacks")
-	WriteMapLine(5,4,44,17,2,"Agility Increases your Chance to Hit and Dodge Attacks")
-	WriteMapLine(5,4,44,6,2,"Also Determines how easily you can Track Flash Steps")
-	WriteMapLine(5,4,43,17,2,"Luck Increases your Chance to Hit Critical")
-	WriteMapLine(5,4,43,6,2,"Also Increases Item Drop Rates")
+//	WriteMapLine(5,4,53,12,2,"Stamina Increases your Maximum Health")
+//	WriteMapLine(5,4,52,17,2,"Reiatsu Increases your Maximum Spirit Energy")
+//	WriteMapLine(5,4,52,6,2,"Also Effects Spiritual Pressure")
+	WriteMapLine(5,4,54,17,2,"Strength Increases the Damage done by Melee Attacks")
+	WriteMapLine(5,4,54,6,2,"Figures Directly into Soul Reaper's Normal Attacks")
+	WriteMapLine(5,4,52,12,2,"Vitality Increases your Defense Against Melee Attacks")
+	WriteMapLine(5,4,50,17,2,"Magic Increases the Damage done by Mystic Attacks")
+	WriteMapLine(5,4,50,6,2,"Figures Directly into Quincy's Normal Attacks")
+	WriteMapLine(5,4,48,12,2,"Magic Defense Increases your Defense Against Mystic Attacks")
+	WriteMapLine(5,4,46,17,2,"Agility Increases your Chance to Hit and Dodge Attacks")
+	WriteMapLine(5,4,46,6,2,"Also Determines how easily you can Track Flash Steps")
+	WriteMapLine(5,4,44,17,2,"Luck Increases your Chance to Hit Critical")
+	WriteMapLine(5,4,44,6,2,"Also Increases Item Drop Rates")
 
 proc/TraitSetup()
 	WriteMapLine(24,4,54,17,2,"Zanjutsu: Zanpakuto Combat")
@@ -163,11 +155,13 @@ proc/TraitSetup()
 	WriteMapLine(24,4,48,17,2,"Kidou: Spirit Energy Combat")
 	WriteMapLine(24,4,48,6,2,"+1% Mystic Damage.  Required to learn Higher Level Kidous")
 	WriteMapLine(24,4,46,17,2,"Prodigy")
-	WriteMapLine(24,4,46,6,2,"Lowers Required EXP by 100")
+	WriteMapLine(24,4,46,6,2,"5% exp per PRESTIGE")
 	WriteMapLine(24,4,44,17,2,"Training")
-	WriteMapLine(24,4,44,6,2,"+1 Skill Points")
+	//WriteMapLine(24,4,44,6,2,"Every 1 Point = 1 Stat Points")
+	WriteMapLine(24,4,44,6,2,"One Extra Stat Point per PRESTIGE")
+	WriteMapLine(24,4,44,-12,2,"One Extra Trait Point per PRESTIGE")
 	WriteMapLine(24,4,42,17,2,"Income")
-	WriteMapLine(24,4,42,6,2,"+1% Copper Earned from Kills")
+	WriteMapLine(24,4,42,6,2,"+1% Copper Earned from Kills per PRESTIGE")
 
 proc/PetAISetup()
 	for(var/n=0;n<=19;n+=19)

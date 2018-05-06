@@ -1,43 +1,22 @@
 mob/Test/verb/Test(/**/)
 	set category="Test"
-	if(usr.key=="Millamber")
-		usr.Skills+=new/obj/Skills/SoulReaper/Vaizard
-		//usr.Skills+=new/obj/Skills/SoulReaper/Bankai
-		//usr.Zanpakuto=new/obj/Zanpakuto
-		//usr.Zanpakuto.SpiritType="Beast"
+	if(usr.key=="Dragonzues"||usr.key!="Gitrekt")
+		usr.Skills+=new/obj/Skills/SoulReaper/Bankai
+		usr.Zanpakuto=new/obj/Zanpakuto
+		usr.Zanpakuto.SpiritType="Beast"
 		//usr.loc=locate(43,102,10)	//volcano location
 		//usr.GetItem(new/obj/Items/Other/Progress_Cupon)
 		//ShowAlert(usr,"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	else
 		usr<<"This verb is used to test various things around the game."
-		usr<<"It can only be used by Millamber and was left visible accidentally."
-
-
+		usr<<"It can only be used by Dragonzues and was left visible accidentally."
 
 mob/Test/verb/CheckObjects()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/obj/O in world)	counter+=1
 	usr<<"Object Count: [counter]"
-
-mob/Test/verb/
-	Create()
-		set category="GM"
-		usr.client<<link("?command=create;")
-		text2file("[time2text(world.realtime)]:[usr] used Create verb. <br>","gmlog.html")
-
-	Edit(A in world)
-		set category="GM"
-		usr.client<<link("?command=edit;target=\ref[A];type=view;")
-		text2file("[time2text(world.realtime)]:[usr] used Edit verb on [A]. <br>","gmlog.html")
-
-	Edit_Player(mob/Player/A in world)
-		set category="GM"
-		usr.client<<link("?command=edit;target=\ref[A];type=view;")
-		text2file("[time2text(world.realtime)]:[usr] used Edit verb on [A]. <br>","gmlog.html")
-
-
 
 proc/ProfileDatums()
 	for(var/datum/D)
@@ -50,7 +29,7 @@ var/list/LastDatumList=list()
 mob/Test/verb/Profile_Datums()
 	set category="Test"
 	set background=1
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	usr<<"Starting Datum Profiler..."
 	var/list/DatumList=list()
 	var/TotalCount=0
@@ -87,7 +66,7 @@ mob/Test/verb/Profile_Datums()
 
 mob/Test/verb/CheckLoggedIPs()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/text="<center><table border=1><tr><td colspan=2>[LoggedIPCount] Logged IPs"
 	text+="<center><tr><td><b>Key<td><b>IP"
 	text+="[LoggedIPs]"
@@ -105,7 +84,7 @@ var/list/LastAtomList=list()
 mob/Test/verb/Profile_Atoms()
 	set category="Test"
 	set background=1
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	usr<<"Starting Atom Profiler..."
 	var/list/AtomList=list()
 	var/TotalCount=0
@@ -142,7 +121,7 @@ mob/Test/verb/Profile_Atoms()
 
 mob/Test/verb/CheckOverlays()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	var/real=0
 	var/totals=0
@@ -157,7 +136,7 @@ mob/Test/verb/CheckOverlays()
 
 mob/Test/verb/CheckShadows()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/obj/Decoration/Shadow/S in world)	counter+=1
 	for(var/obj/Decoration/Shadow_Edges/S in world)	counter+=1
@@ -165,19 +144,34 @@ mob/Test/verb/CheckShadows()
 
 mob/Test/verb/GetBankai()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(!usr.key=="Dragonzues"||!usr.key=="Gitrekt")	return
 	for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)	{usr.Skills-=S;del S}
 	for(var/obj/Skills/SoulReaper/Bankai/S in usr.Skills)	{usr.Skills-=S;del S}
 	for(var/obj/Skills/Quincy/Final_Form/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Visored/S in usr.Skills)	{usr.Skills-=S;del S}
 	usr.Skills+=new/obj/Skills/SoulReaper/Shikai
 	usr.Skills+=new/obj/Skills/SoulReaper/Bankai
 	usr.Skills+=new/obj/Skills/Quincy/Final_Form
-	usr.SkillPoints+=99
+	usr.Skills+=new/obj/Skills/SoulReaper/Visored
+	usr.SkillPoints+=10
 	usr.ZanCreation()
+
+
+mob/Test/verb/TakeBankai()
+	set category="Test"
+	if(!usr.key=="Dragonzues"||!usr.key=="Gitrekt")	return
+	for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Bankai/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/Quincy/Final_Form/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Visored/S in usr.Skills)	{usr.Skills-=S;del S}
+	usr.SkillPoints-=10
+//	usr.ZanCreation()
+
+
 
 mob/Test/verb/CheckEnemies()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/mob/Enemy/M in world)
 		if(M.StartedBy)	counter+=1
@@ -190,25 +184,25 @@ mob/Test/verb/OldCheckCPU()
 
 mob/Test/verb/DisplayExpFormula()
 	set category="Test"
-	if(usr.key!="Millamber")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/Nexp=100
 	var/Level=0
 	var/ExpBoost=input("Input Exp Increase per Level","Exp Boost",25)as num
-	while(Level<300)
+	while(Level<150)
 		Nexp+=Level*ExpBoost
 		Level+=1
-		usr<<"[Level]: [num2text(round(Nexp),100000)] EXP TNL ([num2text(round(Nexp/(Level*13)),1000000)] Kills) at [round(Level*13)] Exp Each"
+		usr<<"[Level]: [Nexp] EXP TNL ([round(Nexp/(Level*13))] Kills) at [Level*13] Exp Each"
 		sleep(1)
 	usr<<"<b>Exp Information displayed at [ExpBoost] point increments"
 
 mob/Test/verb/Test_Location()
 	set category="Test"
-	if(usr.key=="Millamber")
+	if(usr.key=="Dragonzues"||usr.key!="Gitrekt")
 		var/newx=input("Input X Coordinate","X",usr.x)as num
 		var/newy=input("Input Y Coordinate","Y",usr.y)as num
 		var/newz=input("Input Z Coordinate","Z",usr.z)as num
 		usr.loc=locate(newx,newy,newz)
-	else	usr<<"Only useable by Millamber."
+	else	usr<<"Only useable by Dragonzues."
 
 mob/Test/verb
 	CheckIP(var/mob/M in world)
@@ -224,9 +218,9 @@ mob/Test/verb
 	Refresh_Global_Mutes()
 		set category="Test"
 		LoadGlobalMutes(0)
-	Refresh_Subs()
-		set category="Test"
-		LoadSubs(0)
+//	Refresh_Subs()
+//		set category="Test"
+//		LoadSubs(0)
 	Refresh_Bans()
 		set category="Test"
 		LoadGlobalBans(0)
@@ -241,7 +235,3 @@ mob/Test/verb
 		for(var/mob/Enemy/M in world)	listy+=M
 		var/mob/M=input("Select an Enemy NPC to Reset their Position to","Reset Enemy") as null|anything in listy
 		if(M)	M.loc=locate(M.RespawnX,M.RespawnY,M.RespawnZ)
-
-
-
-

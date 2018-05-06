@@ -3,10 +3,7 @@ datum
 		var/Name
 		var/Round
 
-
 var/list/ArenaScores=list()
-
-
 
 proc/UpdateArenaScores(var/Name,var/Round)
 	var/list/TempList=list()

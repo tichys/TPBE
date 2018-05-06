@@ -1,11 +1,16 @@
 #define DEBUG
 world
-	hub="Falacy.BleachEternity"
-	name="Bleach Eternity: Zeus"
+	hub="Dragonzues.Bleach Eternity 3 : Eternal Damnation"
+	name="Bleach Eternity 3 : Eternal Damnation"
 	status="Loading Server Configuration..."
 	map_format=TILED_ICON_MAP
+	//map_format=TILED_ICON_MAP
+	icon_size = "32x32"
 	mob=/mob/Player
-	view=15
+	view=9
+	loop_checks=0
+
+
 	Reboot()
 		Rebooting=1
 		SaveConfig()
@@ -15,38 +20,49 @@ world
 		world.log<<"** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Server Reboot **"
 		world.log<<"Average Players: [round(AvgPlayers/TimesRan)] | CPU: [round(AvgCPU/TimesRan)]%"
 		return ..()
+
+
 	IsBanned(key,address)
-		if(key=="Millamber")	return 0
+		if(key=="Dragonzues"||key=="Gitrekt"||key=="KillaDjKat")	return 0
 		else 	return ..()
+
+
+
 	New()
 		world.log=file("LogFile[world.port].txt")
 		world.hub_password="Xx[739103]xX"
 		spawn()	LogCPU()
-		world.log<<"\n** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Running Bleach Eternity: Zeus Version [GameVersion] **"
-		loadSecurity()
-		/*maps.copy(26)
-		maps.copy(26)
-		maps.copy(26)*/  //used to make instances of a map
-
+		world.log<<"\n** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Running Bleach Eternity 3 Version [GameVersion] **"
+		spawn()	HourlyExpBoost()
 		spawn()
+
+
+
+
+/*
 			HollowTypes+=typesof(/mob/Enemy/Hollows)-text2path("/mob/Enemy/Hollows")
 			for(var/obj/Skills/Bankais/S in world)	BankaiSkillNames+=S.name
 			for(var/obj/Skills/Shikais/S in world)	ShikaiSkillNames+=S.name
-			for(var/obj/Skills/Vaizard/S in world)	VaizardSkillNames+=S.name
 			for(var/obj/Skills/S in world)
-				if(S.SkillType=="Active"||S.SkillType=="Attack"||S.SkillType=="Support")	AllSpecials+=new S.type
-			for(var/obj/Spells/S in world)	AllSpecials+=new S.type
-			for(var/obj/Kidous/S in world)	AllSpecials+=new S.type
+				if(S.SkillType=="Active"||S.SkillType=="Attack"||S.SkillType=="Support")	AllSpecials+=S.type
+			for(var/obj/Spells/S in world)	AllSpecials+=S.type
+			for(var/obj/Kidous/S in world)	AllSpecials+=S.type
+*/
 
+	//		BossList+=typesof(/mob/Enemy/Bosses)-/mob/Enemy/Bosses
+
+
+
+			MonsterTypes+=typesof(/mob/Enemy)-/mob/Enemy
+			for(var/obj/Skills/Bankais/S in world)  BankaiSkillNames+=S.name
+			for(var/obj/Skills/Shikais/S in world)  ShikaiSkillNames+=S.name
+			for(var/obj/Skills/S in world)
+				if(!S.z)    continue
+				if(S.SkillType=="Active" || S.SkillType=="Attack" || S.SkillType=="Support")
+					AllSpecials+=new S.type
+			for(var/obj/Spells/S in world)  if(S.z) AllSpecials+=new S.type
+//			for(var/obj/OffSpells/S in world)   if(S.z) AllSpecials+=new S.type
 			var/LastVersion
-			if(fexists("Rewarded.sav"))
-				var/savefile/F = new("Rewarded.sav")
-				F["Reward"]>>Rewarded
-
-		/*	maps.copy("squad11.map")
-			maps.copy("squad11.map")
-			maps.copy("squad11.map")*/
-
 			if(fexists("config.sav"))
 				var/savefile/F = new("config.sav")
 				F["OverallScores"]>>OverallScores
@@ -54,38 +70,18 @@ world
 				F["LastVersion"]>>LastVersion
 				F["CanMultiKey"]>>CanMultiKey
 				F["ArenaScores"]>>ArenaScores
-				F["MonsterScores"]>>MonsterScores
-				//F["ranks"]>>ranks
-				F["Serverxp"]>>Serverxp
-				F["BadgeCost"]>>BadgeCost
 				F["StatusNote"]>>StatusNote
 				F["RebootTime"]>>RebootTime
 				F["MuteList"]>>MuteList
-				F["Mods"]>>Mods
-				F["GMs"]>>GMs
-				F["Mapsoff"]>>Mapsoff
-				F["Admins"]>>Admins
-				F["KillEvent"]>>KillEvent
-				F["GoldEvent"]>>GoldEvent
-				F["MBround"]>>MBround
-				F["SkillTour"]>>SkillTour
-				F["NoAnn"]>>NoAnn
-				F["DisableMute"]>>DisableMute
 				F["BanList"]>>BanList
-				F["Guild_List"]>>Guilds
-				F["Guild_MEmbers"]>>GMembers
 				F["MOTD"]>>MOTD
 				F["LoggedIPs"]>>LoggedIPs
 				F["LoggedIPCount"]>>LoggedIPCount
-				F["WorldPVP"]>>WorldPVP
-
-
-
-
 				if(!LoggedIPCount)
 					LoggedIPCount=0;LoggedIPs=""
 				if(LastVersion<6.5)
 					world.log<<" ~ Mute List Reset ~ ";MuteList=list()
+
 
 		spawn()
 			BackgroundWorldSetup()
@@ -97,7 +93,7 @@ world
 			PetAISetup()
 			KeyboardSetup()
 			PopulateDamageNums()
-			PopulateHealNums()
+
 
 		spawn()
 			WriteMapLine(80,20,50,16,2,"Desired Results")
@@ -105,17 +101,17 @@ world
 			WriteMapLine(90,-6,50,16,2,"Actual Results")
 			WriteMapLine(89,-12,46,6,2,"Images Rendered In-Game")
 
-		spawn(6000)	Autosave()
+
 		spawn()	TimeLoop()
-		spawn()	LoadSubs()
+//		spawn()	LoadSubs()
 		spawn()	WorldLoop()
 		spawn()	LoadGlobalBans()
 		spawn()	LoadGlobalMutes()
 		spawn()	RequiredVersion()
 		spawn()	LoadOffensiveWords()
-		/*spawn()
-			if(world.host!="Millamber" && world.host!="Tmx85" && world.host!="Millamber" && world.host!="Oreldwin")
-				var/http[]=world.Export("http://dl.dropbox.com/u/32799951/BYOND%20Version.txt")
+		spawn()
+			if(world.host!="MarioSix6")
+				var/http[]=world.Export("http://www.angelfire.com/hero/straygames/VersionBE.txt")
 				if(!http)
 					world<<"Version could not be Verified!"
 					world.log<<"Version could not be Verified!"
@@ -124,22 +120,27 @@ world
 				if(text2num(copytext(F,1,8))>GameVersion)
 					world<<"<b>This version is out of date!"
 					world.log<<"BE Version is out of date"
-					del world;return*/
+					del world;return
 		spawn()	ProfileDatums()
 		spawn()	ProfileAtoms()
 		return ..()
+
+
 	Del()
 		if(!Rebooting)
-			for(var/mob/Player/M in world)
-				if(M.key)	winset(M, null, "command=.quit")
 			SaveConfig()
 			world<<"<font color=red>Server Shutting Down..."
 			world.log<<"** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Server Shutdown Successfully **"
 			if(TimesRan)	world.log<<"Average Players: [round(AvgPlayers/TimesRan)] | CPU: [round(AvgCPU/TimesRan)]%"
 		return ..()
 
+
+
 mob/Player
 	mouse_opacity=2
+
+
+
 
 proc/SaveConfig(/**/)
 	var/savefile/F = new("config.sav")
@@ -148,55 +149,13 @@ proc/SaveConfig(/**/)
 	F["LastVersion"]<<GameVersion
 	F["CanMultiKey"]<<CanMultiKey
 	F["ArenaScores"]<<ArenaScores
-	F["MonsterScores"]<<MonsterScores
 	F["StatusNote"]<<StatusNote
 	F["RebootTime"]<<RebootTime
 	F["MuteList"]<<MuteList
-	F["Mods"]<<Mods
-	F["GMs"]<<GMs
-	//F["ranks"]<<ranks
-	F["KillEvent"]<<KillEvent
-	F["NoAnn"]<<NoAnn
-	F["Mapsoff"]<<Mapsoff
-	F["DisableMute"]<<DisableMute
-	F["Admins"]<<Admins
-	F["Guild_List"]<<Guilds
-	F["Guild Members"]<<GMembers
-	F["Serverxp"]<<Serverxp
-	F["BadgeCost"]<<BadgeCost
-	F["GoldEvent"]<<GoldEvent
-	F["MBround"]<<MBround
-	F["SkillTour"]<<SkillTour
 	F["BanList"]<<BanList
 	F["MOTD"]<<MOTD
 	F["LoggedIPs"]<<LoggedIPs
 	F["LoggedIPCount"]<<LoggedIPCount
-	F["WorldPVP"]<<WorldPVP
-
-mob
-	proc/SaveBank()
-		if(src)
-			if(fexists("Banking/[ckey(src.key)].sav"))
-				fdel("Banking/[ckey(src.key)].sav")
-			var/savefile/F = new("Banking/[ckey(src.key)].sav")
-			F["items"]<<src.bank
-
-	proc/LoadBank()
-		if(src.banked==0)
-			if(fexists("Banking/[ckey(src.key)].sav"))
-				src.banked=1
-				return
-			else
-				SaveBank()
-				src.banked=1
-		else
-			var/savefile/F = new("Banking/[ckey(src.key)].sav")
-			F["items"]>>src.bank
-proc/SaveReward()
-	var/savefile/F = new("Rewarded.sav")
-	F["Reward"]<<Rewarded
-
-
 
 proc/BackgroundWorldSetup()
 	set background=1
@@ -266,22 +225,19 @@ proc/TimeLoop()
 			world<<"<font color=red>Auto-Reboot Commencing";world.Reboot()
 	spawn(10)	TimeLoop()
 
+
 client
 	view=9
 	control_freak=1
 	show_popup_menus=0
 	command_text=".alt "
-	mouse_pointer_icon = 'Pointer.dmi'
+//	mouse_pointer_icon = 'Cursor.dmi'
 	perspective=EDGE_PERSPECTIVE|EYE_PERSPECTIVE
 	//preload_rsc="http://www.angelfire.com/hero/straygames/BErsc.zip"
 
 mob
 	Login(/**/)
 		src.LogClient()
-		/*if(world.host!="Millamber" && world.host!="Millamber" && world.host!="Oreldwin")
-			world<<"Invalid Host Detected.  Shutting Down!"
-			world.log<<"Invalid Host Detected.  Shutting Down!"
-			del world;return*/
 		if(copytext(src.key,1,min(7,length(src.key)))=="Guest-" || src.key=="Guest")
 			src<<"Guest Keys are Disabled"
 			del src;return
@@ -294,17 +250,17 @@ mob
 			if(P.Key==src.key)
 				src<<"This Key is Banned.<br>Reason: [P.Reason]"
 				del src;return
-		if(!SubKeyCheck(src.key))
-			if(src.key in RelogList)
-				src<<"You Must Wait 60 Seconds before Relogging.  Instant Access Available for Donators"
+//		if(!SubKeyCheck(src.key))
+//			if(src.key in RelogList)
+//				src<<"You Must Wait 60 Seconds before Relogging.  Instant Access Available for Subscribers"
+//				del src;return
+		if(PlayerCount>=PlayerLimit)
+			src<<"Player Limit has been Reached.  Additional Slots Available for Subscribers"
+			del src;return
+		if(CanMultiKey!="Allow")
+			for(var/mob/Player/M in world)	if(M.key!=src.key && M.client.address==src.client.address)
+				src<<"Another Connection has been Detected from this IP.  Multikeying Available for Subscribers"
 				del src;return
-			if(PlayerCount>=PlayerLimit)
-				src<<"Player Limit has been Reached.  Additional Slots Available for Donators"
-				del src;return
-			if(CanMultiKey!="Allow")
-				for(var/mob/Player/M in world)	if(M.key!=src.key && M.client.address==src.client.address)
-					src<<"Another Connection has been Detected from this IP.  Multikeying Available for Donators"
-					del src;return
 		/*src.LoadLogonFile()
 		if(src.LoggedOn)
 			src<<"<font color=red><b>A Connection to Another BE Server has been Detected"
@@ -321,10 +277,8 @@ mob
 			LoggedIPs+="<tr><td><b>[src.key]<td>[src.client.address]"
 			LoggedIPCount+=1
 		src.LoadPlayerConfig()
-		src.SubCheck()
-		//src.LoggedOn=1
-		if(!src.Gotbonus0&& !src.Gotbonus1)
-			src.Gotbonus0=0;src.Gotbonus1=0
+//		src.SubCheck()
+		src.LoggedOn=1
 		src.icon_state=""
 		src.invisibility=1
 		src.SaveLogonFile()
@@ -334,11 +288,12 @@ mob
 		BuddyList+=src.MyKey;SortBuddyList()
 		PlayerCount+=1
 		WorldStatusUpdate()
-		src.MOTD()
+		//src.MOTD()
 		src.loc=locate(10,10,2)
+		//src.loc=locate(134,10,2)
 		src.WindowReset()
 		winset(src,,"command=\".options\"")
-		winset(src,"MainWindow","Size=800x608;is-maximized=true;pos=0,0")
+		winset(src,"MainWindow","Size=800x608;is-maximized=true;pos=0,0")//Size=800x608;
 		winset(src,"WhoWindow","pos=100,100")
 		winset(src,"HairWindow","pos=100,100")
 		winset(src,"VoiceWindow","pos=100,100")
@@ -353,69 +308,22 @@ mob
 		spawn()	src.RelocateWindows()
 		spawn()	src.CoolDownSystem()
 		spawn()	src.SecondLoop()
-		if(src.key != "Millamber" && src.key != "Nikorayu")
-			world<<"[PlayerInfoTag][src] has Arrived"
-		if(src.key =="Millamber"||src.key =="Falacy"||src.key =="Oreldwin")
-			src.verbs+=typesof(/mob/Mod/verb)
-			src.verbs+=typesof(/mob/GM/verb)
-			src.verbs+=typesof(/mob/Test/verb)
-			src.verbs+=typesof(/mob/HeadGM/verb)
-			src.verbs+=typesof(/mob/Owner/verb)
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores2
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores3
-			//Admins.Add(src.key)
-			src.GM=4
-		if(src.key=="Nikorayu")
-			src.verbs+=typesof(/mob/Mod/verb)
-			src.verbs+=typesof(/mob/GM/verb)
-			src.verbs+=typesof(/mob/HeadGM/verb)
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores2
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores3
-			src.GM=3
-		if(GoldEvent==2)
-			src <<"<font color=red size=2><b>EVENT: <font color=yellow size=2><b>Increased money gain from Hollows active! Gold gain is level based and income helps a lot.</font>"
-		if(KillEvent==1)
-			src <<"<font color=red size=2><b>EVENT: <font color=yellow size=2><b>Monster Bash is active! Kill as many monsters as you can before it ends for a chance to win prizes!</font>"
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores2
-			src.verbs+= /mob/Event/verb/MonsterBash_Scores3
-			src.verbs+= /mob/Event/verb/Lock_EXP
-			src.verbs+= /mob/Event/verb/unLock_EXP
-		if(WorldPVP==1)
-			src <<"<font color=red size=2><b>PVP EVENT: <font color=yellow size=2><b>World PVP is active, be careful!"
-			src.PVP=1
-			src.overlays+=PVPicon
+		world<<"[PlayerInfoTag][src] has Arrived"
+		if(src.key in list("Dragonzues",world.host)+GMs)	src.verbs+=typesof(/mob/GM/verb)
+		if(src.key=="Dragonzues"||src.key=="Gitrekt"||key=="KillaDjKat")	src.verbs+=typesof(/mob/Test/verb)
 		PlayMusic(src,'SiamShadeDreams.mid')
+		//spawn(6000)	src.AutoSave()
 		//spawn()	src.Movement()
 
 	Logout(/**/)
+		for(var/datum/StatusEffects/S in src.StatusEffects)
+			S.RemovalProc(src)
+		alert("Works?")
 		Players-=src
 		PlayerCount-=1
 		WorldStatusUpdate()
 		RelogTimer(src.key)
 		if(src.Party)	src.LeaveParty()
-		if(src.tourny)
-			Entries.Remove(src)
-			world << "<center><font size=2><font color = red><b><center> [src] logged off and has therefore been disqualified."
-			Tournament_AI()
-		if(Highest_Bidder==src)
-			Highest_Bidder="No one"
-		if(Highest_Bidder2==src)
-			Highest_Bidder2="No one"
-		if(Auction_Owner == src)
-			Auction_Owner = "No one"
-		if(Auction_Owner2 == src)
-			Auction_Owner2 = "No one"
-	/*	if(src.waraa)
-			src.waraa =0
-			wara -= 1
-			War_Checkb()
-		if(src.warbb)
-			src.warbb = 0
-			warb -= 1
-			War_Check()*/
 		BuddyList-=src.MyKey
 		for(var/atom/x in src.DeathCache)	del x
 		for(var/atom/x in src.Cache)	del x
@@ -423,12 +331,11 @@ mob
 			src.PVPingAgainst.PVPingAgainst=null
 			src.PVPingAgainst=null
 			del src.PVPFlag
-	//	if(src.key!="Millamber" || src.key!="Nikorayu")
 		world<<"[PlayerInfoTag][src] ([src.key]) has Left"
 		del src
 
 proc/RequiredVersion()
-	var/http[]=world.Export("http://162.243.95.178/VersionBE.txt")
+	var/http[]=world.Export("http://www.angelfire.com/hero/straygames/RequiredBE.txt")
 	if(http)
 		var/F = file2text(http["CONTENT"])
 		if(text2num(copytext(F,1,8))>GameVersion)
@@ -450,37 +357,16 @@ proc/WorldLoop()
 	PlayerCount=counter
 	WorldStatusUpdate()
 	CheckMuteExpirations()
-	//CheckAuctions()
 	spawn(3000)	WorldLoop()
-proc/CheckAuctions()
-	if(!Auction_Item&&!Auction_Item2)
-		Auction_Owner = "No one"
-		Auction_Owner2 = "No one"
-		Auction_Amount = 0
-		Auction_Amount2 = 0
-		Highest_Bidder="No one"
-		Highest_Bidder2="No one"
-		AuctionON=0
-proc/CancelAuctions()
-		Auction_Owner = "No one"
-		Auction_Owner2 = "No one"
-		Auction_Amount = 0
-		Auction_Amount2 = 0
-		Highest_Bidder="No one"
-		Highest_Bidder2="No one"
-		AuctionON=0
-		for(var/mob/Player/M in world)	if(M.trading==1)	M.trading=0
-		//world << "<b><font color=teal>{AUCTION} <font color=red>All auctions have been reset.</font></b>"
+
 var/list/RelogList=list()
 proc/RelogTimer(var/Keyo)
 	RelogList+=Keyo
 	spawn(600)	RelogList-=Keyo
 
-proc/Autosave()
-	for(var/mob/M in world)	if(M.client)
-		M.Save()
-		M<<"<b><font color=green>User Info:</font><font color=white><b>Your character has been saved.</b></font>"
-	spawn(3000)	Autosave()
+mob/proc/AutoSave()
+	src.Save()
+	spawn(6000)	if(src)	src.AutoSave()
 
 var/obj/PressF=new/obj/Supplemental/PressF
 obj/Supplemental/PressF
@@ -500,7 +386,6 @@ mob
 			if(M.Target==src)	M.dir=get_dir(M,NewLoc)*/
 		if(src.client)
 			if(src.client.eye!=src)	return
-			if(src.Shopping||src.Selling)	return
 			src.overlays-=PressF
 			if(src.MusicMode)	src.Say("/Music")
 			src.EnemyStart(EnemyHuntRange,NewLoc)
@@ -513,12 +398,12 @@ mob
 			/*if(src.Blocking)	//Dodge Rolling
 				src.CanMove=1;src.Blocking=0
 				MyFlick("DodgeRoll",src)*/
-			if(!src.CanMove || src.CanMove==9)	return
+			if(!src.CanMove)	return
 			if(NewLoc.Enter(src))	for(var/obj/NPC/N in get_step(NewLoc,NewDir))
 				src.overlays-=PressF;src.overlays+=PressF	//if they can move check 2 in front
 			else	for(var/obj/NPC/N in get_step(src,NewDir))
 				src.overlays-=PressF;src.overlays+=PressF	//if they cant move check 1 in front
-			//if(src.Shopping||src.Selling)	src.ClearInventory()
+			if(src.Shopping||src.Selling)	src.ClearInventory()
 			src.icon_state=""
 			if(NewLoc.Enter(src))
 				for(var/obj/Supplemental/Follower/O in src.Followers)
@@ -531,14 +416,13 @@ mob
 	Click(location,control,params)
 		var/listy[]=params2list(params)
 		if(listy["left"])
-			if(usr.client.eye!=usr)	return
 			if(usr.AutoTargetFace)	usr.dir=get_dir(usr,src)
 			if(usr.Target==src)	usr.TargetMob(null)
 			else	usr.TargetMob(src)
 		if(src.client && listy["right"])
 			if(MyGetDist(usr,src)>usr.SightRange)	return
 			usr.ClearCharOptions();usr.LastClicked=src
-			var/list/co2show=list("Check","Inspect")
+			var/list/co2show=list("Check")
 			if(src!=usr)
 				co2show+="Follow"
 				co2show+="Duel"

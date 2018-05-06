@@ -3,11 +3,6 @@ var/obj/SkillSups/FFWingS/FFWingS=new()
 var/obj/SkillSups/FFWingE/FFWingE=new()
 var/obj/SkillSups/FFWingW/FFWingW=new()
 var/obj/SkillSups/FFBowOverlay/FFBowOverlay=new()
-var/obj/SkillSups/IchigoVaizardMask/IchigoVaizardMask=new()
-var/obj/SkillSups/ShinjiVaizardMask/ShinjiVaizardMask=new()
-var/obj/SkillSups/LisaVaizardMask/LisaVaizardMask=new()
-var/obj/SkillSups/SuzumebachiBlade/SuzumebachiBlade=new()
-var/obj/SkillSups/SuzumebachiBankai/SuzumebachiBankai=new()
 obj/SkillSups
 	FFWingN
 		layer=MOB_LAYER+1;pixel_x=18;pixel_y=4
@@ -26,27 +21,12 @@ obj/SkillSups
 	ScatterPetals
 		layer=9;pixel_x=-32;mouse_opacity=0
 		icon='Petals.dmi';icon_state="Body"
-	ScatterLeafs
-		layer=9;pixel_x=-32;mouse_opacity=0
-		icon='PlantFuseSkills.dmi';icon_state="Body"
-	BMShield
-		layer=9;mouse_opacity=0
-		icon='Benihime.dmi';icon_state="Blood Mist Shield"
-	IchigoVaizardMask
-		icon='IchigoVaizardMask.dmi'
-		layer=6;pixel_y=9
-	ShinjiVaizardMask
-		icon='ShinjiVaizardMask.dmi'
-		layer=6;pixel_y=9
-	LisaVaizardMask
-		icon='LisaVaizardMask.dmi'
-		layer=6;pixel_y=9
-	SuzumebachiBlade
-		icon='Suzume.dmi'
-		layer=6
-	SuzumebachiBankai
-		icon='SuzumeBankai.dmi'
-		layer=6
+	PetalRain
+		layer=12;pixel_x=-32;mouse_opacity=0
+		icon='Petals.dmi';icon_state="Rain"
+	PetalShikai
+		layer=12;mouse_opacity=0
+		icon='Petals.dmi';icon_state="Shikai"
 	BladeBreak
 		var/mob/Owner
 		layer=9;mouse_opacity=0;density=0
@@ -68,44 +48,65 @@ obj/Gigai
 		spawn(30)	del src
 
 mob/proc
+/*
+	LoadMonsters()
+		MonsterTypes+=typesof(/mob/Enemy)-/mob/Enemy
+		for(var/obj/Skills/Bankais/S in world)  BankaiSkillNames+=S.name
+		for(var/obj/Skills/Shikais/S in world)  ShikaiSkillNames+=S.name
+		for(var/obj/Skills/S in world)
+			if(!S.z)    continue
+			if(S.SkillType=="Active" || S.SkillType=="Attack" || S.SkillType=="Support")
+				AllSpecials+=new S.type
+		for(var/obj/Spells/S in world)  if(S.z) AllSpecials+=new S.type
+		for(var/obj/OffSpells/S in world)   if(S.z) AllSpecials+=new S.type
+
+*/
+
+
+
+
 	Selected_Skill()
 		QuestShow(src,"No Skill Selected")
+
+
 	Taunt(var/TauntDistance)
 		for(var/mob/Enemy/M in oview(TauntDistance,src))
 			M.TauntedBy=src;M.TargetMob(src)
 			ShowEffect(M,'Effects.dmi',"Taunt","",5,0)
+
+
+
 	SpiritForm()
-		if(!src.icon)	return
+		//if(!src.icon)	return
 		if(src.Stunned)	return
-		if(src.jailed)	return
 		if(src.SpiritForm)	return
-		if(src.Transforming ==1) return
 		ShowEffect(src,'Effects.dmi',"EnterBody",src.loc,5,0)
 		ShowEffect(src,'Effects.dmi',"BodyRing",src.loc,5,0)
 		if(src.Class=="Bount")
 			src.icon_state="Stance"
 		if(src.Class=="Soul Reaper")
-			var/obj/Gigai/B=new()
-			var/obj/HI=new()
-			HI.icon='DeadHairs.dmi';HI.icon_state=src.HairStyle
-			HI.icon=MyRGB(HI.icon,rgb(src.HairR,src.HairG,src.HairB))
-			B.overlays+=HI
-			if(src.Squadrank=="Captain")
-				src.icon='captain.dmi'
-			else
-				src.icon='SoulReaper.dmi'
+			//var/obj/Gigai/B=new()
+			//var/obj/HI=new()
+			//HI.icon='DeadHairs.dmi';HI.icon_state=src.HairStyle
+			//HI.icon=MyRGB(HI.icon,rgb(src.HairR,src.HairG,src.HairB))
+			//B.overlays+=HI
+			src.icon='SoulReaper.dmi'
 			//src.DamageIcon=src.icon+rgb(255,0,0)
 			//src.GuardIcon=src.icon+rgb(155,155,155)
-			B.loc=src.loc
+			//B.loc=src.loc
 		if(src.Class=="Quincy")
 			MyFlick("Quincy",src)
 			src.icon='Quincy.dmi'
 			//src.DamageIcon=src.icon+rgb(255,0,0)
 			//src.GuardIcon=src.icon+rgb(155,155,155)
+		src.HollowFormCheck()
 		src.SpiritForm=1
 		src.RefreshClothes()
+
+
+
+
 	Revert(/**/)
-		if("Blood Mist Shield" in src.ToggledSkills)	return
 		if(src.ChainHead)	src.ChainHead.Owner=null
 		src.MovementSpeed=initial(src.MovementSpeed)
 		src.SpiritForm=0
@@ -116,26 +117,32 @@ mob/proc
 			src.CanMove=1
 		src.Bankai=0
 		src.Shikai=0
-		src.Vaizard=0
+		src.Visored=0
 		src.FinalForm=0
-		src.Fused=0
 		src.Element=null
 		src.overlays=null
 		src.ReleaseSkill()
+		for(var/datum/StatusEffects/S in src.StatusEffects)	S.RemovalProc(src)
+		for(var/obj/EquipmentOverlays/S in src.overlays)	src.overlays-=S
 		//src.DamageIcon=src.icon+rgb(255,0,0)
 		//src.GuardIcon=src.icon+rgb(155,155,155)
 		src.MusicMode=0
 		src.icon_state=""
-		src.icon='School.dmi'
+//		if(src.Class=="Hollow")
+//			src.HollowFormCheck()
+//
+//		if(src.Class=="Soul Reaper")
+//			src.icon='SoulReaper.dmi'
+//
+//
+//		if(src.Class=="Quincy")
+//			src.icon='Quincy.dmi'
+//
+//		else
+//			src.icon='School.dmi'
 		src.AddName()
-		src.RefreshClothes()
 		src.AddHair(src.HairStyle)
-		if("Leaf Storm" in src.ToggledSkills)
-			src.ToggledSkills-="Leaf Storm"
-			for(var/obj/SkillSups/ScatterLeafs/P in src.Cache)	{src.overlays-=P;del P}
-		if("Scatter" in src.ToggledSkills)
-			src.ToggledSkills-="Scatter"
-			for(var/obj/SkillSups/ScatterPetals/P in src.Cache)	{src.overlays-=P;del P}
+		src.RefreshClothes()
 		if(src.PVP)	src.overlays+=PVPicon
 		if(src.Party)	src.overlays+=src.Party.PartyIcon
 		for(var/obj/Items/Equipment/E in src.EquipmentList)	E.OnEquip(src)
@@ -144,38 +151,45 @@ mob/proc
 		ShowEffect(src,'Effects.dmi',"EnterBody",src.loc,5,0)
 		ShowEffect(src,'Effects.dmi',"BodyRing",src.loc,5,0)
 
+
+
+
 	RemoveZanOvers()
 		for(var/O in src.overlays)
 			if(O)
 				if(O:name=="ZanOver")	src.overlays-=O
 			else	src.overlays-=O
 
+
+
 	Shikai()
+
 		if(!src.SpiritForm||!src.Zanpakuto)	return
-		if(!src.CanMove || src.Stunned)	return
-		if(src.Shikai == 1 || src.Bankai== 1|| src.Transforming ==1)
+		if(!src.CanMove || src.Stunned ||src.Transforming)	return
+		if(src.Shikai)
+			for(var/datum/StatusEffects/Shikai/SB in src.StatusEffects)
+				SB.RemovalProc(src)
+			return
+		if(!/obj/Skills/SoulReaper/Shikai_Duration in src.Skills)
+			src.Skills+=new/obj/Skills/SoulReaper/Shikai_Duration
 			return
 		src.Transforming=1
-		src.Shikai=1
+		src.Shikai = 1
+		src.ToggledSkills+="Shikai"
 		src.CanMove=0
 		src.dir=SOUTH
 		ShowEffect(src,'Effects.dmi',"Energy","",10,1)
 		PlayTimedSound(view(src,9),'Energy.wav',10)
 		src.icon_state="Block"
+		var/Desc="First and Weakest Release of your Zanpakuto"
+		for(var/obj/Skills/SoulReaper/Shikai_Duration/S in src.Skills)
+			var/Amt = S.Level;var/Cost = 100 - S.Level
+			src.AddEffect(new/datum/StatusEffects/Shikai("Shikai",0,src,"STR","VIT","MGC","MGCDEF","AGI","LCK",Amt,Cost,Desc))
 		sleep(10)
 		src.CanMove=1
 		src.Transforming=0
 		if(!src.SpiritForm)	return
-		if(src.Zanpakuto && src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeStance"
-			else	src.icon_state="Stance"
-		if(src.Zanpakuto.SpiritType=="Hornet")
-			src.RemoveZanOvers()
-			src.RefreshClothes()
-			src.overlays+=SuzumebachiBlade
-			if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
+		src.icon_state="Stance"
 		src.Element=src.Zanpakuto.Element
 		for(var/datum/ZanOvers/D in src.ZanpakutoOverlays)
 			var/obj/O=new;O.layer=5;O.name="ZanOver"
@@ -183,15 +197,50 @@ mob/proc
 			O.icon=MyRGB(O.icon,rgb(D.R,D.G,D.B))
 			src.overlays+=O
 
+
+	Visored()
+		if(!src.VisoredMask)
+			src.Skills+=new/obj/Skills/SoulReaper/Visored_Duration
+			src.ChooseVisoredMask()
+			return
+
+		if(src.Visored>=1)
+			for(var/datum/StatusEffects/Visored/VB in src.StatusEffects)
+				if(VB.name == "Visored")
+					VB.RemovalProc(src)
+					//src.Visored =0
+					//src.ToggledSkills-="Visored"
+					return
+		MyFlick("Mask Appear",src)
+		src.ToggledSkills+="Visored"
+		src.Visored=1
+		var/Desc="Using your Inner Hollow you reach new powers"
+		for(var/obj/Skills/SoulReaper/Visored_Duration/S in src.Skills)
+			var/Amt = S.Level;var/Cost = 200 - S.Level
+			src.AddEffect(new/datum/StatusEffects/Visored("Visored",0,src,"STR","VIT","MGC","MGCDEF","AGI","LCK",Amt,Cost,Desc))
+		src.CanMove=0
+		src.dir=SOUTH
+		src.Element=src.Zanpakuto.Element
+		src.CanMove=1
+		src.Transforming=0
+
+
+
 	Bankai()
-		if("Blood Mist Shield" in src.ToggledSkills)	return
 		if(!src.SpiritForm||!src.Zanpakuto)	return
-		if(!src.CanMove || src.Stunned)	return
-		if(src.Bankai && src.Zanpakuto.SpiritType=="Beast")	src.ChainStart()
-		if(src.Bankai || src.Transforming)	return
+		if(!src.CanMove || src.Stunned|| src.Transforming)	return
+		if(src.Bankai)
+			for(var/datum/StatusEffects/Bankai/SB in src.StatusEffects)
+				SB.RemovalProc(src)
+				src.ToggledSkills -= "Bankai"
+				src.Bankai=0
+				for(var/obj/SkillSups/S in overlays)
+					src.overlays -= S
+				return
+	//	if(src.Bankai && src.Zanpakuto.SpiritType=="Beast")	src.ChainStart()
 		src.Transforming=1
-		src.Shikai=0
 		src.Bankai=1
+		src.ToggledSkills+="Bankai"
 		src.CanMove=0
 		src.dir=SOUTH
 		src.Element=src.Zanpakuto.Element
@@ -201,73 +250,49 @@ mob/proc
 		sleep(30)
 		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
 		MyFlick("S1",src)
+
 		PlayVoice(view(src,src.SightRange),'bankai.wav')
 		sleep(12)
+		src.icon_state="Stance"
+		src.CanMove=1
+		src.Transforming=0
+		var/Desc="Second and Probably Strongest Release for your Zanpaktou"
+		for(var/obj/Skills/SoulReaper/Bankai_Duration/S in src.Skills)
+			var/Amt =S.Level;var/Cost = 200 - S.Level
+
+		//ShowEffect(ThisTarget,'Effects.dmi',"Soul Glow","",10,0,1)
+
+			src.AddEffect(new/datum/StatusEffects/Bankai("Bankai",0,src,"STR","VIT","MGC","MGCDEF","AGI","LCK",Amt,Cost,Desc))
 		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		if(src.Zanpakuto && src.Bankai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeBankaiStance"
-			else	src.icon_state="Stance"
-		if(src.Zanpakuto.SpiritType=="Hornet")
-			src.RemoveZanOvers()
-			src.RefreshClothes()
-			src.overlays+=SuzumebachiBankai
-			if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		if(src.Zanpakuto.SpiritType=="Ghost")
+
+
+
+/*		if(src.Zanpakuto.SpiritType=="Ghost")
 			src.MovementSpeed=1
-			src.icon='IchBankai.dmi'
+			src.icon='bankai.dmi'
 			src.RemoveZanOvers()
 			src.RefreshClothes()
 			//src.DamageIcon=src.icon+rgb(255,0,0)
 			//src.GuardIcon=src.icon+rgb(155,155,155)
-			src.AddHair(src.HairStyle,"IchBankai")
+			src.AddHair(src.HairStyle,"Bankai")
 			src.AddName()
 			ShowEffect(src,'Effects.dmi',"Energy","",30,1)
 			PlayTimedSound(view(src,9),'Energy.wav',30)
 			sleep(30)
-			if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
+			if(!src.SpiritForm){src.CanMove=1;src.Transforming=0;return}
 			MyFlick("Combo",src)
 			PlayVoice(view(src,src.SightRange),'DinsFire.wav')
-		if(usr.Subscriber && !usr.IsMuted())
-			world <<"[Bankaimsg] (<font color=red>[src]</font>)"
-		src.CanMove=1
-		src.Transforming=0
+			return
 		if(src.Zanpakuto.SpiritType=="Dragon")
 			src.icon_state="";src.AddIceWings()
-		if(src.Zanpakuto.SpiritType=="Beast")	src.ChainStart()
+			return
+		if(src.Zanpakuto.SpiritType=="Beast")	src.ChainStart();return
+		if(src.Zanpakuto.SpiritType=="Petals")
+			src.overlays+=new/obj/SkillSups/PetalShikai;return
 
-	Vaizard()
-		if("Blood Mist Shield" in src.ToggledSkills)	return
-		if(!src.SpiritForm)	return
-		if(!src.CanMove || src.Stunned)	return
-		if(src.Vaizard || src.Transforming)	return
-		src.Transforming=1
-		src.Vaizard=1
-		src.CanMove=0
-		src.dir=SOUTH
-		ShowEffect(src,'Effects.dmi',"Energy","",30,1)
-		PlayTimedSound(view(src,9),'Energy.wav',30)
-		src.icon_state="Block"
-		sleep(30)
-		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		MyFlick("S1",src)
-		PlayVoice(view(src,src.SightRange),'HollowVoice1.wav')
-		sleep(12)
-		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		if(src.Zanpakuto && src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeStance"
-			else	src.icon_state="Stance"
-		src.CanMove=1
-		src.Transforming=0
-		if(src.VaiMask=="Ichigo")
-			src.overlays+=IchigoVaizardMask
-		if(src.VaiMask=="Shinji")
-			src.overlays+=ShinjiVaizardMask
-		if(src.VaiMask=="Lisa")
-			src.overlays+=LisaVaizardMask
+
+*/
+
 
 	Final_Form()
 		if(!src.SpiritForm)	return
@@ -298,42 +323,15 @@ mob/proc
 		src.Transforming=0
 		src.CanMove=1
 
-	Fuse()
-		if(!src.SpiritForm)	return
-		if(!src.CanMove || src.Stunned)	return
-		if(src.Fused || src.Transforming)	return
-		src.Dismiss_Pet()
-		src.Transforming=1
-		src.Fused=1
-		src.CanMove=0
-		src.dir=SOUTH
-		ShowEffect(src,'Effects.dmi',"Energy","",30,1)
-		PlayTimedSound(view(src,9),'Energy.wav',30)
-		src.icon_state="Block"
-		sleep(30)
-		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		//src.MovementSpeed=1
-		src.icon='PlantFuse.dmi'
-		src.RefreshClothes()
-		//src.DamageIcon=src.icon+rgb(255,0,0)
-		//src.GuardIcon=src.icon+rgb(155,155,155)
-		src.AddName()
-		ShowEffect(src,'Effects.dmi',"Energy","",30,1)
-		PlayTimedSound(view(src,9),'Energy.wav',30)
-		sleep(30)
-		if(!src.SpiritForm)	{src.CanMove=1;src.Transforming=0;return}
-		PlayVoice(view(src,src.SightRange),'DinsFire.wav')
-		src.CanMove=1
-		src.Transforming=0
 
 	Flash_Step()
-		if("Blood Mist Shield" in src.ToggledSkills)	return
 		if(!src.Target || src.Target==src)	{QuestShow(src,"Invalid Target");return}
 		if(!src.UseRei(round(src.MaxREI/10)))	return
 		var/turf/T=get_step(src.Target,get_dir(src,src.Target))
 		if(T)	T.DblClick(src)
+
+
 	Summon_Pet()
-		if(src.Fused)	return
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		for(var/mob/Pets/BountPets/P in src.Pets)
 			if(MyGetDist(src,P)>=10)
@@ -343,6 +341,8 @@ mob/proc
 				P.StmBar();P.ReiBar();P.Thinking=0
 				P.loc=src.loc;step_rand(P);walk_to(P,src,1)
 				ShowEffect(P,'Effects.dmi',"Appear",duration=10)
+
+
 	Dismiss_Pet()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		for(var/mob/Pets/BountPets/P in src.Pets)
@@ -351,8 +351,12 @@ mob/proc
 				PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
 				ShowEffect(P.loc,'Effects.dmi',"Appear",duration=10)
 				P.Thinking=0;P.loc=null
+
+
 	Syphon_Health_Release()
 		return
+
+
 	Syphon_Health()
 		while(src.SkillBeingCharged)
 			src.icon_state="Block"
@@ -371,16 +375,6 @@ mob/proc
 		src.SkillBeingCharged=null
 		src.icon_state=""
 		src.CanMove=1
-	Devour()
-		var/mob/ThisTarget=src.Target
-		if(!ThisTarget)	return
-		ShowEffect(ThisTarget,'Effects.dmi',"Soul Glow","",10,0,1)
-		if(ThisTarget.STM > (ThisTarget.STM /3))
-			ThisTarget.STM = 0
-			var/heal= src.MaxSTM / 3
-			src.STM += heal
-			DamageShow(src,heal,'HealNums.dmi')
-
 
 
 	Heal_Pet()
@@ -393,6 +387,8 @@ mob/proc
 				ShowEffect(ThisTarget,'Effects.dmi',"Soul Glow","",10,0,1)
 				ThisTarget.STM=min(ThisTarget.MaxSTM,ThisTarget.STM+Heal)
 				ThisTarget.StmBar();DamageShow(ThisTarget,Heal,'HealNums.dmi')
+
+
 	Flash_Heal()
 		if(!src.UseRei(round(src.MaxREI/10)))	return
 		var/Heal=0;for(var/obj/Skills/Bount/Flash_Heal/S in src.Skills)
@@ -402,14 +398,18 @@ mob/proc
 		ShowEffect(ThisTarget,'Effects.dmi',"Soul Glow","",10,0,1)
 		ThisTarget.STM=min(ThisTarget.MaxSTM,ThisTarget.STM+Heal)
 		ThisTarget.StmBar();DamageShow(ThisTarget,Heal,'HealNums.dmi')
+
+
 	Battlefield_Layout()
 		//New(var/Name,var/Durate,var/CastedBy,var/Stat2,var/Amt2,var/Desc,FIS,BIS,var/Range,var/Cost)
-		for(var/datum/StatusEffects/RadialEffects2/E in src.StatusEffects)
+		for(var/datum/StatusEffects/RadialEffects/E in src.StatusEffects)
 			if(E.name=="Battlefield Layout" && E.CastBy=="[src]")
 				E.RemovalProc(src);return
 		if(src.REI>=5)	for(var/obj/Skills/Bount/Battlefield_Layout/S in src.Skills)
-			src.AddEffect(new/datum/StatusEffects/RadialEffects2("Battlefield Layout",0,src,"MovementSpeed",-1,\
+			src.AddEffect(new/datum/StatusEffects/RadialEffects("Battlefield Layout",0,src,"MovementSpeed",-1,\
 				"Increases Movement Speed by 1","GreenBallFront","GreenBallBack",4+S.Level,5))
+
+
 	Offensive_Tactics()
 		for(var/datum/StatusEffects/RadialEffects/E in src.StatusEffects)
 			if(E.name=="Offensive Tactics" && E.CastBy=="[src]")
@@ -417,6 +417,8 @@ mob/proc
 		if(src.REI>=5)	for(var/obj/Skills/Bount/Offensive_Tactics/S in src.Skills)
 			src.AddEffect(new/datum/StatusEffects/RadialEffects("Offensive Tactics",0,src,null,null,\
 				"Increases Damage Dealt by 10%","RedBallFront","RedBallBack",4+S.Level,5))
+
+
 	Defensive_Strategy()
 		for(var/datum/StatusEffects/RadialEffects/E in src.StatusEffects)
 			if(E.name=="Defensive Strategy" && E.CastBy=="[src]")
@@ -424,27 +426,8 @@ mob/proc
 		if(src.REI>=5)	for(var/obj/Skills/Bount/Defensive_Strategy/S in src.Skills)
 			src.AddEffect(new/datum/StatusEffects/RadialEffects("Defensive Strategy",0,src,null,null,\
 				"Decreases Damage Taken by 10%","BlueBallFront","BlueBallBack",4+S.Level,5))
-	Vine_Impale_Release()
-		for(var/obj/Damaging/Vine_Impale/D in oview(src))	if(D.Owner==src)	del D
-		src.CanMove=1;src.SkillBeingCharged=null;src.icon_state="";src.InfBeamCost=0
-	Vine_Impale()
-		if(!src.Fused)	return
-		var/Damage;for(var/obj/Skills/Fuses/Vine_Impale/S in src.Skills)
-			Damage=(S.Level-1+15+src.MGC)*((0.25*(S.Level-1))+1)
-		src.InfBeamAttack(15,"White Lightning",null,Damage,"/obj/Damaging/Vine_Impale")
-	Leaf_Storm()
-		if(!src.Fused)	return
-		if("Leaf Storm" in src.ToggledSkills)
-			src.ToggledSkills-="Leaf Storm"
-			for(var/obj/SkillSups/ScatterLeafs/P in src.Cache)	{src.overlays-=P;del P}
-		else
-			src.ToggledSkills+="Leaf Storm"
-			for(var/i=1;i<=9;i++)
-				var/obj/SkillSups/ScatterLeafs/P=new()
-				if(i<=9)	{P.pixel_x=-64+(32*(i-6));P.pixel_y=-32}
-				if(i<=6)	{P.pixel_x=-64+(32*(i-3));P.pixel_y=0}
-				if(i<=3)	{P.pixel_x=-64+(32*i);P.pixel_y=32}
-				P.icon_state="[i]";src.Cache+=P;src.overlays+=P
+
+
 	Group_Morale()
 		for(var/datum/StatusEffects/RadialEffects/E in src.StatusEffects)
 			if(E.name=="Group Morale" && E.CastBy=="[src]")
@@ -452,27 +435,31 @@ mob/proc
 		if(src.REI>=5)	for(var/obj/Skills/Quincy/Group_Morale/S in src.Skills)
 			src.AddEffect(new/datum/StatusEffects/RadialEffects("Group Morale",0,src,"ReiRegenBonus",1,\
 				"Increases Reiatsu Regeneration by 10 per Second","BlueBallFront","BlueBallBack",4+S.Level,5))
+
+
 	Power_Strike()
 		if("Scatter" in src.ToggledSkills)	return
-		if("Blood Mist Shield" in src.ToggledSkills)	return
+		if("Bankai Scatter" in src.ToggledSkills)	return
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(25))	return
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
 		MyFlick("Power Strike",src)
-		if(src.Zanpakuto && src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeStance"
-			else	src.icon_state="Stance"
-		var/Damage;for(var/obj/Skills/SoulReaper/Power_Strike/S in src.Skills)	Damage=(src.STR*1.5+src.Zanjutsu+100)*((0.25*(S.Level-1))+1)
+		src.icon_state="Stance"
+		var/Damage;for(var/obj/Skills/SoulReaper/Power_Strike/S in src.Skills)	Damage=(src.STR+100)*((0.25*(S.Level-1))+1)
 		for(var/mob/M in get_step(src,src.dir))	src.Damage(M,Damage,src.Element,1,"Melee")
 		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,Damage)
+
+
 	Brave_Shout()
-		var/Range;for(var/obj/Skills/SoulReaper/Brave_Shout/S in src.Skills)	Range=4+S.Level
+		var/Range;for(var/obj/Skills/SoulReaper/Brave_Shout/S in src.Skills)	Range=4+round(S.Level/5)
 		src.Taunt(Range)
+
+
 	Selfless_Distraction()
 		var/Range;for(var/obj/Skills/Quincy/Selfless_Distraction/S in src.Skills)	Range=4+S.Level
 		src.Taunt(Range)
+
+
 	Restore_Point()
 		var/ReqRei;for(var/obj/Skills/SoulReaper/Restore_Point/S in src.Skills)	ReqRei=src.MaxREI*((11-S.Level)/10)
 		if(src.REI<ReqRei)	{QuestShow(src,"[ReqRei] Reiatsu Required");return}
@@ -480,64 +467,72 @@ mob/proc
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
 		src.STM=src.MaxSTM;src.StmBar()
 		src.REI=0;src.ReiBar()
+
+
 	ShockWave()
 		if("Scatter" in src.ToggledSkills)	return
-		if("Blood Mist Shield" in src.ToggledSkills)	return
+		if("Bankai Scatter" in src.ToggledSkills)	return
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(75))	return
 		MyFlick("F3",src)
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-		var/Damage;for(var/obj/Skills/SoulReaper/ShockWave/S in src.Skills)	Damage=(150+src.STR*2+src.Zanjutsu+100)*((0.25*(S.Level-1))+1)
-		for(var/mob/M in oview(1,src))	src.Damage(M,Damage,src.Element)
-		for(var/obj/Bankai/Chains/C in oview(1,src))	src.DamageChain(C,Damage)
+		var/Dist;var/Damage
+		for(var/obj/Skills/SoulReaper/ShockWave/S in src.Skills)
+			Damage=(150+src.STR)*((0.25*(S.Level-1))+1);Dist=round(S.Level/10)+1
+		for(var/mob/M in oview(Dist,src))	src.Damage(M,Damage,src.Element)
+		for(var/obj/Bankai/Chains/C in oview(Dist,src))	src.DamageChain(C,Damage)
+
+
 	Spirit_Blast()
 		if("Scatter" in src.ToggledSkills)	return
-		if("Blood Mist Shield" in src.ToggledSkills)	return
+		if("Bankai Scatter" in src.ToggledSkills)	return
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(50))	return
 		MyFlick("F3",src)
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-		var/Duration;for(var/obj/Skills/SoulReaper/Spirit_Blast/S in src.Skills)	Duration=S.Level
-		for(var/mob/M in oview(1,src))
+		var/Duration;var/Dist
+		for(var/obj/Skills/SoulReaper/Spirit_Blast/S in src.Skills)
+			Duration=S.Level;Dist=1+round(S.Level/10)
+		for(var/mob/M in oview(Dist,src))
 			M.StunProc(Duration,"Stun",src)
-	Mob_Spirit_Blast()
-		if("Scatter" in src.ToggledSkills)	return
-		if("Blood Mist Shield" in src.ToggledSkills)	return
-		if(src.Blocking||!src.CanMove||src.Stunned)	return
-		if(!src.UseRei(50))	return
-		MyFlick("F3",src)
-		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-		var/Duration;Duration=3
-		for(var/mob/M in oview(1,src))
-			M.StunProc2(Duration,"Stun",src)
+
+
 	Power_Shot()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(50))	return
 		MyFlick("FireArrow",src)
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-		var/Damage;for(var/obj/Skills/Quincy/Power_Shot/S in src.Skills)	Damage=(150+src.MGC+src.Kidou)*((0.25*(S.Level-1))+1)
+		var/Damage;for(var/obj/Skills/Quincy/Power_Shot/S in src.Skills)	Damage=(150+src.MGC)*((0.25*(S.Level-1))+1)
 		new/obj/Projectile/Arrow(Damage,10,src.dir,src.loc,src,null,"Power Shot")
+
+
 	Barrage()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(150))	return
 		var/Numbar=0;for(var/obj/Skills/Quincy/Barrage/F in src.Skills)	Numbar=F.Level+1
-		src.BarrageProc((100+src.MGC+src.Kidou/2)*((0.25*(Numbar-2))+1),10,Numbar)
+		src.BarrageProc((100+src.MGC)*((0.25*(Numbar-2))+1),10,Numbar)
+
 
 	Berserk()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(25))	return
 		for(var/obj/Skills/SoulReaper/Berserk/F in src.Skills)
 			src.AddEffect(new/datum/StatusEffects/Berserk("Berserk",20+F.Level-1,10,10+F.Level-1,src))
+
+
 	Enrage()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(!src.UseRei(25))	return
 		for(var/obj/Skills/Shikais/Shared/Enrage/F in src.Skills)
 			src.AddEffect(new/datum/StatusEffects/Berserk("Enrage",30+F.Level-1,0,10+F.Level-1,src))
 
+
 	Spirit_Charge_Release()
 		for(var/obj/O in src.loc)
 			view(src,src.SightRange)<<sound(null,channel=8)
 			if(O.icon_state=="Energy")	del O
+
+
 	Spirit_Charge()
 		if(src.Blocking||!src.CanMove||src.Stunned)	return
 		if(src.Class=="Bount")	src.icon_state="Block"
@@ -545,40 +540,127 @@ mob/proc
 		if(src.Class=="Soul Reaper")	src.icon_state="Block"
 		PlayTimedSound(view(src,src.SightRange),'Energy.wav',999)
 		ShowEffect(src,'Effects.dmi',"Energy","",120,1)
-		var/SkillBoost=0
-		for(var/obj/Skills/Universal/Spirit_Charge/S in src.Skills)	SkillBoost=S.Level
+		var/SkillBoost=0;;var/H
+		for(var/obj/Skills/Universal/Spirit_Charge/S in src.Skills)
+			SkillBoost=S.Level+2
+			if(S.Level >=10)
+				H=1
 		while(src.SkillBeingCharged)
 			src.CanMove=0
-			src.REI+=SkillBoost
-			src.REI=min(src.REI,src.MaxREI)
-			src.ReiBar()
-			sleep(1)
+			if(H)
+				src.REI+=SkillBoost
+				src.REI=min(src.REI,src.MaxREI)
+				src.ReiBar()
+				src.STM+=SkillBoost
+				src.STM=min(src.STM,src.MaxSTM)
+				src.StmBar()
+				sleep(1)
+			else
+				src.REI+=SkillBoost
+				src.REI=min(src.REI,src.MaxREI)
+				src.ReiBar()
+				sleep(1)
 			if(!src)	return
 		src.icon_state=""
 		src.CanMove=1
 
+
 	//Shikai Skill Procs
 	Scatter()
+
 		if("Scatter" in src.ToggledSkills)
 			src.ToggledSkills-="Scatter"
 			for(var/obj/SkillSups/ScatterPetals/P in src.Cache)	{src.overlays-=P;del P}
+			return
+		if("Bankai Scatter" in src.ToggledSkills)
+			src.ToggledSkills-="Bankai Scatter"
+			for(var/obj/SkillSups/ScatterPetals/P in src.Cache)	{src.overlays-=P;del P}
+			return
+		if(src.Bankai)
+			src.BankaiScatter()
+			return
 		else
 			src.ToggledSkills+="Scatter"
+			MyFlick('senbonscatter.dmi',src)
+			src.icon_state="Scatter"
 			for(var/i=1;i<=9;i++)
 				var/obj/SkillSups/ScatterPetals/P=new()
 				if(i<=9)	{P.pixel_x=-64+(32*(i-6));P.pixel_y=-32}
 				if(i<=6)	{P.pixel_x=-64+(32*(i-3));P.pixel_y=0}
 				if(i<=3)	{P.pixel_x=-64+(32*i);P.pixel_y=32}
 				P.icon_state="[i]";src.Cache+=P;src.overlays+=P
+
+
+	BankaiScatter()
+		src.ToggledSkills+="Bankai Scatter"
+		for(var/i=1;i<=25;i++)
+			var/obj/SkillSups/ScatterPetals/P=new()
+			var/ii
+
+			/*	[01][02][03][04][05]
+				[06][07][08][09][10]
+				[11][12][13][14][15]
+				[16][17][18][19][20]
+				[21][22][23][24][25]
+			*/
+			//Top Row Starts
+			if(i==1)	{P.pixel_x=-96+(32*1);P.pixel_y=64;ii = 1}	// [01]
+			if(i==2)	{P.pixel_x=-96+(32*2);P.pixel_y=64;ii = 2}	// [02]
+			if(i==3)	{P.pixel_x=-96+(32*3);P.pixel_y=64;ii = 2}	// [03]
+			if(i==4)	{P.pixel_x=-96+(32*4);P.pixel_y=64;ii = 2}	// [04]
+			if(i==5)	{P.pixel_x=-96+(32*5);P.pixel_y=64;ii = 3}	// [05]
+			//Second Row Starts
+			if(i==6)	{P.pixel_x=-96+(32*1);P.pixel_y=32;ii = 4}	// [06]
+			if(i==7)	{P.pixel_x=-96+(32*2);P.pixel_y=32;ii = 5}	// [07]
+			if(i==8)	{P.pixel_x=-96+(32*3);P.pixel_y=32;ii = 5}	// [08]
+			if(i==9)	{P.pixel_x=-96+(32*4);P.pixel_y=32;ii = 5}	// [09]
+			if(i==10)	{P.pixel_x=-96+(32*5);P.pixel_y=32;ii = 6}	// [10]
+			//Third Row Starts
+			if(i==11)	{P.pixel_x=-96+(32*1);P.pixel_y=0;ii = 4}	// [11]
+			if(i==12)	{P.pixel_x=-96+(32*2);P.pixel_y=0;ii = 5}	// [12]
+			if(i==13)	{P.pixel_x=-96+(32*3);P.pixel_y=0;ii = 5}	// [13]
+			if(i==14)	{P.pixel_x=-96+(32*4);P.pixel_y=0;ii = 5}	// [14]
+			if(i==15)	{P.pixel_x=-96+(32*5);P.pixel_y=0;ii = 6}	// [15]
+			//Fourth Row Starts
+			if(i==16)	{P.pixel_x=-96+(32*1);P.pixel_y=-32;ii = 4}	// [16]
+			if(i==17)	{P.pixel_x=-96+(32*2);P.pixel_y=-32;ii = 5}	// [17]
+			if(i==18)	{P.pixel_x=-96+(32*3);P.pixel_y=-32;ii = 5}	// [18]
+			if(i==19)	{P.pixel_x=-96+(32*4);P.pixel_y=-32;ii = 5}	// [19]
+			if(i==20)	{P.pixel_x=-96+(32*5);P.pixel_y=-32;ii = 6}	// [20]
+			//Fifth Row Starts
+			if(i==21)	{P.pixel_x=-96+(32*1);P.pixel_y=-64;ii = 7}	// [21]
+			if(i==22)	{P.pixel_x=-96+(32*2);P.pixel_y=-64;ii = 8}	// [22]
+			if(i==23)	{P.pixel_x=-96+(32*3);P.pixel_y=-64;ii = 8}	// [23]
+			if(i==24)	{P.pixel_x=-96+(32*4);P.pixel_y=-64;ii = 8}	// [24]
+			if(i==25)	{P.pixel_x=-96+(32*5);P.pixel_y=-64;ii = 9}	// [25]
+			//Choose the Icon State Based off of ii
+			P.icon_state="[ii]";src.Cache+=P;src.overlays+=P
+
+
+
+
 	Petal_Stream()
 		var/Damage;for(var/obj/Skills/Shikais/Light_Dragon/Petal_Stream/S in src.Skills)
-			Damage=(S.Level-1+src.Level+src.MGC+src.Kidou/2)*((0.25*(S.Level-1))+1)
-		src.InfBeamAttack(15,"Scatter",null,Damage,"/obj/Damaging/Petal_Stream")
-		src.CanMove=1
+			Damage=(S.Level-1+15+src.MGC)*((0.25*(S.Level-1))+1)
+		if(src.Shikai)	src.InfBeamAttack(15,"Scatter",null,Damage,"/obj/Damaging/Petal_Stream")
+		if(src.Bankai)	src.InfBeamAttack(15,"Scatter",null,Damage,"/obj/Damaging/Petal_Stream")
+
+
+	Petal_Attack()
+		var/Damage
+		if(src.Shikai)
+			for(var/obj/Skills/Shikais/Light_Dragon/Petal_Attack/S in src.Skills)
+				Damage=(S.Level-1+15+src.MGC)*((0.25*(S.Level-1))+1)
+				src.Petal_Shoot(10,Damage*S.Level,"Petals")
+
+
 	Petal_Stream_Release()
 		for(var/obj/Damaging/Petal_Stream/D in oview(src))	if(D.Owner==src)	del D
 		src.CanMove=1;src.SkillBeingCharged=null;src.icon_state="";src.InfBeamCost=0
+
+
 	Blade_Break()
+		if(src.Bankai && src.Zanpakuto.SpiritType=="Beast")	src.ChainStart()
 		var/obj/SkillSups/BladeBreak/X=new()
 		if(!src.loc.Enter(X))	{del X;return}
 		if(!src.UseRei(50))	return
@@ -586,13 +668,13 @@ mob/proc
 			var/Dir=src.dir;del X
 			var/obj/SkillSups/BladeBreak/H=new(src,S.Level);src.DeathCache+=H
 			H.dir=Dir;H.icon_state="Head";H.loc=get_step(src,Dir)
-			for(var/i=1;i<=S.Level+2;i++)
+			for(var/i=1;i<=round(S.Level/5)+2;i++)
 				if(!src || !H)	return
 				src.CanMove=0;src.icon_state="Blast"
 				var/obj/SkillSups/BladeBreak/B=new(src,S.Level);src.DeathCache+=B
 				B.dir=Dir;B.loc=H.loc
 				step(H,Dir)
-				sleep(2)
+				sleep(1)
 			while(src && H && H.loc!=src.loc)
 				for(var/obj/SkillSups/BladeBreak/B in H.loc)
 					if(B!=H && (B in src.DeathCache))	{src.DeathCache-=B;del B}
@@ -602,23 +684,90 @@ mob/proc
 			if(!src)	return
 			for(var/obj/SkillSups/BladeBreak/B in src.DeathCache)	{src.DeathCache-=B;del B}
 			src.CanMove=1;src.icon_state=""
+
+
 	Freeze_Ring()
-		if(!src.UseRei(350))	return
-		var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/S
-		for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/x in src.Skills)	S=x
-		for(var/turf/T in oview(S.Level,src))
-			for(var/mob/M in T)	M.StunProc(3*S.Level,"Freeze",src)
-			if(!T.density)
-				var/obj/Supplemental/Freeze_Ring/M=new(T);src.Cache+=M
-				spawn(S.Level*50)	if(M)	del M
+		if(!src.UseRei(150))	return
+		if(usr.Bankai)
+			for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/S in src.Skills)
+				for(var/turf/T in oview(1+(S.Level/10),src))
+					for(var/mob/M in T)
+				//			M.STM -= 250+src.MGC*(1+(S.Level/50))
+						M.StunProc(3*S.Level,"Freeze",src)
+						if(M == src)
+							M.AddEffect(new/datum/StatusEffects/AoEDoT(10/*S.Level*5*/,src,src.MGC*2,1/*round(S.Level/10)*/,"Frozen King"))
+							M.AddEffect(new/datum/StatusEffects/StatBooster("Frozen King I","VIT",round(M.VIT*0.2),10,"While on Ice Gain a Boost",M))
+							M.AddEffect(new/datum/StatusEffects/StatBooster("Frozen King II","MGCDEF",round(M.MGCDEF*0.2),10,"While on Ice Gain a Boost",M))
+							M.AddEffect(new/datum/StatusEffects/StatBooster("Frozen King III","MGC",round(M.MGC*0.2),10,"While on Ice Gain a Boost",M))
+
+					if(!T.density)
+						var/obj/Supplemental/Freeze_Ring/M=new(T);src.Cache+=M
+						spawn(S.Level*5)	if(M)	del M
+
+		else
+			var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/S
+			for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/x in src.Skills)	S=x
+			for(var/turf/T in oview(1+(S.Level/10),src))
+				for(var/mob/M in T)	M.StunProc(3*S.Level,"Freeze",src)
+				if(!T.density)
+					var/obj/Supplemental/Freeze_Ring/M=new(T);src.Cache+=M
+					spawn(S.Level*50)	if(M)	del M
+
+
+	Flame_Ring()
+		if(!src.UseRei(150))	return
+		if(usr.Bankai)
+			for(var/obj/Skills/Shikais/Endless_Flames/Flame_Ring/S in src.Skills)
+
+
+				src.AddEffect(new/datum/StatusEffects/AoEDoT(S.Level*10,src,src.MGC+S.Level*2,1+round(S.Level/12),"Burned"))
+
+
+		if(usr.Shikai)
+			for(var/obj/Skills/Shikais/Endless_Flames/Flame_Ring/S in src.Skills)
+				src.AddEffect(new/datum/StatusEffects/AoEDoT(S.Level*10,src,src.MGC+S.Level*2,1+round(S.Level/12),"Burned"))
+
+
+	Ice_Queen()
+		if(!src.UseRei(150))	return
+
+		if(usr.Bankai)
+			for(var/obj/Skills/Shikais/Rukia/Ice_Queen/S in src.Skills)
+				src.AddEffect(new/datum/StatusEffects/AoEDoT(S.Level*10,src,src.MGC+S.Level*2,1+round(S.Level/12),"Ice Queen"))
+
+
+		if(usr.Shikai)
+			for(var/obj/Skills/Shikais/Rukia/Ice_Queen/S in src.Skills)
+				src.AddEffect(new/datum/StatusEffects/AoEDoT(S.Level*10,src,src.MGC+S.Level*2,1+round(S.Level/12),"Ice Queen"))
+
+
+	Ice_Barrage()
+		if(!src.UseRei(200))	return
+		for(var/obj/Skills/Shikais/Rukia/Ice_Barrage/S in src.Skills)
+			src.Ice_BarrageProc(MGC*round(S.Level/25),12,S.Level)
+
+
+
+
 	Ice_Dragon_Assault()
 		if(!src.UseRei(200))	return
 		MyFlick("F3",src);src.CanMove=0
 		src.icon_state="Stance"
-		var/Damage=1000+src.MGC*2+src.Kidou
+		var/Damage=250+src.MGC*(rand(1.0,2.0))
 		for(var/obj/Skills/Shikais/Ice_Dragon/Ice_Dragon_Assault/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.IceDragonAssault('IceDragon.dmi',Damage)
+		src.DragonAssault('IceDragon.dmi',Damage)
 		sleep(15);if(src)	src.CanMove=1
+
+	Fire_Dragon_Assault()
+		if(!src.UseRei(200))	return
+		MyFlick("F3",src);src.CanMove=0
+		src.icon_state="Stance"
+		var/Damage=250+src.MGC*(rand(1.0,2.0))
+		for(var/obj/Skills/Shikais/Endless_Flames/Fire_Dragon_Assault/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
+		src.DragonAssault('FireDragon.dmi',Damage)
+		sleep(15);if(src)	src.CanMove=1
+
+
 	Getsuga_Tenshou_Release()
 		src.TurnMode=0
 		if(src.Stunned || src.ChargedPower<=0)	return
@@ -626,7 +775,7 @@ mob/proc
 		src.ChargedPower=0
 		var/Damage;for(var/obj/Skills/Shikais/Dark_Ghost/Getsuga_Tenshou/S in src.Skills)
 			Damage=src.STR*((0.1*(S.Level-1))+1)
-		ChargedP+=Damage*1.5
+		ChargedP+=Damage*3
 		for(var/obj/O in src.loc)
 			if(O.icon_state=="Energy")
 				del O;view(src,9)<<sound(null,channel=8)
@@ -637,8 +786,10 @@ mob/proc
 		src.icon_state="Stance"
 		new/obj/Projectile/ThreeWide/Getsuga(ChargedP,11,src.dir,src.loc,src)
 		sleep(15);if(src)	src.CanMove=1
+
+
 	Getsuga_Tenshou()
-		if(!src.UseRei(src.MaxREI/5))	return
+		if(!src.UseRei(25))	return
 		src.CanMove=0
 		src.TurnMode=1
 		src.icon_state="Block"
@@ -646,6 +797,8 @@ mob/proc
 		ShowEffect(src,'Effects.dmi',"Energy","",120,1)
 		src.ChargedPower=1
 		src.ChargeSkillPower()
+
+
 	Black_Getsuga_Tenshou_Release()
 		src.TurnMode=0
 		if(src.Stunned || src.ChargedPower<=0)	return
@@ -653,7 +806,7 @@ mob/proc
 		src.ChargedPower=0
 		var/Damage;for(var/obj/Skills/Bankais/Dark_Ghost/Black_Getsuga_Tenshou/S in src.Skills)
 			Damage=src.STR*((0.1*(S.Level-1))+1)
-		ChargedP+=Damage*2
+		ChargedP+=Damage*5
 		for(var/obj/O in src.loc)
 			if(O.icon_state=="Energy")
 				del O;view(src,9)<<sound(null,channel=8)
@@ -664,55 +817,9 @@ mob/proc
 		src.icon_state="Stance"
 		new/obj/Projectile/ThreeWide/Black_Getsuga(ChargedP,11,src.dir,src.loc,src)
 		sleep(15);if(src)	src.CanMove=1
+
+
 	Black_Getsuga_Tenshou()
-		if(!src.UseRei(src.MaxREI/3))	return
-		src.CanMove=0
-		src.TurnMode=1
-		src.icon_state="Block"
-		PlayTimedSound(view(src,src.SightRange),'Energy.wav',999)
-		ShowEffect(src,'Effects.dmi',"Energy","",120,1)
-		src.ChargedPower=1
-		src.ChargeSkillPower()
-	Fire_Ring()
-		if(!src.UseRei(src.REI/10))	return
-		var/Damage
-		var/obj/Skills/Shikais/Fire_Dragon/Fire_Ring/S
-		for(var/obj/Skills/Shikais/Fire_Dragon/Fire_Ring/x in src.Skills)	S=x
-		for(var/turf/T in oview(S.Level,src))
-			for(var/mob/M in T)
-				Damage=src.MGC*2*((0.25*(S.Level))+1)
-				src.InstantAttack(M,/*"FlashFire"*/null,Damage,0,"Fire")
-				M.StunProc(3*S.Level,"Stun",src)
-			if(!T.density)
-				var/obj/Supplemental/Fire_Ring/M=new(T);src.Cache+=M
-				spawn(S.Level*50)	if(M)	del M
-	Fire_Dragon_Assault()
-		if(!src.UseRei(200))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=250+src.MGC+src.Kidou
-		for(var/obj/Skills/Shikais/Fire_Dragon/Fire_Dragon_Assault/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.FireDragonAssault('FireDragon.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Fire_Blast_Release()
-		src.TurnMode=0
-		if(src.Stunned || src.ChargedPower<=0)	return
-		var/ChargedP=src.ChargedPower*2/5
-		src.ChargedPower=0
-		var/Damage;for(var/obj/Skills/Bankais/Fire_Dragon/Fire_Blast/S in src.Skills)
-			Damage=src.MGC*((0.1*(S.Level-1))+1)
-		ChargedP+=Damage*8
-		for(var/obj/O in src.loc)
-			if(O.icon_state=="Energy")
-				del O;view(src,9)<<sound(null,channel=8)
-		MyFlick("Combo",src)
-		PlayVoice(view(src,src.SightRange),'Lightning.wav',2)
-		sleep(6);if(!src)	return
-		MyFlick("F3",src)
-		src.icon_state="Stance"
-		new/obj/Projectile/ThreeWide/Fire_Blast(ChargedP,11,src.dir,src.loc,src)
-		sleep(15);if(src)	src.CanMove=1
-	Fire_Blast()
 		if(!src.UseRei(50))	return
 		src.CanMove=0
 		src.TurnMode=1
@@ -721,213 +828,70 @@ mob/proc
 		ShowEffect(src,'Effects.dmi',"Energy","",120,1)
 		src.ChargedPower=1
 		src.ChargeSkillPower()
-	Fire_Slash()
-		if(!src.UseRei(200))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=750+src.MGC
-		for(var/obj/Skills/Bankais/Fire_Beast/Fire_Slash/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.FireSlashProc('FireBeast.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Fire_Beam()
-		if(!src.UseRei(350))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=400+src.MGC
-		for(var/obj/Skills/Shikais/Fire_Beast/Fire_Beam/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.FireBeamProc('FireBeast.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Healing_Canon_Blast()
-		if(!src.UseRei(300))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=500+src.MGC+src.Kidou
-		for(var/obj/Skills/Bankais/Healing_Canon/Healing_Canon_Blast/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.HealingCanonBlast('HealingCanon.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Cero()
-		if(!src.Class=="Hollow" || !src.Vaizard)	return
-		if(!src.UseRei(150))	return
-		MyFlick("F3",src);src.CanMove=0
-		if(src.Zanpakuto && src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet")
-				src.icon_state="SuzumeStance"
-			else	src.icon_state="Stance"
-		var/Damage=200+src.MGC+src.STR/2+src.Kidou+src.Zanjutsu/1.5
-		for(var/obj/Skills/Vaizard/Cero/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.CeroBeam('Cero.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Bala()
-		if(!src.CanMove)	return
-		var/Blasts=0
-		var/Damage;for(var/obj/Skills/Vaizard/Bala/S in src.Skills)
-			Damage=(src.Kidou/2+src.MGC/2+src.STR/2+src.Zanjutsu/2)*((0.25*(S.Level-1))+1);Blasts=S.Level
-		if(!src.UseRei(src.MaxREI/10))	return
-		for(var/i=1,i<=Blasts,i++)
-			spawn(-1)	if(src)	src.BalaProc(0,Damage,"Bala")
-			sleep(5)
-	Sword_Beam()
-		if(!src.UseRei(180))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=500+src.STR*2+src.Zanjutsu*2
-		for(var/obj/Skills/Shikais/God_Spear/Sword_Beam/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.SwordBeamProc('GodSpear.dmi',Damage)
-		sleep(15);if(src)	src.CanMove=1
-	Sword_Rise()
-		if(!src.UseRei(src.REI/10))	return
-		var/Damage
-		var/obj/Skills/Shikais/God_Spear/Sword_Rise/S
-		for(var/obj/Skills/Shikais/God_Spear/Sword_Rise/x in src.Skills)	S=x
-		for(var/turf/T in oview(2,src))
-			for(var/mob/M in T)
-				Damage=500+src.STR*3*((0.25*(S.Level))+1)
-				src.InstantAttack(M,/*"LightningSpark"*/null,Damage,0,"RisingSword")
-			if(!T.density)
-				var/obj/Supplemental/God_Spear/M=new(T);src.Cache+=M
-				spawn(20)if(M)	del M
-	Sword_Pierce(var/mob/M)
-		if(!src.UseRei(500))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=500+src.STR*2+src.Zanjutsu/2
-		for(var/obj/Skills/Bankais/God_Spear/Sword_Pierce/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.SwordPierceProc('GodSpear.dmi',Damage)
-		src.AttackCauseStatusEffects(M)
-		sleep(15);if(src)	src.CanMove=1
-	Blood_Mist_Shield()
-		if("Blood Mist Shield" in src.ToggledSkills)
-			src.ToggledSkills-="Blood Mist Shield";src.CanMove=1
-			for(var/obj/SkillSups/BMShield/P in src.Cache)	{src.overlays-=P;del P}
-		else
-			src.ToggledSkills+="Blood Mist Shield"
-			var/obj/SkillSups/BMShield/P=new()
-			src.dir=get_dir(src,src)
-			if(src.dir==EAST)
-				P.pixel_x+=4
-			if(src.dir==WEST)
-				P.pixel_x-=4
-			if(src.dir==NORTH)
-				P.pixel_y+=12
-				P.layer=3
-			if(src.dir==SOUTH)
-				P.pixel_y-=12
-			P.icon_state="Blood Mist Shield";src.Cache+=P;src.overlays+=P;src.CanMove=9
-	Reiki_Blast()
-		if(!src.UseRei(250))	return
-		MyFlick("F3",src);src.CanMove=0
-		src.icon_state="Stance"
-		var/Damage=500+src.MGC+src.Kidou
-		for(var/obj/Skills/Shikais/Reiki_Control/Reiki_Blast/S in src.Skills)	Damage+=round(Damage*((S.Level-1)/10))
-		src.ReikiBlastProc('Benihime.dmi',Damage)
-		sleep(15)
-		if(src)
-			if("Blood Mist Shield" in src.ToggledSkills)	src.CanMove=9
-			else	src.CanMove=1
-	Reiki_Blast_Waves()
-		if(!src.CanMove)	return
-		var/Blasts=0
-		var/Damage;for(var/obj/Skills/Bankais/Reiki_Control/Reiki_Blast_Waves/S in src.Skills)
-			Damage=(800+src.Kidou+src.MGC*2)*((0.10*(S.Level-1))+1);Blasts=S.Level
-		if(!src.UseRei(500))	return
-		for(var/i=1,i<=Blasts,i++)
-			spawn(-1);if(src)
-				src.ReikiBlastProc('Benihime.dmi',Damage);MyFlick("F3",src);src.icon_state="Stance"
-			sleep(5)
-	Rocket()
-		if(!src.CanMove)	return
-		var/Damage;for(var/obj/Skills/Bankais/Hornet/Rocket/S in src.Skills)
-			Damage=1000+((100*S.Level)-1)
-		if(!src.UseRei(250))	return
-		src.SuzumeRocketProc(0,Damage,"Rocket")
 
-mob/proc/IceDragonAssault(var/IC,var/Damage)
+mob/proc/DragonAssault(var/IC,var/Damage)
 	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Dragons/IceDragon"
-		var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
+	if(usr.Bankai&&usr.Zanpakuto.SpiritType=="Dragon")
+		if(usr.dir==NORTH||usr.dir==SOUTH)
+			for(var/i=1,i<=3,i++)
+				var/NewPath="/obj/Projectile/Dragons/IceDragon"
+		//		if(src.Element=="Fire")	NewPath="/obj/Projectile/Dragons/FireDragon"
+				var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+				var/obj/Projectile/Dragons/E=new NewPath(Damage,10,src.dir,locate(src.x-1,src.y,src.z),src)
+				var/obj/Projectile/Dragons/F=new NewPath(Damage,10,src.dir,locate(src.x+1,src.y,src.z),src)
+				D.icon=IC;D.icon_state=BodyParts[i]
+				E.icon=IC;E.icon_state=BodyParts[i]
+				F.icon=IC;F.icon_state=BodyParts[i]
+			return
+		if(usr.dir==EAST||usr.dir==WEST)
+			for(var/i=1,i<=3,i++)
+				var/NewPath="/obj/Projectile/Dragons/IceDragon"
+			//	if(src.Element=="Fire")	NewPath="/obj/Projectile/Dragons/FireDragon"
+				var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+				var/obj/Projectile/Dragons/E=new NewPath(Damage,10,src.dir,locate(src.x,src.y-1,src.z),src)
+				var/obj/Projectile/Dragons/F=new NewPath(Damage,10,src.dir,locate(src.x,src.y+1,src.z),src)
+				D.icon=IC;D.icon_state=BodyParts[i]
+				E.icon=IC;E.icon_state=BodyParts[i]
+				F.icon=IC;F.icon_state=BodyParts[i]
+			return
+	if(usr.Zanpakuto.SpiritType=="Dragon")
+		for(var/i=1,i<=3,i++)
+			var/NewPath="/obj/Projectile/Dragons/IceDragon"
+		//	if(src.Element=="Fire")	NewPath="/obj/Projectile/Dragons/FireDragon"
+			var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+			D.icon=IC;D.icon_state=BodyParts[i]
 
-mob/proc/FireDragonAssault(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Dragons/FireDragon"
-		var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
 
-mob/proc/HealingCanonBlast(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Blasts/CanonBlast"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
 
-mob/proc/FireBeamProc(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Blasts/FireBeam"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
+	if(usr.Bankai&&usr.Zanpakuto.SpiritType=="Endless Flames")
+		if(usr.dir==NORTH||usr.dir==SOUTH)
+			for(var/i=1,i<=3,i++)
+				//var/NewPath="/obj/Projectile/Dragons/IceDragon"
+				//if(src.Element=="Fire")
+				var/NewPath="/obj/Projectile/Dragons/FireDragon"
+				var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+				var/obj/Projectile/Dragons/E=new NewPath(Damage,10,src.dir,locate(src.x-1,src.y,src.z),src)
+				var/obj/Projectile/Dragons/F=new NewPath(Damage,10,src.dir,locate(src.x+1,src.y,src.z),src)
+				D.icon=IC;D.icon_state=BodyParts[i]
+				E.icon=IC;E.icon_state=BodyParts[i]
+				F.icon=IC;F.icon_state=BodyParts[i]
+			return
+		if(usr.dir==EAST||usr.dir==WEST)
+			for(var/i=1,i<=3,i++)
+				var/NewPath="/obj/Projectile/Dragons/FireDragon"
+				var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+				var/obj/Projectile/Dragons/E=new NewPath(Damage,10,src.dir,locate(src.x,src.y-1,src.z),src)
+				var/obj/Projectile/Dragons/F=new NewPath(Damage,10,src.dir,locate(src.x,src.y+1,src.z),src)
+				D.icon=IC;D.icon_state=BodyParts[i]
+				E.icon=IC;E.icon_state=BodyParts[i]
+				F.icon=IC;F.icon_state=BodyParts[i]
+			return
+	if(usr.Zanpakuto.SpiritType=="Endless Flames")
+		for(var/i=1,i<=3,i++)
+			var/NewPath="/obj/Projectile/Dragons/FireDragon"
+			var/obj/Projectile/Dragons/D=new NewPath(Damage,10,src.dir,src.loc,src)
+			D.icon=IC;D.icon_state=BodyParts[i]
 
-mob/proc/FireSlashProc(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/ThreeWide/Fire_Slash_Move"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
-
-mob/proc/CeroBeam(var/IC,var/Damage)
-	//var/list/BodyParts=list("Head","Body")
-	//for(var/i=1,i<=3,i++)
-	var/NewPath="/obj/Projectile/Ceros/Cero"
-	var/obj/Projectile/Ceros/D=new NewPath(Damage,10,src.dir,src.loc,src)
-	D.icon=IC;D.icon_state="Cero"
-
-mob/proc/SwordBeamProc(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Blasts/SwordBeam"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
-
-mob/proc/ReikiBlastProc(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Blasts/ReikiBlast"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
-
-mob/proc/SwordPierceProc(var/IC,var/Damage)
-	var/list/BodyParts=list("Head","Body","Tail")
-	for(var/i=1,i<=3,i++)
-		var/NewPath="/obj/Projectile/Blasts/SwordBeam"
-		var/obj/Projectile/Blasts/D=new NewPath(Damage,10,src.dir,src.loc,src)
-		D.icon=IC;D.icon_state=BodyParts[i]
-
-mob/proc/SuzumeRocketProc(var/ReiCost,var/AttackPower,var/IS)
-	if(ReiCost && !src.UseRei(ReiCost))	return
-	src.CanMove=0
-	MyFlick("SuzumeBankaiAim",src)
-	src.icon_state="SuzumeBankaiStance"
-	PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-	var/obj/Projectile/Suzume/F=new(AttackPower,10,src.dir,src.loc,src)
-	F.icon_state="[IS]"
-	sleep(15);if(src)	src.CanMove=1
-
-mob/proc/BalaProc(var/ReiCost,var/AttackPower,var/IS)
-	if(!src.Class=="Hollow" || !src.Vaizard)	return
-	if(ReiCost && !src.UseRei(ReiCost))	return
-	src.CanMove=0
-	MyFlick("F2",src)
-	var/obj/Zanpakuto/Z=src.Zanpakuto
-	if(src.Zanpakuto && src.Shikai && Z.SpiritType=="Hornet")
-		src.icon_state="SuzumeStance"
-	else	src.icon_state="Stance"
-	PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-	var/obj/Projectile/BalaBlast/F=new(AttackPower,10,src.dir,src.loc,src)
-	F.icon_state="[IS]"
-	sleep(15);if(src)	src.CanMove=1
 
 mob/proc/ChargeSkillPower()
 	while(src.SkillBeingCharged)
@@ -939,5 +903,3 @@ mob/proc/ChargeSkillPower()
 			src.ReiBar()
 		sleep(1)
 		if(!src)	return
-
-//new/obj/Projectile/ThreeWide/Fire_Slash_Move

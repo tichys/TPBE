@@ -1,25 +1,32 @@
+#define NExpGet round((src.Level*1000)*1.0015)
+
+
 var
-	list/MonsterScores = list()
+	list/BossList=list()
 	list/Players=list()
 	PlayerCount=0
 	PlayerLimit=99
 	EnemyHuntRange=4
-	WorldPVP=0
+	HourlyExpBoost=0
+	ScaryMode = 0
 	IsRouted
 	CanMultiKey="Disable"
-	MOTD="<html><body bgcolor=black><font color=yellow><b><center>Welcome to Bleach Eternity"
+	MOTD="<html><body bgcolor=black><font color=yellow><b><center>Welcome to Bleach Eternity \
+		<br> Current Changes are As Follows <br> Server Exp Rate <br> Hourly Double Exp		<br>\
+	Hollow Class with About 5 Transformastions <br> Visored Stat and Verb (Not Sure if it works 100%)\
+					<br>New Mobs<br> Lv.250 <br> Lv. 300 <br> Lv.400 <br> \
+Lv.600 <br> Lv.850 <br> Lv. 1150 <br> Lv.1400 <br> Lv.1800 <br> Lv.2300 <br> Lv.3000 <br> Lv.5000\
+<br> New Aizen Hair	 <br>Petals Bankai Has Larger Scatter<br>Petals Shikai has a Projetile based Attack now too\
+	<br><font color=white>Currently Working On<br>Arrancar icon base<br>Maybe some Renji Bankai Abilities<br>	"
 	list/ChargeableSkills=list("Spirit Charge","Getsuga Tenshou","White Lightning","Petal Stream",\
-		"Roaring Thunder Burn","Black Getsuga Tenshou","Syphon Health","Fire Blast","Vine Impale")
+		"Roaring Thunder Burn","Black Getsuga Tenshou","Syphon Health")
 	list/AllSpecials=list()
 	list/ShikaiSkillNames=list()
 	list/BankaiSkillNames=list()
-	list/VaizardSkillNames=list()
 	list/HollowTypes=list()
-	GameVersion= 1.09
+	GameVersion=11.3
 	StatusNote
-	RebootTime	//auto reboot setting
-	Serverxp = 0
-	BadgeCost=250000
+	RebootTime  	//auto reboot setting
 	Rebooting
 	PlayerInfoTag="<b><font size=1><font color=blue>Player Info:</font> "
 	VoteInfoTag="<b><font color=yellow>Vote Info:</font></b> "
@@ -27,18 +34,15 @@ var
 	PveDam=2	//PVE Damage Multiplier
 	PveArrDam=1
 	LoggedIPs=""
-	NoAnn=0
-	KillEvent=0
-	GoldEvent=1
-	Mapsoff=0
-	MBround=0
-	SkillTour=0
-	DisableMute = 0
+	ServerExpRate=1
+	list/MonsterTypes=list()
 	LoggedIPCount=0
-	Map/Squadspawn
+	ChosenHollowBase
 	list/MapNames=list("1"="Sewers","3"="Arial Outpost","4"="Karakura","5"="Soul Society",\
 		"6"="Training Grounds","7"="Ice Caverns","8"="Arena","9"="Ever Forest","10"="Volvanic Enclave",\
 		"11"="Mountainside")
+
+
 
 atom/var
 	var/HairStyle="Bald"
@@ -47,22 +51,12 @@ atom/var
 	HairG=0
 	HairB=0
 
-obj/var/desc2
-obj/var/nobank = 0
-obj/var/enc = 0
-obj/var/noenchant = 0
-obj/var/nosalvage =0
-obj/var/oname
-
 mob/var/tmp
 	//other vars
 	AFK=0
 	LoggedOn=0
 	OnLevelScreen=0
-	ezcheck=0
-	Giftcd=0
 	QuestClear=1
-	MonsterWho=0
 	InventoryOpen=0
 	obj/NPC/Shops/Shopping
 	obj/NPC/Shops/Selling
@@ -71,11 +65,6 @@ mob/var/tmp
 	ArenaRound=0
 	ArenaBonus=0
 	list/TransLocs=list()
-	list/Tickets=list()
-	checked = 0
-	Locked = 0
-	selecting = 0
-	connection = "Offline"
 	//icon/DamageIcon
 	//icon/GuardIcon
 	icon/PlayerIcon//displayed in Local Chat
@@ -98,17 +87,10 @@ mob/var/tmp
 	PlayTime=0
 	SaveSlot
 	SpiritForm=0
-	Slowed=0
 	CanMove=1
 	CanSave=1
 	TurnMode=0
 	CanShunpo=0
-	Expboost=1
-	got20=0
-	got40=0
-	got60=0
-	got80=0
-	got100=0
 	Firing=0
 	Casting=0
 	RegenWait=0
@@ -124,13 +106,9 @@ mob/var/tmp
 	SavedTyping=""
 	Shikai=0
 	Bankai=0
-	Vaizard=0
+	Visored=0
 	FinalForm=0
 	PVP=0
-	GM = 0
-	KillPoints=0
-	KillReset=0
-	trading=0
 	Chosen
 	list/Followers=list()
 	list/ZanpakutoOverlays=list()
@@ -145,121 +123,70 @@ mob/var/tmp
 	AutoAttackFace=1
 	AutoSkillFace=1
 	Transforming=0
-	boughtMGC = 0
-	boughtSTR =0
-	boughtAGI = 0
-	boughtVIT = 0
-	boughtLCK = 0
-	boughtMGCDEF = 0
-	boughtstats = 0
-atom/movable/var
-	random
 
 mob/var
 	//Service Uses
 	RespecUses=0
 	BarberUses=0
-	Itemfixed=0
-	min= 0
-	max =0
-	hassafe=0
-	Badges = 0
-	bBadges = 0
-	lvl51 = 0
-	Credited = 0
-	Credits = 0
-	Converted = 0
-	ezcheck2 = 0
-	banked=0
-	gotGift=0
-	Globaloff = 0
-	Lieu = 0
-	Rootie = 0
-	Devour = 0
-	Bones=0
-	Leather=0
-	Thread=0
-	Iron=0
-	Mithril=0
-	EnchantedOre=0
-	Adhesive=0
-	MeteorFragment=0
-	Gems=0
-	DivineOre=0
-	HonorBonus=0
-	CustomRank="Member"
-	HonorSet = 0
-	Squadlevel=1
-	Squadexp=10
-	Squadnexp=5000000
-	sexp=0
+
 	//Pet Stuff
 	list/Pets=list()
 	mob/Pets/CurPet
 	datum/Gambits/GambitHolder/CurGambit
-	PetOut=0
-	PetType
-	GainedSun=0
-	GainedEvoSun=0
-	Fused=0
-	jailed=0
-	onscreen=0
-	Auctionban=0
-	Gotbonus0=0
-	Gotbonus1=0
-	Gotbonus2=0
-	Gotbonus3=0
-	Gotbonus4=0
-	badge100=0
-	badge200=0
-	badge300=0
-	badge400=0
-	badge500=0
-	badge750=0
-	Squadreset=0
-	Squadmute=0
-	lastticket=0
 
 	//stat/skill vars
+	GottenSkillPoints=0
+	UsedTraining=0
+	UsedProdigy=0
+
+	Mining_Level=0
+	Mining_Exp=0
+	Mining_Nexp=10
+
+
+
+
 	Level=1
-	REI=200//reiatsu
-	MaxREI=200
-	STM=300
-	MaxSTM=300
-	STR=1
-	VIT=1
-	MGC=1
-	MGCDEF=1
-	AGI=1
-	LCK=1
-	Platinum=0
+	Prestige=0
+	REI=1000//reiatsu
+	MaxREI=1000
+	STM=1000
+	MaxSTM=1000
+	STR=5
+	VIT=5
+	MGC=5
+	MGCDEF=5
+	AGI=5
+	LCK=5
 	Gold=0
 	Silver=0
 	Copper=0
 	Exp=0
-	Nexp=100
+	Nexp=1000
 	Kills=0
 	Deaths=0
 	Honor=0
 	PvpKills=0
 	PvpDeaths=0
+	GM=0
 	Class
 	ClassLevel=1
 	ArrowCharges=0
 	MaxArrowCharges=1
-	SkillPoints=0
-	StatPoints=0
-	TraitPoints=0
+	SkillPoints=5
+	StatPoints=5
+	TraitPoints=5
+	VisoredMask
+	ArrancarMask
 	list/Kidous=list()
 	list/Skills=list()
 	list/Spells=list()
 	list/ShikaiSkills=list()
 	list/BankaiSkills=list()
-	list/VaizardSkills=list()
 	list/FinalFormSkills=list()
+	MaxCombo=5
 	ArrowStr=0
 	ArrowDist=0
-	VaiMask="None"
 	CurSkill="Selected Skill"
 	SkillDmg=0
 	SkillRei=0
@@ -293,11 +220,17 @@ mob/var
 
 	//trait vars
 	Zanjutsu=0
+	ZanjutsuCap=300
 	Hakuda=0
+	HakudaCap=300
 	Hohou=0
+	HohouCap=300
 	Kidou=0
+	KidouCap=300
 	Prodigy=0
+	ProdigyCap=100
 	Training=0
+	TrainingCap=175
 	Manual=0
 	Income=0
 
@@ -344,9 +277,3 @@ mob/var
 	VoiceSet="Ichigo"
 	list/AttVoices=list()
 	list/HurtVoices=list()
-
-	//CD Vars
-	tmp/StatsShown=0
-
-	//Admin Vars
-	PVPAll=0

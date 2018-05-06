@@ -1,4 +1,10 @@
 obj/EquipmentOverlays
-	BlankVaizardMask
-		icon='BlankVaizardMask.dmi'
+	BlankVisoredMask
+		icon='BlankVisoredMask.dmi'
+		layer=6;pixel_y=9
+	DANKVisoredMask
+		icon='DANKVisoredMask.dmi'
+		layer=6;pixel_y=9
+	HornedVisoredMask
+		icon='HornedVisoredMask.dmi'
 		layer=6;pixel_y=9

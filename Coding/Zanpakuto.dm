@@ -31,10 +31,7 @@ mob/proc/ZanCreation()
 	src.ZanpakutoOverlays=list()
 	var/obj/CP=new/obj/HUD/CharPreview
 	CP.screen_loc="6:16,5:16";src.client.screen+=CP
-	if(src.Squadrank=="Captain")
-		CP.icon="captain.dmi";CP.icon_state="Stance"
-	else
-		CP.icon='SoulReaper.dmi';CP.icon_state="Stance"
+	CP.icon='SoulReaper.dmi';CP.icon_state="Stance"
 	CP.HairR=src.HairR;CP.HairG=src.HairG;CP.HairB=src.HairB
 	CP.layer=4;CP.AddHair(src.HairStyle)
 
@@ -45,7 +42,7 @@ turf
 				usr.Zanpakuto.name=copytext(TextInput(usr,"Input the Name of your Zanpakuto \nExamples: Senbonzakura or Zabimaru","Zanpakuto Name",usr.Zanpakuto.name),1,500)
 		Spirit_Type
 			Click()
-				usr.Zanpakuto.SpiritType=input("Select the Spirit Type of your Zanpakuto","Zanpakuto Spirit Type")in list("Petals","Dragon","Beast","Ghost","Fire Dragon","Healing Canon","Fire Beast","God Spear","Reiki Control","Hornet","Paitence")
+				usr.Zanpakuto.SpiritType=input("Select the Spirit Type of your Zanpakuto","Zanpakuto Spirit Type")in list("Petals","Dragon","Beast","Ghost","Endless Flames","Kira","Rukia"/*,"Unstoppable Power"*/)
 		Command
 			Click()
 				usr.Zanpakuto.Command=copytext(TextInput(usr,"Input the Command for your Zanpakuto \nExamples: Scatter or Roar","Zanpakuto Command",usr.Zanpakuto.Command),1,500)
@@ -79,40 +76,17 @@ turf
 					MSG+="Bankai: Costume Changes, Speed Greatly Increases, Unlimited Combo Chain"
 
 				if(usr.Zanpakuto.SpiritType=="Dragon")
-					MSG+="Shikai: [usr.Zanpakuto.Element] Attribute Slash Extends off Regular Attacks > > "
-					MSG+="Bankai: Granted Powerfull Area Effect [usr.Zanpakuto.SpiritType] Attacks"
+					MSG+="Shikai: Zanpakuto Element Attribute Slash Extends off Regular Attacks > > "
+					MSG+="Bankai: Granted Powerfull Area Effect Zanpakuto Element Attacks"
 
 				if(usr.Zanpakuto.SpiritType=="Petals")
 					MSG+="Shikai: Zanpakuto Scatters into One Thousand Blades > > "
 					MSG+="Bankai: 1000 Blades rise from the ground, with their scattering infinitely more blades then rise."
 
-				if(usr.Zanpakuto.SpiritType=="Fire Dragon")
-					MSG+="Shikai: [usr.Zanpakuto.Element] Attribute Slash Extends off regular Attacks, Granted Ability: Fire Ring > > "
-					MSG+="Bankai: Granted Powerfull Effect [usr.Zanpakuto.SpiritType] Attacks"
+				if(usr.Zanpakuto.SpiritType=="Endless Flames")
+					MSG+="Shikai:  Fire Based Abilities > >"
+					MSG+="Bankai: Engulf All in Flames"
 
-				if(usr.Zanpakuto.SpiritType=="Healing Canon")
-					MSG+="Shikai: Slash Heals your Target!> > "
-					MSG+="Bankai: Granted A Powerfull [usr.Zanpakuto.Element] Blast!"
-
-				if(usr.Zanpakuto.SpiritType=="Fire Beast")
-					MSG+="Shikai: [usr.Zanpakuto.Element] Attribute Slash Extends off regular Attacks, Granted Ability: Fire Slash > > "
-					MSG+="Bankai: Granted A Powerfull Fire Blast Attack"
-
-				if(usr.Zanpakuto.SpiritType=="God Spear")
-					MSG+="Shikai: The ability to extend and retract your sword at light speed, Granted Ability: Sword Beam > > "
-					MSG+="Bankai: Granted A Move which attacks the heart."
-
-				if(usr.Zanpakuto.SpiritType=="Reiki Control")
-					MSG+="Shikai: The ability to create reiki blasts off your sword, Granted Ability: Blood Mist Shield > > "
-					MSG+="Bankai: Granted the ability to master reiki control from your sword."
-
-				if(usr.Zanpakuto.SpiritType=="Hornet")
-					MSG+="Shikai: The ability to create a demonic hell butterfly on the user causing high critical damage > > "
-					MSG+="Bankai: Granted the ability to fire a giant missle like rocket doing high damage."
-
-				if(usr.Zanpakuto.SpiritType=="Paitence")
-					MSG+="Shikai: The ability slash an object doubling its weight! > > "
-					MSG+="Bankai: Granted the ability to sned of a series of slashes before the target can react."
 
 				if(ShowAlert(usr,"[MSG]",list("Finish","Cancel"))=="Finish")
 					usr.client.eye=usr
