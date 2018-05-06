@@ -4,6 +4,8 @@ client
 		for(var/O in src.screen)
 			if(!istype(O,/obj/Items))	del O
 		if(src.mob)
+			for(var/datum/StatusEffects/S in src.mob.StatusEffects)
+				S.RemovalProc(src.mob)
 			src.mob.Save()
 			src.mob.LoggedOn=0
 			src.mob.SaveLogonFile()
@@ -89,6 +91,7 @@ mob/proc
 		for(var/obj/Kidous/K in src.Kidous)	K.overlays=initial(K.overlays)
 		for(var/obj/Spells/S in src.Spells)	S.overlays=initial(S.overlays)
 		for(var/obj/I in src.Inventory)	I.overlays=initial(I.overlays)
+
 		//Hack Detection
 		/*var/Hacks=0
 		if(LHD!=round((src.Level*3+7)/6))	Hacks+=1
@@ -109,6 +112,10 @@ mob/proc
 		F["LastX"]<<src.x
 		F["LastY"]<<src.y
 		F["LastZ"]<<src.z
+		F["Perstige"]<<src.Prestige
+		F["GottenSkillPoints"]<<src.GottenSkillPoints
+		F["UsedTraining"]<<src.UsedTraining
+		F["UsedProdigy"]<<src.UsedProdigy
 		F["HairR"]<<src.HairR
 		F["HairG"]<<src.HairG
 		F["HairB"]<<src.HairB
@@ -124,6 +131,7 @@ mob/proc
 		F["MGCDEF"]<<src.MGCDEF
 		F["AGI"]<<src.AGI
 		F["LCK"]<<src.LCK
+		F["VisoredMask"]<<src.VisoredMask
 		F["Gold"]<<src.Gold
 		F["Silver"]<<src.Silver
 		F["Copper"]<<src.Copper
@@ -228,8 +236,10 @@ mob/proc
 		if(src.SaveVersion<1.2)
 			src<<"Your Save file is Too Far out of Date. Please Create a new Character"
 			return
-
+		for(var/datum/StatusEffects/S in F["StatusEffects"])
+			S.RemovalProc(src)
 		F["LastX"]>>src.LastX
+
 		F["LastY"]>>src.LastY
 		F["LastZ"]>>src.LastZ
 		F["HairR"]>>src.HairR
@@ -237,6 +247,10 @@ mob/proc
 		F["HairB"]>>src.HairB
 		F["name"]>>src.name
 		F["Level"]>>src.Level
+		F["Perstige"]>>src.Prestige
+		F["GottenSkillPoints"]>>src.GottenSkillPoints
+		F["UsedTraining"]>>src.UsedTraining
+		F["UsedProdigy"]>>src.UsedProdigy
 		F["REI"]>>src.REI
 		F["MaxREI"]>>src.MaxREI
 		F["STM"]>>src.STM
@@ -255,6 +269,7 @@ mob/proc
 		F["Deaths"]>>src.Deaths
 		F["Kills"]>>src.Kills
 		F["Honor"]>>src.Honor
+		F["VisoredMask"]>>src.VisoredMask
 		F["PvpKills"]>>src.PvpKills
 		F["PvpDeaths"]>>src.PvpDeaths
 		F["Class"]>>src.Class
@@ -266,7 +281,9 @@ mob/proc
 		F["StatPoints"]>>src.StatPoints
 		F["TraitPoints"]>>src.TraitPoints
 		F["SkillPoints"]>>src.SkillPoints
+		//alert("1")
 		F["StatusEffects"]>>src.StatusEffects
+		//alert("1")
 		F["HairStyle"]>>src.HairStyle
 		F["TutLevel"]>>src.TutLevel
 		F["DodgeBonus"]>>src.DodgeBonus
@@ -330,11 +347,13 @@ mob/proc
 		F["AutoTargetFace"]>>src.AutoTargetFace
 		F["AutoAttackFace"]>>src.AutoAttackFace
 		F["AutoSkillFace"]>>src.AutoSkillFace
-		src.SubExpirationCheck()
+//		src.SubExpirationCheck()
 
-		src.icon='school.dmi'
-		if(src.gender==FEMALE)	src.icon='SchoolFemale.dmi'
-		src.LHD=round((src.Level*3+7)/6)
+		//src.icon='school.dmi'
+		//if(src.Class=="Hollow")	src.icon='SpiderHollow.dmi'
+		src.SpiritForm()
+		//if(src.gender==FEMALE)	src.icon='SchoolFemale.dmi'
+		//src.LHD=round((src.Level*3+7)/6)
 		//src.DamageIcon=src.icon+rgb(255,0,0)
 		//src.GuardIcon=src.icon+rgb(155,155,155)
 		src.AddName()
@@ -342,6 +361,7 @@ mob/proc
 		src.AddHair(src.HairStyle)
 		for(var/obj/Items/Equipment/E in src.EquipmentList)	E.OnEquip(src)
 		for(var/datum/StatusEffects/RadialEffects/E in src.StatusEffects)	E.AddOverlays(src)
+
 		src.HUD()
 		src.QuestRefresh()
 		src.RefreshClothes()
@@ -357,7 +377,12 @@ mob/proc
 		for(var/obj/Items/I in src.Inventory)	I.UpdateCount()
 		for(var/mob/Pets/P in src.Pets)
 			P.Owner=src;P.AddName()
+		if(src.Class=="Bount"||src.Class=="Human")
+			src.icon='school.dmi'
+		if(src.Class=="Arrancar")
+			src.icon='Arrancar3.dmi'
 		src.CreatePlayerIcon()
+		src.HollowFormCheck()
 		src<<"Load Complete"
 		src.SaveFixes()
 		if(src.SaveVersion<4.9)	return
@@ -386,6 +411,7 @@ mob/proc/SaveFixes()
 		if(src.Class=="Quincy")	src.client.eye=locate(10,29,2)
 		if(src.Class=="Bount")	src.client.eye=locate(48,124,2)
 		if(src.Class=="Soul Reaper")	src.client.eye=locate(29,29,2)
+		if(src.Class=="Hollow")	src.client.eye=locate(29,143,2)
 		src.invisibility=1;src.LoadSkillTree()
 		ShowAlert(src,"Your Character has been Respecced due to a Recent Update. > Use this time to ReAllocate your Points. \
 			> > Note: If you hold Shift when distributing Stat and/or Trait points you can use up to 10 points at once.")
@@ -410,6 +436,9 @@ mob/proc/CreatePlayerIcon()
 	if(src.Class=="Bount")
 		if(src.gender!="female")	I='School.dmi'
 		else	I='SchoolFemale.dmi'
+	if(src.Class=="Hollow")
+		src.HollowFormCheck()
+		I=src.icon
 	src.PlayerIcon=new(I,icon_state="",dir=SOUTH);src.PlayerIcon.Shift(SOUTH,9,0)
 	var/icon/I2
 	if(src.HairOver)	I2=new(src.HairOver.icon,icon_state="",dir=SOUTH)

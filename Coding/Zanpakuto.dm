@@ -42,7 +42,7 @@ turf
 				usr.Zanpakuto.name=copytext(TextInput(usr,"Input the Name of your Zanpakuto \nExamples: Senbonzakura or Zabimaru","Zanpakuto Name",usr.Zanpakuto.name),1,500)
 		Spirit_Type
 			Click()
-				usr.Zanpakuto.SpiritType=input("Select the Spirit Type of your Zanpakuto","Zanpakuto Spirit Type")in list("Petals","Dragon","Beast","Ghost")
+				usr.Zanpakuto.SpiritType=input("Select the Spirit Type of your Zanpakuto","Zanpakuto Spirit Type")in list("Petals","Dragon","Beast","Ghost","Endless Flames","Kira","Rukia"/*,"Unstoppable Power"*/)
 		Command
 			Click()
 				usr.Zanpakuto.Command=copytext(TextInput(usr,"Input the Command for your Zanpakuto \nExamples: Scatter or Roar","Zanpakuto Command",usr.Zanpakuto.Command),1,500)
@@ -76,12 +76,17 @@ turf
 					MSG+="Bankai: Costume Changes, Speed Greatly Increases, Unlimited Combo Chain"
 
 				if(usr.Zanpakuto.SpiritType=="Dragon")
-					MSG+="Shikai: [usr.Zanpakuto.Element] Attribute Slash Extends off Regular Attacks > > "
-					MSG+="Bankai: Granted Powerfull Area Effect [usr.Zanpakuto.SpiritType] Attacks"
+					MSG+="Shikai: Zanpakuto Element Attribute Slash Extends off Regular Attacks > > "
+					MSG+="Bankai: Granted Powerfull Area Effect Zanpakuto Element Attacks"
 
 				if(usr.Zanpakuto.SpiritType=="Petals")
 					MSG+="Shikai: Zanpakuto Scatters into One Thousand Blades > > "
 					MSG+="Bankai: 1000 Blades rise from the ground, with their scattering infinitely more blades then rise."
+
+				if(usr.Zanpakuto.SpiritType=="Endless Flames")
+					MSG+="Shikai:  Fire Based Abilities > >"
+					MSG+="Bankai: Engulf All in Flames"
+
 
 				if(ShowAlert(usr,"[MSG]",list("Finish","Cancel"))=="Finish")
 					usr.client.eye=usr

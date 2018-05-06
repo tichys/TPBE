@@ -3,11 +3,53 @@ atom/proc/ColorFlick(var/icon/I2F)
 	src.icon=I2F
 	spawn(3)	if(src)	src.icon=src.SavedIcon*/
 
+#define NExpGet 1000+(src.Level*1000)
+
+#define STMRegen round((src.MaxSTM)/100)
+#define REIRegen round((src.MaxREI)/100)
+
+
+mob/proc/HollowFormCheck()
+	if(src.Class=="Hollow")
+		if(src.Level >= 0&&src.Level<= 25)
+			src.icon = 'ScorpionHollow.dmi'
+		if(src.Level >= 25&&src.Level<= 50)
+			src.icon = 'GroundHollow.dmi'
+		if(src.Level >= 50&&src.Level<= 100)
+			src.icon = 'MantisHollow.dmi'
+		if(src.Level >= 100&&src.Level<= 125)
+			src.icon = 'WolfHollow.dmi'
+		if(src.Level >= 125&&src.Level<= 150)
+			src.icon = 'GrowlerHollow.dmi'
+		if(src.Level >= 150&&src.Level<= 175)
+			src.icon = 'HowlerHollow.dmi'
+
+
 proc/WorldStatusUpdate()
 	var/PlayerLimitNote="/[PlayerLimit]"
 	if(!PlayerLimit)	PlayerLimitNote=""
 	if(!StatusNote)	world.status="(v[GameVersion]) (Players: [PlayerCount][PlayerLimitNote])"
 	else	world.status="[StatusNote]]<br>\[(v[GameVersion]) (Players: [PlayerCount][PlayerLimitNote])"
+
+
+
+
+
+proc/HourlyExpBoost()
+	var/randboost = pick(1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.45,1.5,1.55,1.6,1.65,1.7,1.75,1.8,1.85,1.9,1.95,2)
+	if(HourlyExpBoost <= 0)
+		HourlyExpBoost ++
+		ServerExpRate+=randboost-1
+		world << "<font color=green>Hourly Server [randboost]x Exp Boost Begins"
+		return
+	if(HourlyExpBoost >= 1)
+		HourlyExpBoost --
+		world << "<font color=green>Hourly Server [randboost]x Exp Boost Ended"
+		ServerExpRate-=randboost-1
+		return
+	spawn(4000)	HourlyExpBoost()
+
+
 
 proc/ListCheck(var/Object,var/list/Listo)
 	if(Object in Listo)	return 1
@@ -129,8 +171,19 @@ mob/proc/Respec(/**/)
 		src.StmRegenBonus=1
 		src.ComboList=list("S1","D1","F1","F2","F3")
 		src.Skills+=new/obj/Skills/SoulReaper/Basic_Combat;src.Skills+=new/obj/Skills/SoulReaper/Guard
+		src.Skills+=new/obj/Skills/SoulReaper/Combat_Mastery
 		if("Shikai Training" in src.CompletedQuests)	src.Skills+=new/obj/Skills/SoulReaper/Shikai
 		if("Bankai Training" in src.CompletedQuests)	src.Skills+=new/obj/Skills/SoulReaper/Bankai
+
+	if(src.Class=="Arrancar")
+		src.StmRegenBonus=1
+		src.ReiRegenBonus=1
+		src.ComboList=list("S1","D1","F1")
+		src.Skills+=new/obj/Skills/Hollow/Basic_Combat
+		src.Skills+=new/obj/Skills/SoulReaper/Combat_Mastery
+		src.Skills+=new/obj/Skills/SoulReaper/Guard
+		if("Become Arrancar" in src.CompletedQuests)	src.Skills+=new/obj/Skills/Hollow/Ressurection
+
 	if(src.Class=="Bount")
 		src.StmRegenBonus=1
 		src.ReiRegenBonus=1
@@ -148,7 +201,7 @@ mob/proc/Respec(/**/)
 	src.HotKeys=list()
 	for(var/i=1;i<=9;i++)	src.HotKeys+="Selected Skill"
 	//trait resets
-	src.Nexp+=src.Prodigy*100
+	//src.Nexp+=src.Prodigy*100
 	src.Hohou=0;src.Zanjutsu=0;src.Hakuda=0;src.Kidou=0
 	src.Training=0;src.Manual=0;src.Prodigy=0;src.Income=0
 	//bonus resets
@@ -156,8 +209,8 @@ mob/proc/Respec(/**/)
 	src.ArrCreateSpd=0;src.DistChargeSpd=0;src.GuardBonus=0;src.CounterBonus=0
 	src.DoubleStrikeBonus=0;src.ShieldBonus=0;src.ImmunityBonus=0
 	//stat resets
-	src.SkillPoints=src.Level-1;src.StatPoints=(src.Level-1)*3;src.TraitPoints=src.Level-1
-	src.MaxREI=200;src.MaxSTM=300;src.STR=10;src.VIT=1;src.AGI=1;src.LCK=1;src.MGC=1;src.MGCDEF=1
+	src.SkillPoints=src.Level;src.StatPoints=(src.Level)*30;src.TraitPoints=src.Level
+	src.MaxREI=200;src.MaxSTM=300;src.STR=5;src.VIT=5;src.AGI=5;src.LCK=5;src.MGC=5;src.MGCDEF=5
 	src.MaxSTM+=(src.Level-1)*10;src.MaxREI+=(src.Level-1)*5
 	for(var/obj/Items/Equipment/E in src.EquipmentList)
 		for(var/Stat in E.StatBoosts)	src.vars["[Stat]"]+=E.StatBoosts[Stat]
@@ -224,14 +277,14 @@ mob/proc/EnemyStart(var/Distance,var/atom/Loco)
 		if(!M.StartedBy)
 			M.TargetMob(src)
 			M.StartedBy=src
-			src.LevelShiftEnemy(M)
+			//src.LevelShiftEnemy(M)
 			spawn(rand(0,5))	if(M)	M.EnemyAI()
 
 mob/proc/ForceEnemyStart(var/mob/Enemy/M)
 	if(istype(M,/mob/Enemy))
 		if(!M.StartedBy)
 			M.TargetMob(src);M.StartedBy=src
-			src.LevelShiftEnemy(M)
+			//src.LevelShiftEnemy(M)
 			spawn(rand(0,5))	if(M)	M.EnemyAI()
 
 atom/proc/BackDir(var/dir2Check=src.dir)
@@ -285,12 +338,24 @@ mob/proc/DeathCheck(var/mob/Killer)
 			if(istype(src,/mob/Pets))	src.loc=null
 			else
 				src.loc=locate(rand(81,99),rand(81,99),2)
-				spawn(rand(300,600))
+				spawn(70)
 					if(!src.RespawnZ)
 						for(var/atom/x in src.Cache)	del x
 						del src;return
-					if(istype(src,/mob/Enemy))	src:LevelShift(initial(src.Level))
+					if(istype(src,/mob/Enemy))
+						var/P=rand(1,100)
+						if(P <= 33)
+							//src.IsWeak=1
+							src.Level=initial(src.Level)-1
+						if(P >= 67)
+							//src.IsStrong=1
+							src.Level =initial(src.Level)+1
+						if(P >= 34 && P < 66)
+							//src.IsNormal=1;src.name = "Normal [src.name]"
+							src.Level=initial(src.Level)
+						src:LevelShift(/*initial(src.Level)*/)
 					src.loc=locate(src.RespawnX+rand(-1,1),src.RespawnY+rand(-1,1),src.RespawnZ)
+					//src:GetTitleEffect()
 					ShowEffect(src.loc,'Effects.dmi',"EnergyBall")
 		if(!Killer.client && Killer.Owner && Killer.Owner.client)	Killer=Killer.Owner
 		if(Killer.client && !src.client && !src.Owner)	//Exp from NPCs
@@ -302,19 +367,38 @@ mob/proc/DeathCheck(var/mob/Killer)
 			Killer.EnemyDropCheck(src)
 			Killer.QuestKillCheck(src)
 			Killer.Kills+=1
-			var/ExpGain=src.Level*13+rand(-5,5)
-			ExpGain=min(ExpGain,Killer.Level*13+rand(-5,5))
+			var/ExpGain=round((src.Level*100+rand(src.Level/2,src.Level)))
+			ExpGain=min(ExpGain,round((Killer.Level*100+rand(Killer.Level/2,Killer.Level))))
 			if(istype(src,/mob/Enemy/Bosses))	ExpGain*=2
-			ExpGain=round(ExpGain/max(1,(Killer.Level-src.Level)))
-			Killer.GiveExp(ExpGain,"Killed [src]")
+			if(src:IsNormal) ExpGain*=1.1
+			if(src:IsStrong) ExpGain*=1.2
+			//ExpGain=round(ExpGain/max(1,round((Killer.Level*100+rand(Killer.Level/2,Killer.Level)))))
+			//if(Killer.Party&&Killer.Party.Members.len >=1)
+			//	ExpGain+=ExpGain*(0.5*(Killer.Party.Members.len))
+			//else ExpGain=ExpGain
 			Killer.GiveGold(0,0,src.Level+round((src.Level*Killer.Income)/100))
+			//if(Killer.Level - src.Level >=18) ExpGain=0
 			if(Killer.Party)	for(var/mob/M in Killer.Party.Members)
-				if(M!=Killer && MyGetDist(M,Killer)<=Killer.SightRange && !M.invisibility)
-					var/LevelDifference=abs(Killer.Level-M.Level)
-					if(LevelDifference>=1)	LevelDifference-=1
-					var/ExpDifferential=round(ExpGain/2)*round(LevelDifference/5)
-					M.GiveExp(max(0,round(ExpGain/2)-ExpDifferential),"Party Killed [src]")
-					M.QuestKillCheck(src);//M.EnemyDropCheck(src)
+				//if(MyGetDist(M,Killer)<=Killer.SightRange && !M.invisibility)/*M!=Killer &&*/
+				ExpGain+=ExpGain*(0.5*(Killer.Party.Members.len))
+					//var/LevelDifference=abs(Killer.Level-M.Level)
+					//if(LevelDifference>=1)	LevelDifference-=1
+					//var/ExpDifferential=round(ExpGain/2)*round(LevelDifference/5)
+				M.GiveExp(round(ExpGain),"Party Killed [src]")
+				M.QuestKillCheck(src);//M.EnemyDropCheck(src)
+			if(!Killer.Party)	Killer.GiveExp(round(ExpGain),"Killed [src] got [ExpGain]")
+			//if(Killer in GMs)
+			//	Killer << "Party list amount [Killer.Party.Members.len]"
+
+			//Killer.GiveGold(0,0,src.Level+round((src.Level*Killer.Income)/100))
+			//if(Killer.Party)	for(var/mob/M in Killer.Party.Members)
+			//	if(/*M!=Killer &&*/ MyGetDist(M,Killer)<=Killer.SightRange && !M.invisibility)
+			//		ExpGain+=ExpGain*(0.5*(Killer.Party.Members.len))
+			//		//var/LevelDifference=abs(Killer.Level-M.Level)
+			//		//if(LevelDifference>=1)	LevelDifference-=1
+			///		//var/ExpDifferential=round(ExpGain/2)*round(LevelDifference/5)
+			//	/	M.GiveExp(round(ExpGain),"Party Killed [src]")
+			//		M.QuestKillCheck(src);//M.EnemyDropCheck(src)*/
 			if(Killer.z==8)
 				for(var/atom/x in src.Cache)	del x
 				Killer.MatchStart();del src;return
@@ -329,6 +413,11 @@ mob/proc/EnemyDropCheck(var/mob/Enemy/E)
 	if(S && rand(1,100)<=S.DropRate+round(src.LCK/5))
 		var/NewPath=text2path(S.ItemPath);var/obj/NewObj=new NewPath
 		if(NewObj.name=="Hollow Mask")	NewObj.name="[E.name] Mask"
+		if(NewObj:IsMagic==1)	NewObj.name= "Magic [NewObj.name]"
+		if(NewObj:IsRare==1)	NewObj.name= "Rare [NewObj.name]"
+		if(NewObj:IsEpic==1)	NewObj.name= "Epic [NewObj.name]"
+		if(NewObj:IsLegendary==1)	NewObj.name= "Legendary [NewObj.name]"
+		//else NewObj.name="[S:name]"
 		src.GetItem(NewObj)
 
 mob/proc/QuestKillCheck(var/mob/Enemy/E)
@@ -345,7 +434,13 @@ mob/proc/GetExpBar()
 	return	round(src.Exp/src.Nexp*25,1)
 
 mob/proc/GiveExp(var/ExpGain,var/Reason="Unknown")
+	var/Prod=src.Prodigy/20
+	ExpGain*=Prod+ServerExpRate
+//	if(src.key in GMs)
+//		ExpGain*=3
 	src.Exp+=ExpGain
+	//if(src.key in GMs)
+		//src << "Exp [ExpGain] <br> Prodigy Bonuse = [1+src.Prodigy/100] <br> Combo Bonus = [1+src.ComboCount/10] "
 	if(src.ExpDisplay=="Orb" || src.ExpDisplay=="Both")
 		var/xoff=12
 		if(ExpGain>=10)	xoff=8
@@ -402,52 +497,72 @@ mob/proc/ShowWings()
 	src.Followers+=X;X.loc=locate(src.x-1,src.y,src.z);X.pixel_x=8;X.xoff=-1;X.yoff=0;X.dir=src.dir
 	spawn(10)	if(X)	del X
 
-var/MobStats=3
+var/MobStats=1
+
+
 mob/proc/ApplyStats(/**/)
 	var/Multiplier=1;if(istype(src,/mob/Enemy/Bosses))	Multiplier=2
 	if(istype(src,/mob/Pets))	Multiplier=1
-	src.MaxSTM=(initial(src.MaxSTM)+((src.Level-1)*40))*Multiplier
-	src.MaxREI=(initial(src.MaxREI)+((src.Level-1)*20))*Multiplier
-	src.STR=(initial(src.STR)+((src.Level-1)*MobStats))*Multiplier
-	src.VIT=(initial(src.VIT)+((src.Level-1)*MobStats))*1
-	src.MGC=(initial(src.MGC)+((src.Level-1)*MobStats))*Multiplier
-	src.MGCDEF=(initial(src.MGCDEF)+((src.Level-1)*MobStats))*1
-	src.AGI=(initial(src.AGI)+((src.Level-1)*MobStats))*1
-	src.LCK=(initial(src.LCK)+((src.Level-1)*MobStats))*Multiplier
+
+	src.MaxSTM=1000//(round((initial(src.MaxSTM)/4))+((src.Level*1)*40))*Multiplier
+	src.MaxREI=1000//(round((initial(src.MaxREI)/4))+((src.Level*1)*20))*Multiplier
+	src.STR=(initial(src.STR)+((round(src.Level)*4)*(MobStats)))*Multiplier
+	src.VIT=(initial(src.VIT)+((round(src.Level)*4)*(MobStats)))*Multiplier
+	src.MGC=(initial(src.MGC)+((round(src.Level)*4)*(MobStats)))*Multiplier
+	src.MGCDEF=(initial(src.MGCDEF)+((round(src.Level)*4)*(MobStats)))*Multiplier
+	src.AGI=(initial(src.AGI)+((round(src.Level)*4)*(MobStats)))*Multiplier
+	src.LCK=(initial(src.LCK)+((round(src.Level)*4)*(MobStats)))*Multiplier
 	src.STM=src.MaxSTM;src.StmBar()
 	src.REI=src.MaxREI;src.ReiBar()
 
-mob/proc/LevelCheck(/**/)
-	if(src.Level>=150)
-		if(src.Exp>src.Nexp)	src.Exp=src.Nexp
-		return
-	if(src.LHD!=round((src.Level*3+7)/6))	return
+mob/proc/LevelCheck()
 	if(src.Exp>=src.Nexp)
 		src.ShowWings()
 		src.Level+=1
 		for(var/mob/Pets/P in src.Pets)
 			P.ShowWings();P.Level+=1;P.ApplyStats()
-		src.LHD=round((src.Level*3+7)/6)
-		src.MaxSTM+=10
-		src.MaxREI+=5
+		//src.LHD=round((src.Level*3+7)/6)
+
+
+
+	//	src.MaxSTM+=10+(round(src.Level/10))
+	//	src.MaxREI+=10+(round(src.Level/10))
+
+		src.StatPoints+=3+src.Prestige
+		src.STR+=1
+		src.VIT+=1
+		src.MGC+=1
+		src.MGCDEF+=1
+		src.AGI+=1
+		src.LCK+=1
+//		src.STR+=3+(round(src.Level/10))
+//		src.VIT+=3+(round(src.Level/10))
+//		src.MGC+=3+(round(src.Level/10))
+//		src.MGCDEF+=3+(round(src.Level/10))
+//		src.AGI+=3+(round(src.Level/10))
+//		src.LCK+=3+(round(src.Level/10))
 		src.STM=src.MaxSTM
 		src.REI=src.MaxREI
-		src.StatPoints+=3
-		src.SkillPoints+=1
-		src.TraitPoints+=1
+		//src.StatPoints++
+	//	if(src.GottenSkillPoints >= 2500)
+	//		ShowAlert("Can't Get Any more Skill Points",src)
+	//	else
+		src.SkillPoints+=round(1+src.Training)
+		src.TraitPoints+=round(1+src.Training)
 		src.Exp=src.Exp-src.Nexp
-		src.Nexp+=src.Level*100
+		src.Nexp=NExpGet
 		var/Phours=round(src.PlayTime/60/60)
 		var/Pminutes=round(src.PlayTime/60-(60*Phours))
 		src.LevelLog="<tr><td><center><font color=gray><b>[src.Level]<td><center><font color=gray><b>[Phours]h [Pminutes]m[src.LevelLog]"
-		world<<"<b><font size=1><font color=blue>[src] has Reached Level [src.Level]"
+		view(8)<<"<b><font size=1><font color=blue>[src] has Reached Level [src.Level]"
 		for(var/obj/HUD/ExpOrb/O in src.client.screen)
 			O.icon_state="[src.GetExpBar()]"
 		for(var/obj/HUD/LevelOrb/O in src.client.screen)
 			O.icon_state="LvlFlash"
 		UpdateOverallScores(src.name,src.Class,src.Level,src.PlayTime)
-		if(src.Level%10==0)
-			src.GetItem(new/obj/Items/Other/Progress_Cupon)
+		//if(src.Level%10==0)
+		//	src.GetItem(new/obj/Items/Other/Progress_Cupon)
+		src.HollowFormCheck()
 		src.TrackQuests()
 		src.QuestRefresh()
 		src.LevelDisplay()
@@ -455,6 +570,17 @@ mob/proc/LevelCheck(/**/)
 		src.HUDRefresh()
 		src.StmBar()
 		src.ReiBar()
+		if(!Zanpakuto.SpiritType)
+			for(var/obj/Skills/SoulReaper/Understanding/S in src.Skills)
+				for(var/obj/Skills/SoulReaper/Shikai/H in src.Skills)
+					if(S.Level >=100&&!H)
+						src.Skills+=new/obj/Skills/SoulReaper/Shikai
+						src.Skills+=new/obj/Skills/SoulReaper/Shikai_Duration
+						src.ZanCreation()
+					else
+						var/P =rand(1,2)
+						if(P>=2)
+							S.Level+=1
 		src.Save()
 
 proc/Split(var/text2split,var/SplitBy)
@@ -481,7 +607,7 @@ proc/TrimSpaces(var/Text2Trim)
 	return Text2Trim
 
 mob/proc/NameGuard(/**/)
-	var/list/ReservedNames=list("Falacy","FaIacy","Strai","SolarOblivion","SoIarOblivion","SolarObIivion","SoIarObIivion")
+	var/list/ReservedNames=list("Dragonzues","FaIacy","Strai","SolarOblivion","SoIarOblivion","SolarObIivion","SoIarObIivion")
 	for(var/mob/Player/M in world)	if(M.client && M!=src)	ReservedNames+=M.name
 	src.name=FilterMessage(src.name)
 	if(!src.name)	src.name=src.key
@@ -597,6 +723,8 @@ atom/proc/HairConfigure(var/HS)
 	if(HS=="MakiBankai")	src.icon='MakiBankai.dmi'
 	if(HS=="Yoruichi")	src.icon='Yoruichi.dmi'
 	if(HS=="YoruichiBankai")	src.icon='YoruichiBankai.dmi'
+	if(HS=="Aizen")	src.icon='AizenHair.dmi'
+	if(HS=="Vaizard Mask")	src.icon='BlankVisoredMask.dmi'
 
 var/list/CachedRGBs=list()
 proc/MyRGB(var/icon/I,var/RGB)
@@ -612,6 +740,8 @@ proc/MyRGB(var/icon/I,var/RGB)
 obj/HairOver
 	pixel_y=9
 	layer=6
+
+
 atom/proc/AddHair(var/Style,var/State)
 	if(!src.HairOver)
 		var/obj/HairOver/HO=new()
@@ -622,6 +752,15 @@ atom/proc/AddHair(var/Style,var/State)
 	src.HairOver.HairConfigure("[Style][State]")
 	src.HairOver.icon=MyRGB(src.HairOver.icon,rgb(src.HairR,src.HairG,src.HairB))
 	src.overlays+=src.HairOver
+
+atom/proc/RemoveMask(var/Style,var/State)
+	for(var/obj/EquipmentOverlays/BlankVisoredMask/M in src.overlays)
+		src.overlays -= M
+	for(var/obj/EquipmentOverlays/DANKVisoredMask/M in src.overlays)
+		src.overlays -= M
+
+
+
 
 obj/Supplemental/Effect
 	mouse_opacity=0
@@ -724,7 +863,7 @@ mob/proc
 	WriteTraitScreen()
 		for(var/obj/HUD/UnLearned_Skill/O in src.client.screen)	del O
 		src.ButtonGlow()
-		src.WriteLine(9,0,17,12,"SkillPoints","Trait Points: [src.TraitPoints]",1)
+		src.WriteLine(9,0,19,12,"SkillPoints","Trait Points: [src.TraitPoints]",1)
 		src.WriteLine(2,src.CSV(src.Zanjutsu),16,12,"SkillPoints","[src.Zanjutsu]",0)
 		src.WriteLine(2,src.CSV(src.Hakuda),14,12,"SkillPoints","[src.Hakuda]",0)
 		src.WriteLine(2,src.CSV(src.Hohou),12,12,"SkillPoints","[src.Hohou]",0)
@@ -735,15 +874,15 @@ mob/proc
 	WriteStatScreen()
 		for(var/obj/HUD/UnLearned_Skill/O in src.client.screen)	del O
 		src.ButtonGlow()
-		src.WriteLine(9,0,17,12,"SkillPoints","Stat Points: [src.StatPoints]",1)
-		src.WriteLine(2,src.CSV(src.MaxSTM),15,12,"SkillPoints","[src.MaxSTM]",0)
-		src.WriteLine(2,src.CSV(src.MaxREI),14,12,"SkillPoints","[src.MaxREI]",0)
-		src.WriteLine(2,src.CSV(src.STR),12,12,"SkillPoints","[src.STR]",0)
-		src.WriteLine(2,src.CSV(src.VIT),11,12,"SkillPoints","[src.VIT]",0)
-		src.WriteLine(2,src.CSV(src.MGC),9,12,"SkillPoints","[src.MGC]",0)
-		src.WriteLine(2,src.CSV(src.MGCDEF),8,12,"SkillPoints","[src.MGCDEF]",0)
-		src.WriteLine(2,src.CSV(src.AGI),6,12,"SkillPoints","[src.AGI]",0)
-		src.WriteLine(2,src.CSV(src.LCK),5,12,"SkillPoints","[src.LCK]",0)
+		src.WriteLine(9,0,19,12,"SkillPoints","Stat Points: [src.StatPoints]",1)
+		//src.WriteLine(2,src.CSV(src.MaxSTM),15,12,"SkillPoints","[src.MaxSTM]",0)
+		//src.WriteLine(2,src.CSV(src.MaxREI),14,12,"SkillPoints","[src.MaxREI]",0)
+		src.WriteLine(2,src.CSV(src.STR),16,12,"SkillPoints","[src.STR]",0)
+		src.WriteLine(2,src.CSV(src.VIT),14,12,"SkillPoints","[src.VIT]",0)
+		src.WriteLine(2,src.CSV(src.MGC),12,12,"SkillPoints","[src.MGC]",0)
+		src.WriteLine(2,src.CSV(src.MGCDEF),10,12,"SkillPoints","[src.MGCDEF]",0)
+		src.WriteLine(2,src.CSV(src.AGI),8,12,"SkillPoints","[src.AGI]",0)
+		src.WriteLine(2,src.CSV(src.LCK),6,12,"SkillPoints","[src.LCK]",0)
 
 mob/proc/CSV(var/Stat2Center)//Center Stat Value
 	var/StartOffset=12
@@ -809,9 +948,16 @@ mob/proc/Damage(var/mob/M,var/damage,var/Element,var/DblChance=1,var/DamageType=
 	if(rand(1,100)<=1+M.DodgeBonus+SpdBonus-src.Hakuda+M.Hohou)
 		DamageShow(M,pick("Dodge","Miss"));PlaySoundEffect(view(M,M.SightRange),'miss.wav');return
 	var/DamageIcon='DamageNums.dmi'
+	if(istype(M,/mob/Enemy))	if(M.Level-src.Level>6)	damage=round(damage*300)
+	if(src.client)	if(M.Level-src.Level >= 6)	damage=0
 	if(src.client)	M.PVPWait=10
 	if(M.client)	src.PVPWait=10
 	if("Scatter" in M.ToggledSkills)
+		if(M.dir==get_dir(M,src))
+			PlaySoundEffect(view(src,src.SightRange),pick('SwordBlock1.wav','SwordBlock2.wav'),2)
+			ShowEffect(M,'Effects.dmi',"counterspark","between2",10)
+			ShowEffect(M,'Effects.dmi',"PetalSpark","",10);return
+	if("Bankai Scatter" in M.ToggledSkills)
 		if(M.dir==get_dir(M,src))
 			PlaySoundEffect(view(src,src.SightRange),pick('SwordBlock1.wav','SwordBlock2.wav'),2)
 			ShowEffect(M,'Effects.dmi',"counterspark","between2",10)
@@ -828,6 +974,7 @@ mob/proc/Damage(var/mob/M,var/damage,var/Element,var/DblChance=1,var/DamageType=
 			ShowEffect(M,'Effects.dmi',"counterspark","between2",10)
 			if(M.Blocking)	M.dir=get_dir(M,src)
 			if(DamageType=="Melee")
+				new/obj/Supplemental/SlashEffect(M)
 				if(M.Blocking && DblChance!=2 && MyGetDist(src,M)<=1)
 					for(var/obj/Skills/SoulReaper/Backlash/B in M.Skills)
 						DamageShow(M,"Backlash");M.Damage(src,max(0,round(damage/2)),null,2,"Break")
@@ -852,20 +999,24 @@ mob/proc/Damage(var/mob/M,var/damage,var/Element,var/DblChance=1,var/DamageType=
 		if(Element in M.ElemWeakness)	damage*=2
 		if(Element in M.ElemStrength)	damage=round(damage/2)
 		if(Element in M.Immunities)	{damage=0;DamageShow(M,"Immune")}
-	if(DamageType=="Melee")	damage+=round(damage*(src.Zanjutsu/100))
+
+	if(DamageType=="Melee")
+		damage+=round(damage*(src.Zanjutsu/100))
 	if(DamageType=="Mystic")	damage+=round(damage*(src.Kidou/100))
 	if(rand(1,100)<=1+LckBonus+src.CritBonus)	{damage*=2;DamageIcon='CritDamage.dmi'}
 	damage-=round(damage*(M.ShieldBonus/100))
-	if(istype(M,/mob/Enemy))	if(M.Level-src.Level>1)	damage=round(damage/(M.Level-src.Level))
-	if(src.client && M.client)	damage=round(damage/2,1)	//PVP Damage
+	//
+	if(src.client && M.client)	damage=100//round(damage/2,1)	//PVP Damage
 	for(var/datum/StatusEffects/Invincibles/SEI in M.StatusEffects)	damage=0
 	//figure up the last gasps after all damage calcs!
 	for(var/obj/Skills/SoulReaper/Last_Gasp/G in M.Skills)
 		if(M.STM<=damage && M.STM>1)		{damage=min(damage,M.STM-1);DamageShow(M,"Last Gasp");M.LastGasp("Last_Gasp")}
 	for(var/obj/Skills/Quincy/Pride_of_the_Quincy/G in M.Skills)
 		if(M.STM<=damage && M.STM>1)		{damage=min(damage,M.STM-1);DamageShow(M,"Pride");M.LastGasp("Quincy_Pride")}
-	damage=round(damage)
+	damage=round(rand(damage*1.0,damage*1.10))
 	DamageShow(M,damage,DamageIcon)
+//	src.GiveExp(1)
+
 	M.STM-=damage;M.StmBar()
 	if(istype(M,/mob/Enemy))	M.TrackDamage(src,damage)
 	if(M.REI<M.MaxREI)
@@ -880,12 +1031,17 @@ mob/proc/LastGasp(var/EffectType="Last_Gasp")
 	spawn(10)	if(src && E)	E.RemovalProc(src)
 
 mob/proc/AttackCauseStatusEffects(var/mob/M)
-	if(src.Shikai)	for(var/obj/Skills/Shikais/Earth_Beast/Wound/S in src.Shikai)
+	if(src.Shikai || src.Bankai)	for(var/obj/Skills/Shikais/Earth_Beast/Wound/S in src.Shikai)
 		var/Durate=7+((S.Level-1)*2)
 		var/DPS=round(src.STR/10)
 		M.AddEffect(new/datum/StatusEffects/PoisonTypes/Bleed(Durate,src.name,DPS,"Cause [DPS] Bleed Damage for [Durate] Seconds"))
-	if(src.Shikai)	for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Blade/S in src.Shikai)
-		if(rand(1,100)<=S.Level*10)	M.StunProc(2,"Freeze",src)
+	if(src.Shikai || src.Bankai)	for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Blade/S in src.Shikai)
+		if(rand(1,100)<=S.Level/**10*/)	M.StunProc(2,"Freeze",src)
+	if(src.Shikai || src.Bankai) for(var/obj/Skills/Shikais/Kira/Heavy_Weight/S in src.Skills)
+		M.AddEffect(new/datum/StatusEffects/StatBooster("Heavy Weight","MovementSpeed",(round(S.Level/10)+1),S.Level,"Decreases Your Speed",src))
+
+	if(src.Element == "Lightning")
+		M.AddEffect(new/datum/StatusEffects/StatBooster("Shocked","MGCDEF",-(round(M.MGCDEF*0.2)),20,"Shocked Causes you to take more damage",src))
 
 mob/proc/MeleeDamage(var/mob/M,var/damage=0)
 	damage=max(0,damage-M.VIT)
@@ -894,7 +1050,7 @@ mob/proc/MeleeDamage(var/mob/M,var/damage=0)
 	if(src.Shikai)	for(var/obj/Skills/Shikais/Shared/Blind_Strength/S in src.Skills)
 		damage+=round(damage*(0.01+(((S.Level-1)/100)*1)))
 	for(var/obj/Skills/SoulReaper/Combat_Mastery/S in src.Skills)
-		damage+=round(damage*min(5,src.ComboCount-1)*S.Level*0.1)
+		damage+=round(damage*min(1,src.ComboCount-1)*(S.Level*0.05))
 	for(var/obj/Skills/SoulReaper/Spirit_Shell/S in M.Skills)
 		damage-=round(damage*S.Level*0.05)
 	return damage

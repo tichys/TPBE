@@ -34,19 +34,22 @@ mob
 		stat("Host:", "[world.host]")
 		stat("Version:", "[GameVersion]")
 		stat("Up Time:","[hours]:[minutes]:[seconds]")
-		stat("Server XP Multipler:", "[Serverxp]  **(0: Normal, 1: Double XP)")
 		stat("Time Zone:","[time2text(world.timeofday,"hh:mm")]")
 		if(PlayerLimit)	stat("Players:", "[PlayerCount] / [PlayerLimit]")
 		else	stat("Players:", "[PlayerCount]")
 		stat("Usage:", "[world.cpu]%")
 		stat("Link:","[world.internet_address]:[world.port] [IsRouted]")
 		stat("Tag:", "[StatusNote]")
+		stat("Exp Rate :","[ServerExpRate]")
+		stat("Mining Level :","[src.Mining_Level]")
+		stat("Mining Exp :","[src.Mining_Exp]/[src.Mining_Nexp]")
 
-		statpanel("Vote")
+
+		/*statpanel("Vote")
 		stat("<b>Click to Interact")
 		stat(VoteTypes)
 		stat("<b>[Votes.len] Votes Currently Underway")
-		stat(Votes)
+		stat(Votes)*/
 
 		statpanel("Parties")
 		stat("Double Click a Party for Details")
@@ -118,14 +121,14 @@ mob
 						else	{src.REI-=src.StmRegenCost;src.ReiBar()}
 					if(Ok2Go)
 						var/StmBonus=src.StmRegenBonus
-						if(!src.SpiritForm)	StmBonus+=1
+						StmBonus+=1
 						if(src.STM<src.MaxSTM)
 							src.STM=min(src.MaxSTM,src.STM+(10*StmBonus));src.StmBar()
 				if(src.ReiRegenWait<0 && !src.SkillBeingCharged)
 					var/Ok2Go=1
 					if(Ok2Go)
 						var/ReiBonus=src.ReiRegenBonus
-						if(!src.SpiritForm)	ReiBonus+=1
+						ReiBonus+=1
 						if(src.REI<src.MaxREI)
 							src.REI=min(src.MaxREI,src.REI+(10*ReiBonus));src.ReiBar()
 		if(src.SkillBeingCharged)
@@ -177,3 +180,17 @@ mob/proc/SkillProcs()
 			var/Damage;for(var/obj/Skills/Shikais/Light_Dragon/Scatter/S in src.Skills)
 				Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
 			for(var/mob/M in oview(1,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")
+
+		if(src.Bankai)
+			if("Bankai Scatter" in src.ToggledSkills)
+				if(!src.Shikai && !src.Bankai)	src.Scatter()
+				var/Damage;for(var/obj/Skills/Shikais/Light_Dragon/Scatter/S in src.Skills)
+					Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
+				for(var/mob/M in view(2,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")
+
+
+//		if("Bankai Scatter" in src.ToggledSkills)
+//			if(!src.Shikai && !src.Bankai)	src.BankaiScatter()
+//			var/Damage;for(var/obj/Skills/Bankais/Light_Dragon/Bankai_Scatter/S in src.Skills)
+//				Damage=(S.Level-1+25+src.MGC)*((0.25*(S.Level-1))+1)
+//			for(var/mob/M in oview(1,src))	src.Damage(M,Damage-round(M.REI/100),"Petal",1,"Mystic")

@@ -11,23 +11,19 @@ obj/Supplemental
 		icon='SoulReaperClothes.dmi'
 		layer=FLOAT_LAYER
 
-mob/Subscriber/verb
-	Subscribe()
-		set category="Sub"
-		if(!SubKeyCheck(usr.key))	usr<<link("http://www.angelfire.com/hero/straygames/Subscribe.html")
-		else	usr.SubCheck()
+mob/GM/verb
 	Font_Color()
-		set category="Sub"
+		set category="GM"
 		usr.FontColor=input("Select your Font Color:","Font Color",usr.FontColor)as color
 	Font_Face()
-		set category="Sub"
+		set category="GM"
 		//Bookman Old Style - breaks icon size
 		usr.FontFace=input("Set the font face for your messages","Font Face",usr.FontFace)as text
 		usr.FontFace=AsciiCheck(RemoveHTML(usr.FontFace))
 		if(findtext(usr.FontFace,"Bookman Old Style"))	usr.FontFace=null
 		if(!usr.FontFace)	usr.FontFace=initial(usr.FontFace)
 	Dye_Clothes()
-		set category="Sub"
+		set category="GM"
 		usr.ClothesR=max(0,min(200,input("Input Red Dye","Clothes Dye",usr.ClothesR) as num))
 		usr.ClothesG=max(0,min(200,input("Input Green Dye","Clothes Dye",usr.ClothesG) as num))
 		usr.ClothesB=max(0,min(200,input("Input Blue Dye","Clothes Dye",usr.ClothesB) as num))
@@ -43,6 +39,7 @@ mob/proc/RefreshClothes()
 		if(src.icon=='SchoolFemale.dmi')	src.ClothesOverlay.icon='SchoolClothesF.dmi'
 		if(src.icon=='Quincy.dmi')	src.ClothesOverlay.icon='QuincyClothes.dmi'
 		src.ClothesOverlay.icon=MyRGB(src.ClothesOverlay.icon,rgb(src.ClothesR,src.ClothesG,src.ClothesB))
+		src.AddHair(src.HairStyle)
 		src.overlays+=src.ClothesOverlay
 
 proc/RemoveHTML(var/T)

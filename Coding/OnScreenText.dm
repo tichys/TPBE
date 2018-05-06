@@ -22,9 +22,9 @@ obj/HUD/OnScreenText
 	ChatBG
 		icon='ChatBG.png'
 		layer=20
-		New(var/xp,var/yp)
+		New(var/xp,var/yp,var/IS)
 			if(!xp||!yp)	return
-			src.icon_state="[xp-5],[yp-6]"
+			src.icon_state=""
 			src.screen_loc="[xp+1],[yp+1]"
 	Next
 		//NextBUTTON
@@ -42,11 +42,27 @@ obj/HUD/OnScreenText
 			usr.client.screen-=src
 	BG
 
+	ChatBG2
+		layer=20
+		icon='ChatBG2.png'
+		New(var/xp,var/yp)
+			if(!xp||!yp)	return
+			//src.icon_state="[xp-5],[yp-6]"
+			src.screen_loc="[xp+1],[yp+1]"
+
 mob/proc/ShowBG()
 	for(var/obj/HUD/OnScreenText/ChatBG/CBG in src.client.screen)	del CBG
 	src.CustBG(5,6,13,14);return
 
+
+
 mob/proc/CustBG(var/FromX,var/FromY,var/EndX,var/EndY)
+	//if(P == "Normal")
+	//	src.client.screen+=new/obj/HUD/OnScreenText/CustBG(CurX,CurY,IS)
+	//if(P == "Small")
+//		src.client.screen+=new/obj/HUD/OnScreenText/ChatBG2(CurX,CurY)
+//	else
+//		src.client.screen+=new/obj/HUD/OnScreenText/CustBG(CurX,CurY)
 	var/CurX=FromX;var/CurY=FromY
 	while(CurX<=EndX)
 		var/IS="MM"
@@ -82,6 +98,9 @@ mob/proc/CustChoice(var/Choice,var/Slot,var/X,var/Y,var/EndX)
 		src.client.screen+=new/obj/HUD/OnScreenText/ChoiceSelect(min(X+6,EndX-1),16,Y,16,,Choice)
 		src.client.screen+=new/obj/HUD/OnScreenText/ChoiceSelect(min(X+7,EndX),16,Y,16,"ChoiceBGR",Choice,PO)
 		src.WriteLine(min(X+6,EndX-1),26,Y,28,"Choice","[Choice]",0)
+
+
+
 
 proc/CustAlert(var/mob/M,var/text2show,var/list/Choices=list("OK"),var/StartX,var/StartY,var/EndX,var/EndY)
 	if(!M || M.Chatting)	return

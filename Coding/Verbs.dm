@@ -23,6 +23,16 @@ obj/Supplemental
 			MyFlick("[Elem]Spark",src)
 			spawn(10)	del src
 			return ..()
+	SlashEffect
+		icon='Effects.dmi'
+		layer=8
+		New(var/mob/M)
+			src.pixel_x+=rand(-8,8)
+			src.pixel_y+=rand(-8,8)
+			src.loc=locate(M.x,M.y,M.z)
+			MyFlick("slash",src)
+			spawn(10)	del src
+			return ..()
 	Follower
 		var/xoff=1
 		var/yoff=1
@@ -45,7 +55,7 @@ mob/verb
 		var/Formatting="<B><font size=2 face=Frosty's Winterland><font color=green>"
 		var/Icon2Show="\icon[ChatIcon]"
 		var/list/Output2=world
-		if(src.Subscriber)	Icon2Show="\icon[SubIcon]"
+//		if(src.Subscriber)	Icon2Show="\icon[SubIcon]"
 		if(src.ChatMode=="Local" && src.icon)
 			Output2=view(src.SightRange,src);Icon2Show="\icon[src.PlayerIcon]"
 		if(src.ChatMode=="Zone" && src.icon)
@@ -70,7 +80,7 @@ mob/verb
 		var/Formatting="<B><font size=2 face=Frosty's Winterland><font color=white>"
 		var/Icon2Show="\icon[ChatIcon]"
 		var/list/Output2=world
-		if(src.Subscriber)	Icon2Show="\icon[SubIcon]"
+//		if(src.Subscriber)	Icon2Show="\icon[SubIcon]"
 		if(src.ChatMode=="Local" && src.icon)
 			Output2=view(src.SightRange,src);Icon2Show="\icon[src.PlayerIcon]"
 		if(src.ChatMode=="Zone" && src.icon)
@@ -83,7 +93,10 @@ mob/verb
 		if(src.ChatMode=="Party" && !src.Party)	return
 		var/dispo="<a href='?src=\ref[usr];action=PrivateMessage;SendMes=Yes;KeyName=[usr.MyKey]'>[Icon2Show]</a>"
 		var/SubFormatting="<font color=[src.FontColor]><font face=[src.FontFace]>"
-		Output2<<"[dispo][Formatting][src]:[SubFormatting] [html_encode(t)]"
+		if(src.key in GMs)
+			Output2<<"[dispo][Formatting]<font color=red>: GM : [src] :<font size = 3>[SubFormatting] [html_encode(t)]"
+		else
+			Output2<<"[dispo][Formatting][src]:[SubFormatting] [html_encode(t)]"
 		usr.LastSays+=html_encode(t);if(src.LastSays.len>20)	src.LastSays=src.LastSays.Copy(2,0)
 
 		var/EC=copytext(t,length(t),length(t)+1)
@@ -133,9 +146,9 @@ mob/verb
 		Feel free to Logout at any time<p>
 
 		<font color=gray>When do I get Transformations?<br></font color>
-		- Shikai can be attained at level 20 by completing Urahara's Training<br>
-		- Bankai can be attained at level 50 by completing Yoruichi's Training<br>
-		- Visored can be attained at level 125 by completing Hiyori's Training<br>
+		- Shikai can be attained at level 50 by completing Urahara's Training<br>
+		- Bankai can be attained at level 150 by completing Yoruichi's Training<br>
+		- Visored can be attained at level 400 by completing Hiyori's Training<br>
 		- Final Form can be attained at level 25 by completing Uryu's Grandfather's Training<p>
 
 		<font color=gray>How do I Rest?<br></font color>

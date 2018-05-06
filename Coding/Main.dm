@@ -1,11 +1,16 @@
 #define DEBUG
 world
-	hub="Falacy.BleachEternity"
-	name="The Players Bleach"
-	status="Regularly Updated"
+	hub="Dragonzues.Bleach Eternity 3 : Eternal Damnation"
+	name="Bleach Eternity 3 : Eternal Damnation"
+	status="Loading Server Configuration..."
 	map_format=TILED_ICON_MAP
+	//map_format=TILED_ICON_MAP
+	icon_size = "32x32"
 	mob=/mob/Player
 	view=9
+	loop_checks=0
+
+
 	Reboot()
 		Rebooting=1
 		SaveConfig()
@@ -15,15 +20,26 @@ world
 		world.log<<"** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Server Reboot **"
 		world.log<<"Average Players: [round(AvgPlayers/TimesRan)] | CPU: [round(AvgCPU/TimesRan)]%"
 		return ..()
+
+
 	IsBanned(key,address)
-		if(key=="Falacy")	return 0
+		if(key=="Dragonzues"||key=="Gitrekt"||key=="KillaDjKat")	return 0
 		else 	return ..()
+
+
+
 	New()
 		world.log=file("LogFile[world.port].txt")
 		world.hub_password="Xx[739103]xX"
 		spawn()	LogCPU()
-		world.log<<"\n** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Running Bleach Eternity 2 Version [GameVersion] **"
+		world.log<<"\n** [time2text(world.realtime, "hh:mm:ss MMM, DD YYYY")] Running Bleach Eternity 3 Version [GameVersion] **"
+		spawn()	HourlyExpBoost()
 		spawn()
+
+
+
+
+/*
 			HollowTypes+=typesof(/mob/Enemy/Hollows)-text2path("/mob/Enemy/Hollows")
 			for(var/obj/Skills/Bankais/S in world)	BankaiSkillNames+=S.name
 			for(var/obj/Skills/Shikais/S in world)	ShikaiSkillNames+=S.name
@@ -31,11 +47,24 @@ world
 				if(S.SkillType=="Active"||S.SkillType=="Attack"||S.SkillType=="Support")	AllSpecials+=S.type
 			for(var/obj/Spells/S in world)	AllSpecials+=S.type
 			for(var/obj/Kidous/S in world)	AllSpecials+=S.type
+*/
 
+	//		BossList+=typesof(/mob/Enemy/Bosses)-/mob/Enemy/Bosses
+
+
+
+			MonsterTypes+=typesof(/mob/Enemy)-/mob/Enemy
+			for(var/obj/Skills/Bankais/S in world)  BankaiSkillNames+=S.name
+			for(var/obj/Skills/Shikais/S in world)  ShikaiSkillNames+=S.name
+			for(var/obj/Skills/S in world)
+				if(!S.z)    continue
+				if(S.SkillType=="Active" || S.SkillType=="Attack" || S.SkillType=="Support")
+					AllSpecials+=new S.type
+			for(var/obj/Spells/S in world)  if(S.z) AllSpecials+=new S.type
+//			for(var/obj/OffSpells/S in world)   if(S.z) AllSpecials+=new S.type
 			var/LastVersion
 			if(fexists("config.sav"))
 				var/savefile/F = new("config.sav")
-				F["Serverxp"]>>Serverxp
 				F["OverallScores"]>>OverallScores
 				F["PlayerLimit"]>>PlayerLimit
 				F["LastVersion"]>>LastVersion
@@ -53,6 +82,7 @@ world
 				if(LastVersion<6.5)
 					world.log<<" ~ Mute List Reset ~ ";MuteList=list()
 
+
 		spawn()
 			BackgroundWorldSetup()
 			WorldStatusUpdate()
@@ -64,14 +94,16 @@ world
 			KeyboardSetup()
 			PopulateDamageNums()
 
+
 		spawn()
 			WriteMapLine(80,20,50,16,2,"Desired Results")
 			WriteMapLine(80,-20,46,6,2,"Static PreRendered Images")
 			WriteMapLine(90,-6,50,16,2,"Actual Results")
 			WriteMapLine(89,-12,46,6,2,"Images Rendered In-Game")
 
+
 		spawn()	TimeLoop()
-		spawn()	LoadSubs()
+//		spawn()	LoadSubs()
 		spawn()	WorldLoop()
 		spawn()	LoadGlobalBans()
 		spawn()	LoadGlobalMutes()
@@ -92,6 +124,8 @@ world
 		spawn()	ProfileDatums()
 		spawn()	ProfileAtoms()
 		return ..()
+
+
 	Del()
 		if(!Rebooting)
 			SaveConfig()
@@ -100,12 +134,16 @@ world
 			if(TimesRan)	world.log<<"Average Players: [round(AvgPlayers/TimesRan)] | CPU: [round(AvgCPU/TimesRan)]%"
 		return ..()
 
+
+
 mob/Player
 	mouse_opacity=2
 
+
+
+
 proc/SaveConfig(/**/)
 	var/savefile/F = new("config.sav")
-	F["Serverxp"]<<Serverxp
 	F["OverallScores"]<<OverallScores
 	F["PlayerLimit"]<<PlayerLimit
 	F["LastVersion"]<<GameVersion
@@ -187,12 +225,13 @@ proc/TimeLoop()
 			world<<"<font color=red>Auto-Reboot Commencing";world.Reboot()
 	spawn(10)	TimeLoop()
 
+
 client
 	view=9
 	control_freak=1
 	show_popup_menus=0
 	command_text=".alt "
-	mouse_pointer_icon = 'Pointer.dmi'
+//	mouse_pointer_icon = 'Cursor.dmi'
 	perspective=EDGE_PERSPECTIVE|EYE_PERSPECTIVE
 	//preload_rsc="http://www.angelfire.com/hero/straygames/BErsc.zip"
 
@@ -211,17 +250,17 @@ mob
 			if(P.Key==src.key)
 				src<<"This Key is Banned.<br>Reason: [P.Reason]"
 				del src;return
-		if(!SubKeyCheck(src.key))
-			if(src.key in RelogList)
-				src<<"You Must Wait 60 Seconds before Relogging.  Instant Access Available for Subscribers"
+//		if(!SubKeyCheck(src.key))
+//			if(src.key in RelogList)
+//				src<<"You Must Wait 60 Seconds before Relogging.  Instant Access Available for Subscribers"
+//				del src;return
+		if(PlayerCount>=PlayerLimit)
+			src<<"Player Limit has been Reached.  Additional Slots Available for Subscribers"
+			del src;return
+		if(CanMultiKey!="Allow")
+			for(var/mob/Player/M in world)	if(M.key!=src.key && M.client.address==src.client.address)
+				src<<"Another Connection has been Detected from this IP.  Multikeying Available for Subscribers"
 				del src;return
-			if(PlayerCount>=PlayerLimit)
-				src<<"Player Limit has been Reached.  Additional Slots Available for Subscribers"
-				del src;return
-			if(CanMultiKey!="Allow")
-				for(var/mob/Player/M in world)	if(M.key!=src.key && M.client.address==src.client.address)
-					src<<"Another Connection has been Detected from this IP.  Multikeying Available for Subscribers"
-					del src;return
 		/*src.LoadLogonFile()
 		if(src.LoggedOn)
 			src<<"<font color=red><b>A Connection to Another BE Server has been Detected"
@@ -238,7 +277,7 @@ mob
 			LoggedIPs+="<tr><td><b>[src.key]<td>[src.client.address]"
 			LoggedIPCount+=1
 		src.LoadPlayerConfig()
-		src.SubCheck()
+//		src.SubCheck()
 		src.LoggedOn=1
 		src.icon_state=""
 		src.invisibility=1
@@ -249,11 +288,12 @@ mob
 		BuddyList+=src.MyKey;SortBuddyList()
 		PlayerCount+=1
 		WorldStatusUpdate()
-		src.MOTD()
+		//src.MOTD()
 		src.loc=locate(10,10,2)
+		//src.loc=locate(134,10,2)
 		src.WindowReset()
 		winset(src,,"command=\".options\"")
-		winset(src,"MainWindow","Size=800x608;is-maximized=true;pos=0,0")
+		winset(src,"MainWindow","Size=800x608;is-maximized=true;pos=0,0")//Size=800x608;
 		winset(src,"WhoWindow","pos=100,100")
 		winset(src,"HairWindow","pos=100,100")
 		winset(src,"VoiceWindow","pos=100,100")
@@ -269,13 +309,16 @@ mob
 		spawn()	src.CoolDownSystem()
 		spawn()	src.SecondLoop()
 		world<<"[PlayerInfoTag][src] has Arrived"
-		if(src.key in list("Falacy",world.host)+GMs)	src.verbs+=typesof(/mob/GM/verb)
-		if(src.key=="Falacy")	src.verbs+=typesof(/mob/Test/verb)
+		if(src.key in list("Dragonzues",world.host)+GMs)	src.verbs+=typesof(/mob/GM/verb)
+		if(src.key=="Dragonzues"||src.key=="Gitrekt"||key=="KillaDjKat")	src.verbs+=typesof(/mob/Test/verb)
 		PlayMusic(src,'SiamShadeDreams.mid')
 		//spawn(6000)	src.AutoSave()
 		//spawn()	src.Movement()
 
 	Logout(/**/)
+		for(var/datum/StatusEffects/S in src.StatusEffects)
+			S.RemovalProc(src)
+		alert("Works?")
 		Players-=src
 		PlayerCount-=1
 		WorldStatusUpdate()

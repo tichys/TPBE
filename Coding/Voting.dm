@@ -67,7 +67,7 @@ obj/Votes
 			for(var/mob/M in world)	if(M.client && M.LastSays.len)	Mobs+=M
 			var/mob/M=input("Select a Player to Start the Vote Against","Vote [src.name]") as null|anything in Mobs-usr
 			if(!M)	return
-			if(M.key=="Falacy")	return
+			if(M.key=="Dragonzues")	return
 			var/NewReason=input("Select the Message to Mute for:","Vote Mute Reason") as null|anything in M.LastSays
 			if(!M || !usr || !NewReason)	return
 			if((usr.key in GlobalVoters)||(usr.client.address in GlobalVoters))

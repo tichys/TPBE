@@ -39,8 +39,13 @@ obj/Bankai
 			icon='BeastBankai.dmi'
 			icon_state="Body"
 			New()
+				for(var/obj/Skills/Shikais/Earth_Beast/Blade_Break/BB in usr.Skills)
+					src.MaxHP*=BB.Level
+				src.HP=src.MaxHP
 				src.DamageIcon=BeastBladeDamageIcon
 				return ..()
+
+
 
 		proc/Destroy(/**/)
 			if(!src.HP)	return
@@ -81,6 +86,16 @@ obj/Bankai
 				src.ActualDir=get_dir(src,NewLoc);src.NextDir=get_dir(src,NewLoc)
 			return ..()
 		Bump(atom/M)
+			if(!src.Owner)	return
+			if(ismob(M))
+				src.Owner.Damage(M,src.Damage,src.Owner.Element)
+				return
+			if(istype(M,/obj/Bankai/Chains))
+				src.Owner.DamageChain(M,src.Owner.STR+rand(-5,5))
+				return
+			src.Owner.DamageChain(src,src.Owner.STR+rand(-5,5))
+
+		Entered(atom/M)
 			if(!src.Owner)	return
 			if(ismob(M))
 				src.Owner.Damage(M,src.Damage,src.Owner.Element)

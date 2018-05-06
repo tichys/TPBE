@@ -1,4 +1,7 @@
 atom/var/PreDensity=null
+
+
+
 obj/Supplemental
 	SummonNotice
 		layer=21
@@ -59,6 +62,9 @@ obj/Supplemental
 	Freeze_Ring
 		layer=TURF_LAYER+1;mouse_opacity=0
 		icon='Effects.dmi';icon_state="Ice"
+	Flame_Ring
+		layer=TURF_LAYER+1;mouse_opacity=0
+		icon='Effects.dmi';icon_state="Fire"
 
 mob/proc
 	UseRei(var/ReiAmt)
@@ -96,6 +102,8 @@ mob/proc
 		var/mob/ThisTarget=src.GetAlly()
 		ShowEffect(ThisTarget,'Effects.dmi',"Soul Glow","",10,0,1)
 		ThisTarget.AddEffect(new/datum/StatusEffects/Regen(Durate,src.name))
+
+
 	Brightest_Light()
 		if(!src.UseRei(100))	return
 		var/Heal=0;for(var/obj/Spells/Healing/Brightest_Light/S in src.Spells)

@@ -1,4 +1,6 @@
 var/list/SubList=list()
+/*
+
 mob/var/Subscriber=0
 
 mob/verb/SubscribeMenu()
@@ -108,7 +110,7 @@ mob/verb/View_Subscribers()
 		if(OnName)	KeyLink="[t]"
 		else	text+="<td>[KeyLink]	<td>[t]<tr>"
 	usr<<browse("[text]","window=ViewSubscribers")
-
+*/
 proc/AsciiCheck(var/t as text)
 	var/counter=0
 	while(counter<=length(t)-1)

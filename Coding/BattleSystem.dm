@@ -18,7 +18,7 @@ mob/proc
 				if(O:CoolDown)
 					//QuestShow(src,"[O:CoolDown/10] Second CoolDown");return
 					return
-				O:CoolDown=O:MaxCoolDown;break
+				O:CoolDown=O:MaxCoolDown-round(O:Level/3.3);break
 		if(src.Target)
 			if(MyGetDist(src,src.Target)<=src.SightRange)
 				if(src.AutoSkillFace)	src.dir=get_dir(src,src.Target)
@@ -40,6 +40,7 @@ mob/verb
 		if(src.Chatting)	return
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(1)
+			if(src.Class=="Hollow")	src.Attack(1)
 			if(src.Class=="Quincy")	src.CreateArrow()
 			if(src.Class=="Bount")
 				for(var/mob/Pets/P in src.Pets)	if(MyGetDist(src,P)<=9)
@@ -49,6 +50,7 @@ mob/verb
 		if(src.Chatting)	return
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(2)
+			if(src.Class=="Hollow")	src.Attack(2)
 			if(src.Class=="Quincy")	src.PullArrow()
 			if(src.Class=="Bount")
 				for(var/mob/Pets/P in src.Pets)	if(MyGetDist(src,P)<=9)
@@ -68,10 +70,13 @@ mob/verb
 							src.QuestComplete(D.ExpReward,D.name,D.GoldReward,D.SilverReward,D.CopperReward,D.ItemReward)
 			N.DblClick(src)
 			return
+		for(var/obj/Mining/M in get_step(src,src.dir))
+			M.DblClick(src)
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(3)
 			if(src.Class=="Quincy")	src.FireArrow()
 			if(src.Class=="Bount")	src.Attack(3)
+			if(src.Class=="Hollow")	src.Attack(3)
 	Defend()
 		set hidden=1
 		if(!src.CanBlock())	return
@@ -147,7 +152,7 @@ mob/proc/TargetMob(var/mob/Enemy/M)
 		if(istype(src,/mob/Enemy))	return
 		if(!M.StartedBy && M.z!=8)
 			M.TargetMob(src);M.StartedBy=src
-			src.LevelShiftEnemy(M)
+			//src.LevelShiftEnemy(M)
 			spawn(rand(0,5))	if(M)	M.EnemyAI()
 	src.Target=M
 	if(src.client)
@@ -162,6 +167,7 @@ mob/proc/CanBlock()
 	if(src.SkillBeingCharged)	return
 	if(src.Class!="Soul Reaper")	return
 	if("Scatter" in src.ToggledSkills)	return
+	if("Bankai Scatter" in src.ToggledSkills)	return
 	if(!src.CanMove && src.ComboCount<=1)	return
 	return 1
 
@@ -180,6 +186,9 @@ obj/Projectile
 	FireBall
 		icon='Effects.dmi'
 		icon_state="Red Flame Cannon"
+	Petals
+		icon='Petals.dmi'
+		icon_state="Head"
 	Arrow
 		icon='SkillEffects.dmi'
 		icon_state="Arrow"
@@ -192,6 +201,45 @@ obj/Projectile
 		Black_Getsuga
 			icon='Effects.dmi'
 			icon_state="BlackGetsuga"
+/*		New(var/Nstr,var/Ndist,var/Ndir,var/atom/Nloc,var/Nowner,var/Ncenter)
+			src.Center=Ncenter
+			if(src.Center)	src.icon_state="invis"
+			else
+				if(Ndir==NORTH)
+					var/obj/Projectile/ThreeWide/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_x=32;src.overlays+=OA
+					var/obj/Projectile/ThreeWide/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_x=-32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x+1,Nloc.y,Nloc.z),Nowner,OA)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x-1,Nloc.y,Nloc.z),Nowner,OB)
+					src.Parts=list(A,B)
+				else if(Ndir==SOUTH)
+					var/obj/Projectile/ThreeWide/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_x=-32;src.overlays+=OA
+					var/obj/Projectile/ThreeWide/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_x=32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x-1,Nloc.y,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x+1,Nloc.y,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+				else if(Ndir==EAST)
+					var/obj/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_y=-32;src.overlays+=OA
+					var/obj/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_y=32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y+1,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+				else if (Ndir==WEST)
+					var/obj/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_y=32;src.overlays+=OA
+					var/obj/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_y=-32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y+1,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+			return ..(Nstr,Ndist,Ndir,Nloc,Nowner)
+
+*/
+
+
+
+
+
+
+
+
 		New(var/Nstr,var/Ndist,var/Ndir,var/atom/Nloc,var/Nowner,var/Ncenter)
 			src.Center=Ncenter
 			if(src.Center)	src.icon_state="invis"
@@ -221,6 +269,11 @@ obj/Projectile
 					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
 					src.Parts=list(A,B)
 			return ..(Nstr,Ndist,Ndir,Nloc,Nowner)
+
+//*/
+
+
+
 	New(var/Nstr,var/Ndist,var/Ndir,var/Nloc,var/Nowner,var/NTarget=null,var/AT)
 		spawn()
 			src.ArrowType=AT
@@ -234,6 +287,7 @@ obj/Projectile
 				if((src.dir!=NORTH && src.dir!=SOUTH) || src.ArrowType=="Rapid Fire")	src.pixel_y=rand(-8,8)
 				if((src.dir!=EAST && src.dir!=WEST) || src.ArrowType=="Rapid Fire")	src.pixel_x=rand(-8,8)
 			if(src.ArrowType=="Rapid Fire")	src.Str=round(src.Str/2)
+
 			for(var/i=0,i<=src.Dist,i++)//moves the target for preset distance
 				if(!src.MyTarget)	step(src,src.dir)
 				else	step(src,get_dir(src,src.MyTarget))
@@ -257,9 +311,9 @@ obj/Projectile
 			var/obj/Projectile/O=M
 			if(src.Owner==O.Owner)	return ..()
 			else	{del src;return}
-		if(istype(src,/obj/Projectile/ThreeWide))
-			for(var/obj/O in src:Parts)	del O
-			src.loc=locate(get_step(src,src.dir))
+		//if(istype(src,/obj/Projectile/ThreeWide))
+		//	for(var/obj/O in src:Parts)	del O
+		//	src.loc=locate(get_step(src,src.dir))
 		if(src.Owner)
 			if(istype(M,/obj/Bankai/Chains))	src.Owner.DamageChain(M,src.Str+rand(-5,5))
 			if(ismob(M))
@@ -271,8 +325,8 @@ obj/Projectile
 					var/NewDir=src.DeflectionDirection()
 					if(src.dir!=NewDir)	{src.dir=NewDir;return}
 				if(src.Owner.CanPVP(M))
-					var/damage=max(0,(src.Str+src.Dist)+rand(-5,5))
-					for(var/obj/Skills/Quincy/Power_Arrow/G in src.Owner.Skills)	damage+=round(damage*(G.Level/10))
+					var/damage=100//max(0,(src.Str+src.Dist)+rand(-5,5))
+					//for(var/obj/Skills/Quincy/Power_Arrow/G in src.Owner.Skills)	damage+=round(damage*(G.Level/10))
 					var/CurStm=M.STM
 					if(istype(src,/obj/Projectile/Dragons) && rand(1,100)<=10)
 						if(src.Owner && src.Owner.Element=="Ice")	M.StunProc(2,"Freeze",src.Owner)
@@ -368,36 +422,53 @@ mob/proc
 			if(src.ArrowType=="Homing Arrow" && src.Target)	NTarget=src.Target
 			new/obj/Projectile/Arrow((src.ArrowStr*PveArrDam/5)+src.MGC,src.ArrowDist,src.dir,src.loc,src,NTarget,src.ArrowType)
 			if(src.ArrowType=="Spread Shot")	src.SpreadShot()
+
+
+
+
 			if(src.ArrowType=="Rapid Fire")
 				var/Numbar=0;for(var/obj/Skills/Quincy/Rapid_Fire/F in src.Skills)	Numbar=F.Level
 				src.BarrageProc((src.ArrowStr*PveArrDam/5)+src.ArrowDist,src.ArrowDist,Numbar)
+
+
+
+
+
+
 			if(src.FinalForm/* && src.icon_state=="PullArrow"*/)
 				src.FinalForm=2;sleep(3)
 				if(src && src.FinalForm==2)	src.FinalForm=1
 				return
 			src.ArrowStr=0;src.ArrowDist=0
 			src.TurnMode=0;src.CanMove=1
-	Attack(var/Height)
+	Attack(var/Height,var/Button="S")
+
 		if("Scatter" in src.ToggledSkills)	return
+		if("Bankai Scatter" in src.ToggledSkills)	return
 		if(src.SkillBeingCharged)	return
 		if(src.Blocking)	return
 		if(src.Stunned)	return
-		var/Button="S"
-		if(Height==2)	Button="D"
-		if(Height==3)	Button="F"
+		if(Height==2)
+			Button="D"
+		if(Height==3)
+			Button="F"
 		if(src.icon=='Bankai.dmi' && src.ComboReady)	goto ComboUp
-		if("[Button][src.ComboCount+1]" in src.ComboList)
-			if(src.ComboCount>=1 && src.ComboReady)	goto ComboUp
+		//if("[Button][src.ComboCount+1]" in src.ComboList)
+		for(var/obj/Skills/SoulReaper/Combat_Mastery/CM in usr.Skills)
+			if(src.ComboCount+1<=CM.Level)
+				if(src.ComboCount>=1 && src.ComboReady)	goto ComboUp
+
 		if(!src.CanMove)	return
 		ComboUp
 		if(src.client)
 			for(var/obj/HUD/ComboSysHud/C in src.client.screen)
-				if(C.screen_loc=="7,18")	C.icon_state="[copytext(num2text(src.ComboCount+1),1,2)]"
+				if(C.screen_loc=="7,18")	C.icon_state="[copytext(num2text(ComboCount+1),1,2)]"
 		if(src.Target)	src.FlashAssault(src.Target)
 		src.CanMove=0
 		src.AttackHeight=Height
 		src.ComboReady=0
 		src.ComboCount+=1
+		//src << "Current Combo [src.ComboCount]"
 		src.ComboStopper=rand(1,999999)
 		var/ThisCombo=src.ComboStopper
 		if(src.client && src.Target)
@@ -408,8 +479,9 @@ mob/proc
 			PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
 			src.icon_state="Stance"
 			if(src.icon=='Bankai.dmi')	MyFlick("Combo",src)
-			else if(src.Class=="Bount")	MyFlick("Attack",src)
-			else	MyFlick("[Button][src.ComboCount]",src)
+			else if(src.Class=="Bount"||src.Class=="Hollow"|| src.Class=="Arrancar")	MyFlick("Attack",src)
+
+			else	MyFlick(/*[Button][rand(1,5)]*/"Attack",src)
 		//else	MyFlick("Attack",src)
 		for(var/mob/M in get_step(src,src.dir))
 			if(istype(M,/mob/Enemy) && istype(src,/mob/Enemy))	continue
@@ -428,15 +500,16 @@ mob/proc
 							src.loc=NT;src.dir=get_dir(src,M)
 			if(src.OverDriveOn)
 				src.KnockBack(M,src);src.KnockBackFollow(M)
-			var/damage=src.STR+rand(-5,5)
+			var/damage=src.STR+rand(0,1)
 			if(!M.client)	damage*=PveDam
-			if(src.OverDriveOn)	damage+=damage*0.2
+			if(src.OverDriveOn)	damage+=damage*0.5
 			src.Damage(M,damage,src.Element,1,"Melee")
-		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,src.STR+rand(-5,5))
+		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,src.STR+rand(0,1))
 		var/SpawnTime=Height*5
 		if(src.client)
-			SpawnTime=15
+			SpawnTime=round(7.5*src.MovementSpeed)
 			spawn(3)	src.ComboReady=1
+		if(istype(src,/mob/Enemy))	SpawnTime=round(3.0*src.MovementSpeed)
 		if(src.icon=='Bankai.dmi')	SpawnTime=4
 		spawn(3)	if(src)	src.AttackHeight=0
 		spawn(SpawnTime)
@@ -463,17 +536,43 @@ mob/proc
 			src.CanMove=1
 			src.Blocking=0
 			if(src.icon_state=="Block")	src.icon_state="Stance"
+
+
+
 	BarrageProc(var/Damage,var/Dist,var/Numbar)
-		for(var/i=1,i<=Numbar,i++)
-			MyFlick("FireArrow",src)
-			PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-			new/obj/Projectile/Arrow(Damage,Dist,src.dir,src.loc,src,null,"Rapid Fire")
+		for(var/i=1,i<=round(Numbar/5)+1,i++)
+			if(usr.Class=="Quincy")
+				MyFlick("FireArrow",src)
+				PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
+				if(src.dir==NORTH||src.dir==SOUTH)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(rand(src.x-1,src.x+1),src.y,src.z),src,null,"Rapid Fire")
+				if(src.dir==EAST||src.dir==WEST)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(src.x,rand(src.y-1,src.y+1),src.z),src,null,"Rapid Fire")
+				//new/obj/Projectile/Arrow(Damage,Dist,src.dir,src.loc,src,null,"Rapid Fire")
+
+
+
+	Ice_BarrageProc(var/Damage,var/Dist,var/Numbar)
+		for(var/i=1,i<=round(Numbar/5)+1,i++)
+			if(usr.Zanpakuto.SpiritType=="Rukia")
+				if(src.dir==NORTH||src.dir==SOUTH)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(rand(src.x-1,src.x+1),src.y,src.z),src,null,"Ice")
+				if(src.dir==EAST||src.dir==WEST)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(src.x,rand(src.y-1,src.y+1),src.z),src,null,"Ice")
+
+
+
+
+
+
 	SpreadShot()
 		var/Damage=(src.ArrowStr*PveArrDam/5)
 		if(src.dir==NORTH)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,NORTHWEST,src.loc,src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,NORTHEAST,src.loc,src)
 		if(src.dir==SOUTH)
+			//new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTH,locate(src.x-1,src.y,src.z),src)
+			//new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTH,locate(src.x+1,src.y,src.z),src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTHWEST,src.loc,src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTHEAST,src.loc,src)
 		if(src.dir==EAST)

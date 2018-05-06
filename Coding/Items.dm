@@ -75,8 +75,15 @@ obj/Items
 		src.CurStack-=Amt
 		if(src.CurStack<=0)	del src
 		else	src.UpdateCount()
-	Click()
+	Click(location,control,params)
+		var/listy[]=params2list(params)
 		if(usr.Chatting)	return
+		if(listy["ctrl"])
+			if(usr.Chatting)	return
+			if(!(src in usr.Inventory))	return
+			if(CustAlert(usr,"Destroy [src]?",list("Yes","No"),ScreenX,ScreenY,ScreenX+5,ScreenY+2)=="Yes") //12,9,17,11
+				usr.RemovalCheck(src);usr.GiveGold(0,0,src:CurStack);del src
+			return
 		if(usr.Shopping)
 			var/list/SalePrices=GetBuyPrices(src,1)
 			var/SalePriceTag="> Sale Price: "
@@ -102,8 +109,10 @@ obj/Items
 			return
 		var/list/ChoiceList=list("Use","Close")
 		if(!src.HasUse)	ChoiceList-="Use"
+
 		if(CustAlert(usr,"[src.name] > > [src.desc]",ChoiceList,ScreenX,ScreenY-6,ScreenX+5,ScreenY-2)=="Use")
 			src.Use(usr)
+
 	Other
 		icon='OtherItems.dmi'
 		MaxStack=25
@@ -153,6 +162,10 @@ obj/Items
 		Use(var/mob/M)
 			M.AddEffect(new/datum/StatusEffects/ItemStatBooster(src,usr.name))
 			src.Discard(1)
+		Shikai_Str_Boost
+			Stat2Boost="STR";Amt2Boost=300;Duration=18000
+			desc="Shikai Boosts Your STR"
+
 		Adrenaline_Shot
 			GoldValue=0;SilvValue=4;CoprValue=0
 			Stat2Boost="MaxSTM";Amt2Boost=100;Duration=1800

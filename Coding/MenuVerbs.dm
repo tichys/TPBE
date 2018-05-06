@@ -269,7 +269,7 @@ mob/proc/WhoProc(var/list/SortedPlayers)
 		var/Phours=round(M.PlayTime/60/60)
 		var/Pminutes=round(M.PlayTime/60-(60*Phours))
 		var/SubStar=""
-		if(M.Subscriber)	SubStar="* "
+//		if(M.Subscriber)	SubStar="* "
 		//var/Pseconds=round(M.PlayTime-(60*Pminutes)-(60*Phours*60))
 		TextList+="<tr><td><b><font color=gray><a href='?src=\ref[src];CheckPlayer=\ref[M]'>[M.name]"
 		TextList+="<td><b><font color=gray>[SubStar][M.key]"

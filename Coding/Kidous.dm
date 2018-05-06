@@ -10,7 +10,7 @@ obj
 		mouse_opacity=2
 		var/Level=0
 		var/SkillType
-		var/MaxLevel=5
+		var/MaxLevel=50
 		var/LevelDesc
 		var/KidouRank=1
 		var/Incantation
@@ -20,8 +20,8 @@ obj
 		var/MaxCoolDown=30
 		Click()
 			var/Learnable=1
-			var/SubMax=5
-			if(usr.Subscriber)	SubMax=5
+			var/SubMax=100
+//			if(usr.Subscriber)	SubMax=5
 			var/obj/Kidous/MS
 			for(var/obj/Kidous/O in usr.Kidous)
 				if(O.name==src.name)
@@ -37,16 +37,46 @@ obj
 				ShowAlert(usr,"[OverDesc] > > [LI][src.LevelDesc]",list("Close"))
 			if(Learnable==2)
 				var/LD="[src.LevelDesc]"
-				if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Level","Close"))=="Level")
-					if(usr.SkillPoints<=0)	return
-					if(MS.Level<SubMax)
-						for(var/obj/Kidous/S in usr.Kidous)
-							if(S.name==src.name)
-								S.Level+=1;break
-						usr.SkillPoints-=1;usr.LoadKidouTree();usr.LevelOrbGlow()
-					else
-						//ShowAlert(usr,"Higher Kidou Levels Available > for Subscribers")
-						ShowAlert(usr,"Higher Kidou Levels Not Yet Available")
+				if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Level","Close")))  ///,"Input"
+					if("Level")
+						var/Amount =input("How Many To Add? You have [usr.SkillPoints] Left","Level [src.name]") as num
+						if(usr.SkillPoints<Amount)	return
+						if(MS.Level>=MS.MaxLevel)	return
+						if(Amount+MS.Level<=MS.MaxLevel)
+							for(var/obj/Kidous/S in usr.Kidous)
+								if(S.name==src.name)
+									S.Level+=Amount;break
+							usr.SkillPoints-=Amount;usr.LoadSkillTree();usr.LevelOrbGlow()
+						else
+							//ShowAlert(usr,"Higher Skill Levels Available > for Subscribers")
+							ShowAlert(usr,"This Would Set It Higher Then It Can Go")
+
+/*
+						if(usr.SkillPoints<=0)	return
+						if(MS.Level<SubMax)
+							for(var/obj/Kidous/S in usr.Kidous)
+								if(S.name==src.name)
+									S.Level+=1;break
+							usr.SkillPoints-=1;usr.LoadKidouTree();usr.LevelOrbGlow()
+						else
+							//ShowAlert(usr,"Higher Kidou Levels Available > for Subscribers")
+							ShowAlert(usr,"Higher Kidou Levels Not Yet Available")
+*/
+/*
+					if("Input")
+						var/Amount =input("How Many To Add? You have [usr.SkillPoints] Left","Level [src.name]") as num
+
+						if(usr.SkillPoints<Amount)	return
+						if(MS.Level>=MS.MaxLevel)	return
+						if(Amount+MS.Level<=MS.MaxLevel)
+							for(var/obj/Kidous/S in usr.Kidous)
+								if(S.name==src.name)
+									S.Level+=Amount;break
+							usr.SkillPoints-=Amount;usr.LoadSkillTree();usr.LevelOrbGlow()
+						else
+							//ShowAlert(usr,"Higher Skill Levels Available > for Subscribers")
+							ShowAlert(usr,"This Would Set It Higher Then It Can Go")
+*/
 			if(Learnable==1)
 				var/LD="[src.LevelDesc]"
 				if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Learn","Close"))=="Learn")

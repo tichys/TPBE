@@ -7,6 +7,16 @@ mob/verb
 			Post any Bugs you Find on the Forums</b><br>
 			<a href="http://www.byond.com/members/Falacy/forum" target="Z">Report A Bug</a><p>
 
+			10-24-17<br>
+			-Version 11.4<br>
+			-Added Bankai Effect of Shikai Abilities Includes but not Limited To:<br>
+			-Petals : Petal Stream , Petal Attack , Scatter
+			-Dragon : Dragon Assualt , Freeze Ring
+			-Beast  : Blade Break ,
+
+
+
+
 			10-07-10<br>
 			-Version 11.3<br>
 			-Disabled Multi-Server Login Restrictions<p>

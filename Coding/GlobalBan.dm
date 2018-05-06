@@ -1,5 +1,5 @@
 var/list/GlobalBanList=list()
-var/ServerTag="<font color=red><b>The Player's Bleach Eternity V1</b></font>"
+var/ServerTag="<b><font color=green>Server Info:</font>"
 
 mob/proc/CheckGlobalBan()
 	if(src.client.address in GlobalBanList)

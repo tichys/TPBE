@@ -127,6 +127,7 @@ mob/proc/QuestAdd(var/QuestName,var/turf/Loco,var/list/Objectives=list(),var/Exp
 
 mob/proc/QuestComplete(var/Exp2Give,var/QuestName,var/G,var/S,var/C,var/Item2Give)
 	var/ItemTag=""
+	Exp2Give*=ServerExpRate
 	if(Item2Give)
 		var/NewPath=text2path(Item2Give);var/obj/O=new NewPath
 		ItemTag="[O.name]";src.GetItem(O)
