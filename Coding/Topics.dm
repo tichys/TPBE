@@ -213,6 +213,7 @@ mob/proc/HairColor(/**/)
 		<td [S]><a href='?src=\ref[src];action=HairStyle;HairStyle=Izuru'>[C]Izuru</a></td></tr>
 	<tr><td [S]><a href='?src=\ref[src];action=HairStyle;HairStyle=Maki'>[C]Maki</a></td>
 		<td [S]><a href='?src=\ref[src];action=HairStyle;HairStyle=Yoruichi'>[C]Yoruichi</a></td>
+		<td [S]><a href='?src=\ref[src];action=HairStyle;HairStyle=Aizen'>[C]Aizen</a></td>
 		<td [S]><a href='?src=\ref[src];action=HairStyle;HairStyle=Bald'>[C]     </a></td></tr>
 	<tr><td colspan=3 bgcolor=gray><center><img src=HairIMG></td></tr>
 	<form method=get action='' name=form>

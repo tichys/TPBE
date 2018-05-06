@@ -30,6 +30,7 @@ mob/Supplemental
 			return ..()
 
 obj/NPC
+	var/Message="Hello"
 	layer=4
 	density=1
 	mouse_opacity=0
@@ -38,12 +39,31 @@ obj/NPC
 	New()
 		src.AddName()
 		if(src.name=="Yoruichi")	src.AddHair("Yoruichi")
+		if(src.name=="Aizen")	src.AddHair("Aizen")
+		if(src.name=="Vaizard Recruit")
+			src.AddHair("Urahara")
+			src.AddHair("Vaizard Mask")
+		if(src.name=="Inner Hollow")
+			src.AddHair("ichigo")
+			src.AddHair("Vaizard Mask")
 		if(src.icon=='SoulReaper.dmi'||src.icon=='Captain.dmi'||src.icon=='SchoolFemale.dmi')
 			var/obj/HO=new/obj/HairOver
 			if(src.gender=="female"||src.icon=='SchoolFemale.dmi')	HO.icon='yoruichi.dmi'
 			else	HO.icon=pick('ichigo.dmi','toshiro.dmi','urahara.dmi','uryu.dmi','renji.dmi','Byakuya.dmi','Kenpachi.dmi','Izuru.dmi','Maki.dmi')
 			HO.icon=MyRGB(HO.icon,rgb(rand(0,100),rand(0,100),rand(0,55)))
 			src.overlays+=HO
+
+	Hollow
+		DblClick()
+			if(src in get_step(usr,usr.dir))
+				PlayMenuSound(usr,'TP_Talk_Start.wav')
+				ShowText(usr,src.Message)
+		Aizen
+			icon = 'Arrancar.dmi'
+			Message="Want to become An Arrancar?"
+
+
+
 	Other
 		Portal
 			layer=8
@@ -72,7 +92,7 @@ obj/NPC
 				MyFlick("PortalClose",src)
 				sleep(4);return ..()
 	Random
-		var/Message="Hello"
+		//var/Message="Hello"
 		QuestChest
 			icon='QuestItems.dmi';icon_state="Diary"
 			var/Item2Give="/obj/Items/QuestItems/Diary"
@@ -96,6 +116,7 @@ obj/NPC
 					QuestShow(usr,"Already Looted this Chest!");return
 				var/obj/O=new src.Item2Give
 				if(usr.GetItem(O))	usr.ChestList+="*[src.x],[src.y],[src.z]"
+
 		Window
 			density=1;icon_state="Window"
 			name="";icon='Interior.dmi'
@@ -129,7 +150,8 @@ obj/NPC
 		var/CurPathNum=2;var/Dir=1
 		var/datum/PathDatum/CurPath
 		var/list/PathLocs=list()
-		var/Message;var/WalkSpeed=4
+		//var/Message
+		var/WalkSpeed=4
 		Krain
 			Message="They say if you Graft hollow masks together you can make powerfull equipment Shards"
 			New()
@@ -174,15 +196,15 @@ obj/NPC
 		Name_Changer
 			DblClick()
 				if(src in get_step(usr,usr.dir))
-					if(!usr.Subscriber)
-						ShowAlert(usr,"This Service is only Available to Stray Games Subscribers!");return
+//					if(!usr.Subscriber)
+//						ShowAlert(usr,"This Service is only Available to Stray Games Subscribers!");return
 					if(ShowAlert(usr,"If you'd like I can change your character's name for you. > This service is provided for free and can be used an unlimited amount of times",list("Change","Cancel"))=="Change")
 						usr.ChangeName()
 						if(usr)	usr.AddName()
 		Respeccer
 			DblClick()
 				if(src in get_step(usr,usr.dir))
-					var/GoldCost=0;var/SilvCost=5;if(usr.Subscriber)	SilvCost=0
+					var/GoldCost=0;var/SilvCost=5	//;if(usr.Subscriber)	SilvCost=0
 					SilvCost*=usr.RespecUses+1;SilvCost=min(10000,SilvCost)
 					while(SilvCost>=100)	{GoldCost+=1;SilvCost-=100}
 					var/GoldTag=(GoldCost ? "[GoldCost] Gold" : "");var/AndT=(GoldCost&&SilvCost ? " and " : "")
@@ -197,7 +219,7 @@ obj/NPC
 		Barber
 			DblClick()
 				if(src in get_step(usr,usr.dir))
-					var/GoldCost=0;var/SilvCost=5;if(usr.Subscriber)	SilvCost=0
+					var/GoldCost=0;var/SilvCost=5	//;if(usr.Subscriber)	SilvCost=0
 					SilvCost*=usr.BarberUses+1;SilvCost=min(10000,SilvCost)
 					while(SilvCost>=100)	{GoldCost+=1;SilvCost-=100}
 					var/GoldTag=(GoldCost ? "[GoldCost] Gold" : "");var/AndT=(GoldCost&&SilvCost ? " and " : "")
@@ -209,11 +231,16 @@ obj/NPC
 							usr.TakeGold(GoldCost,SilvCost,0)
 						else	ShowAlert(usr,"You dont have enough!  It costs [GoldTag][AndT][SilvTag] to Change your Hair Style!")
 						if(!GoldCost && !SilvCost)	ShowAlert(usr,"To show our appreciation for your support of Stray Games... > This service has been provided free of charge!")
+
+
+
+
+
 		Zanpakuto_Manager
 			DblClick()
 				if(src in get_step(usr,usr.dir))
 					for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)
-						var/GoldCost=0;var/SilvCost=10000;if(usr.Subscriber)	SilvCost=0
+						var/GoldCost=0;var/SilvCost=10000	//;if(usr.Subscriber)	SilvCost=0
 						while(SilvCost>=100)	{GoldCost+=1;SilvCost-=100}
 						var/GoldTag=(GoldCost ? "[GoldCost] Gold" : "");var/AndT=(GoldCost&&SilvCost ? " and " : "")
 						var/SilvTag=(SilvCost ? "[SilvCost] Silver" : "");GoldTag=(!GoldCost&&!SilvCost ? "Free for Subs" : "[GoldTag]")
@@ -260,13 +287,28 @@ obj/NPC
 		Spirit_Manager
 			DblClick()
 				if(src in get_step(usr,usr.dir))
-					switch(ShowAlert(usr,"How can I help you?",list("Rest","Spawn","Cancel")))
-						if("Rest")
-							usr.STM=usr.MaxSTM
-							usr.REI=usr.MaxREI
-							usr.StmBar()
-							usr.ReiBar()
-							ShowAlert(usr,"Stamina and Reiatsu Restored!",list("OK"))
+					usr.STM=usr.MaxSTM
+					usr.REI=usr.MaxREI
+					usr.StmBar()
+					usr.ReiBar()
+					switch(ShowAlert(usr,"How can I help you?",list("Spawn","Prestige","Cancel")))
 						if("Spawn")
 							if(ShowAlert(usr,"Would you like to set your Respawn Point to this Location?",list("Yes","No"))=="Yes")
 								usr.SetRespawn()
+						if("Prestige")
+							if(ShowAlert(usr,"Would you like to reset your level to 1 and get prestige bonuses?",list("Yes","No"))=="Yes")
+								if(usr.Level<=250)
+									ShowAlert(usr,"Not high enough Level need 250+")
+									return
+								usr.Level = 1
+								usr.Nexp = 1000
+								usr.Training += 1
+								usr.Prodigy += 1
+								usr.Income += 1
+								usr.Prestige += 1
+								usr.STR = 5
+								usr.VIT = 5
+								usr.MGC = 5
+								usr.MGCDEF = 5
+								usr.AGI = 5
+								usr.LCK = 5

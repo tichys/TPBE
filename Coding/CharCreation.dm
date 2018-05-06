@@ -33,13 +33,17 @@ mob/proc/SaveFileHUD()
 			src.WriteLine(6,12,ySpot,2,"LoadScreen","Level [M.Level] [M.Class]",0)
 			M.screen_loc="14,[ySpot-1]:4";M.icon_state="Stance";src.client.screen+=M
 			if(M.Class=="Soul Reaper")	M.icon='SoulReaper.dmi'
+			if(M.Class=="Hollow")
+				M.HollowFormCheck()
+			if(M.Class=="Arrancar")
+				M.icon='Arrancar.dmi'
 			if(M.Class=="Quincy")	M.icon='Quincy.dmi'
 			if(M.Class=="Bount")
 				if(usr.gender!="female")	M.icon='School.dmi'
 				else	M.icon='SchoolFemale.dmi'
 		else	src.WriteLine(8,16,ySpot,-4,"LoadScreen","Empty Save Slot",0)
 	usr.Loading=0
-
+//was tur
 turf
 	CharCreation
 		density=1
@@ -77,6 +81,7 @@ turf
 			icon='CharCreation.png'
 
 		Buttons
+			layer=10
 			icon=null
 			LoadGame
 				var/Slot=1
@@ -92,11 +97,11 @@ turf
 						if(ShowAlert(usr,"Load the Character from Slot [src.Slot]?",list("Load","Cancel"))=="Load")
 							usr.Load();return
 					else
-						if(!usr.Subscriber && src.Slot>=3)
-							ShowAlert(usr,"Additional Save Slots Available for Subscribers")
-							if(!usr)	return
-							usr.loc=locate(86,10,2);usr.SaveFileHUD()
-							usr.Loaded=0;return
+						//if(!usr.Subscriber && src.Slot>=3)
+						//	ShowAlert(usr,"Additional Save Slots Available for Subscribers")
+						//	if(!usr)	return
+						//	usr.loc=locate(86,10,2);usr.SaveFileHUD()
+						//	usr.Loaded=0;return
 						if(ShowAlert(usr,"No File Detected. > Create a New Character in Slot [src.Slot]?",list("Create","Cancel"))=="Create")
 							usr.loc=locate(29,10,2);return
 					if(!usr)	return
@@ -146,6 +151,9 @@ turf
 							usr.client.screen+=CP
 							if(usr.Class=="Soul Reaper")	CP.icon='SoulReaper.dmi'
 							if(usr.Class=="Quincy")	CP.icon='Quincy.dmi'
+							if(usr.Class=="Hollow")
+								CP.icon='ScorpionHollow.dmi'
+								ChosenHollowBase=CP.icon
 							if(usr.Class=="Bount")
 								if(usr.gender!="Female")	CP.icon='School.dmi'
 								else	CP.icon='SchoolFemale.dmi'
@@ -153,13 +161,17 @@ turf
 							usr.client.screen+=HP
 							usr.name=html_encode(copytext(usr.key,1,15))
 							usr.WriteLine(7,7,16,11,"NameDisplay",usr.name,1)
+							usr.RefreshClothes()
 			Name
 				Click()
 					usr.ChangeName()
 					if(usr) usr.WriteLine(7,7,16,11,"NameDisplay",usr.name,1)
 			HairStyle
 				Click()
-					usr.HairColor()
+					if(usr.Class=="Hollow") ShowAlert(usr,"This Class Can't Have Hair Yet",list("OK"))
+					else
+						usr.HairColor()
+					usr.RefreshClothes()
 			VoiceSet
 				Click()
 					usr.VoiceSelect()
@@ -172,7 +184,7 @@ turf
 					if(usr.icon)	return
 					usr.icon='School.dmi'
 					if(usr.gender==FEMALE)	usr.icon='SchoolFemale.dmi'
-					usr.LHD=round((usr.Level*3+7)/6)
+					//usr.LHD=round((usr.Level*3+7)/6)
 					//usr.DamageIcon=src.icon+rgb(255,0,0)
 					//usr.GuardIcon=src.icon+rgb(155,155,155)
 					usr.LoadVoiceSet()
@@ -191,25 +203,43 @@ turf
 					if(usr.Class=="Soul Reaper")
 						usr.Skills+=new/obj/Skills/SoulReaper/Basic_Combat
 						usr.Skills+=new/obj/Skills/SoulReaper/Guard
+						usr.Skills+=new/obj/Skills/SoulReaper/Combat_Mastery
+						usr.Skills+=new/obj/Skills/SoulReaper/Understanding
 						usr.ComboList=list("S1","D1","F1","F2","F3")
+						usr.ReiRegenBonus=0
+					if(usr.Class=="Hollow")
+						usr.Skills+=new/obj/Skills/Hollow/Basic_Combat
+						usr.Skills+=new/obj/Skills/SoulReaper/Guard
+						usr.ComboList=list("F1","F2","F3")
+						usr.Skills+=new/obj/Skills/SoulReaper/Combat_Mastery
 						usr.ReiRegenBonus=0
 					if(usr.Class=="Bount")
 						usr.Skills+=new/obj/Skills/Bount/Summon_Pet
 						usr.Skills+=new/obj/Skills/Bount/Dismiss_Pet
 						usr.Skills+=new/obj/Skills/Bount/Heal_Pet
 						usr.Skills+=new/obj/Skills/Bount/Pet_Skills
-						usr.Pets+=new/mob/Pets/BountPets/Fly_Trap
+						switch(input(usr,"What Pet Would you Like?","Pet Choice") in list("Hollow","Origami Doll","Fly Trap"))
+							if("Hollow")
+								usr.Pets+=new/mob/Pets/BountPets/Hollow_Doll
+							if("Origami Doll")
+								usr.Pets+=new/mob/Pets/BountPets/Origami_Doll
+							if("Fly Trap")
+								usr.Pets+=new/mob/Pets/BountPets/Fly_Trap
 						for(var/mob/Pets/P in usr.Pets)	P.Owner=usr
 						usr.ComboList=list("F1")
+						usr.Skills+=new/obj/Skills/SoulReaper/Combat_Mastery
 					usr.Spells+=new/obj/Spells/Teleportation/Teleportation
 					usr.Spells+=new/obj/Spells/Teleportation/Recall
 					for(var/obj/Skills/O in usr.Skills)	O.Level=1
 					usr.QuestRefresh()
-					usr.loc=locate(50,88,1)
+					usr.loc=locate(9,30,1)
 					usr.invisibility=0
 					//usr.Save()
 					usr.CreatePlayerIcon()
+					if(usr.Class=="Hollow")
+						usr.icon = 'ScorpionHollow.dmi'
 					PlayMenuSound(usr,'TP_Talk_Start.wav')
 					ShowAlert(usr,"This Game Uses an AutoSave Feature")
 					ShowText(usr,"Welcome to Bleach Eternity! > > ** Press the F Key to Advance Messages")
 					ShowText(usr,"** NPCs with an ! over their head Have Important Information for you. > > ** Press the F Key to Talk with them")
+					usr.RefreshClothes()

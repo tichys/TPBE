@@ -1,0 +1,202 @@
+			-Version 1.04<br>
+			-Some bug fixes and limitations for new release prep.<br>
+			-Added a temporary verb to empty your banks, make sure they have under 50 items which is the limit<br>
+			-Fixed the new map entrance bug.<br>
+			-Added Keakers spawn<br>
+			-Items other than super rares and rares no longer go in bank.<br>
+			-No more code releases until v2.<br>
+			-Added a new map, find it!<br>
+			-Fixed a few small bugs.<br>
+			-Players can no longer watch a tournament while in the skillup screen<br>
+			-Fixed a bug which would cause the game to use quite a lot of cpu<br>
+			-(TEMPORARY ADDITION)When you speak to the Bank Manager he will now tell you how many items you have stored<br>
+			-Banks have been limited to 50 slots. I suggest you empty them and maintain them or you might lose drops if both are full.<br>
+			-If your inventory is full and you receive an item either by auctions, given or drops - the item will go to your bank instead.<br>
+			-Implemented a more versatile log for myself which keeps track of all player received gold, items and more.<br>
+			-Limited a few commands when an Auction is ongoing<br>
+			-Fixed a few more auction bugs.<br>
+			-You should now be able to see Experience gain on screen again.<br>
+			-Creating a Guild now costs 500 gold.(Many guilds are nice but pointless, if all players make their own.)<br>
+			-Bankai messages as well as Guild messages are now restricted to base font size<br>
+			-Fixed a gold & item duplication bug, player involved was wiped.<br>
+			-GM's summon no longer requires confirmation from the player<br>.
+			-A jail verb has been added for staff.<br>
+			-When in a player owned spawn, you will no longer see on screen experience.<br>
+			-Fixed yet another bug which was causing some a loop and inevitably lagging the game.<br>
+			-Fixed a duplication bug, the people involved will have their inventory wiped once I have gone through the new obj log.<br>
+			-GM's will no longer appear on the Monster Scoreboard<br>
+			-DoS and CoZ  droprate was made slightly easier<br>
+			-Scoreboards were deleted but your score isn't lost and will apply itself once you kill something.<br>
+			-You can no longer change name when a Monsterbash Event is active.<br>
+			-Fixed density issues in New Haven<br>
+			-Added a verb Teleport Home for those that have Houses<br>
+			-Added a new map, it is still incomplete but it has NPC's for 200+ to kill.Pier of Arial will take you!<br>
+			-Urahara's Reiki Blast and waves were buffed. Both factor in Kidou and Waves do double your magic.<br>
+			-Changed MonsterScores under Commands to show top ranked. Kill something to update it<br>
+			-Added a new event - MonsterBash<br>
+			-Some bug fixes for Inventory handling.<br>
+			-2 new world drops added with a higher drop chance.<br>
+			-More items added to the Gear vendor<br>
+			-1 new Armor in donator shop<br>
+			-Updated the Donate button so you can leave instruction<br>
+			-Removed random bankai messages from non subs<br>
+			-Added an extra check for Auctions, hopefully this will solve the bug<br>
+			-GM's can now remove Moderators.<br>
+			-Bankai Alerts will now have the player name at the end of the message<br>
+			-Guildwars have been disabled.<br>
+			-Fixed a bug with the mispelled Shikai Patience which would freeze the server<br>
+			-Fixed a bug with invisibility helm not working on relog<br>
+			-Fixed a bug where the winner of a Tournament would still have PVP enabled after it ended.<br>
+			-Added an automatic auction reset in case auction bugs<br>
+			-New Sell credits command. Yes, you can now sell credits for gold. (Credit sales are LOGGED)<br>
+			-When double exp is active, Income trait is doubled. If you have 100 income and kill a level 50 mob you will get around 1 silver.<br>
+			-You can now purchase multiple stats/Gold from Honor Exchanger. However Gold price was upped to 100 honor.<br>
+			-Some sub shop items values were recalculated<br>
+			-The rare cloak drop also gives the ability to see invisibility<br>
+			-Added Invisibility effect to Donator shop helm and See invisiblity to another item in Donator Shop<br>.
+
+			<p>
+			-Version 1.03<br>
+			-Added a cooldown to the EXP orb, no more spammin!.<br>
+			-Exp Orb now just shows you the percentage needed to level and the number.<br>
+			-Reduced the amount of EXP needed from 200+.<br>
+			-Players over 200 entering Volcano will go to a lvl 200 only version of it.<br>
+			-Misc bug fixes, Bounto battlefield layout should not buff their pets as well.<br>
+			-Rare items will now automatically be deposited in your bank.<br>
+			-A very basic Bank system has been added.Banker NPC in most towns.<br>
+			-A separate Auction for Credits has been added.<br>
+			-Added more Tournament level range brackets.<br>
+			-Max level raised to 250, but levelup after 201 is painful.<br>
+			-Toshiro Freeze dragon thing was given a nice boost to compensate for lack of Bankai until v2.<br>
+			-Corrected a bug where if you used TAB while using Leaf Storm or Scatter, the shield would become invisible and continue to do damage.<br>
+			-Battlefield Layout will only buff Bountos and their pets now.<br>
+			-Movementspeed restored to the usual values..<br>
+			-Fixed a bug where carrying a Phoenix feather would make you immortal in Tournaments.<br>
+			-Battlefield Tactics will not buff someone who is near maximum speed threshold<br>
+			-Bounto Fusion reactivated<br>
+			-Two new world drops added, a cape and armor.<br>
+			-New boots in Donator store.<br>
+			-The Devourer of Souls is now a World drop.<br>
+			-Disable Global chat under Options has been fixed and no longer prevents you from seeing chat channels other than Global.<br>
+			-Tournament code redone, it should now properly account for player deaths.<br>
+			-Bounto Fusion has been disabled until fixed.<br>
+			-Arena money gain has been increased.<br>
+			-Ultima has been added, you can now complete the quest. Thanks go to TorrentialWin for the icon.<br>
+			-Fixed a bug that caused a loop when dieing in tourney.<br>
+			-Changed Moderator chat icon to a nice hot PINK star to denote their status. Moderators are players, not GMs..<br>
+			-Quincy's Pride will no longer work in Tournaments or Wars.<<br>
+			-Fixed a bug that caused a loop when dieing in tourney.<br>
+			-Restore point should now work.<br>
+			-Bounto pets are now Stronger.<br>
+			-Immunity skill added to Bountos.<br>
+			-Removed Movement Speed from boots for the time being.<br>
+			-Phoenix feathers will no longer activate during a Tournament or War.<br>
+			-You can not Declare war when a Tournament is in progress and vice versa.<br>
+			-Captains should now not be able to be challenged by a player under level 150(it wasn't working)<br>
+			-Fixed a bug 13th Captain wasn't saving!<br>
+			-Fixed a bug where Shift-Click on skill levels would not apply the proper boost. Respec yourselves!<br>
+			-Removed all Subscription/Subscriber names and renamed them to Donators.<br>
+			-Corrected the description of Cross Sword in store.<br>
+			-Corrected a bug that was crashing the server.<br>
+			-You must now be at least level 150 to Challenge a captain.<br>
+			-Auction system enabled again, also fixed a bug with give item.<br>
+			-Auction system disabled until fixed, due to inventory bug.<br>
+			-Extra Trait point removed from Sub Benefits - it was too overpowered.<br>
+			-Tweaked \ to save every 10 minutes.<br>
+			-Added a fix to the Challenge Captain code, also only one person may Challenge a captain at a time.<br>
+			-Added 2 new NON Donator items at Gear vendor and 2 new sub items.<br>
+			-New armor (helm,cloak,boots) rare drops have been added to monsters.<br>
+			-A Guide section has been added to the Help system, press ? to see it.<br>
+			-GM summon requires players to approve first.<br>
+			-Most stats and gold displays have been rounded.<br>
+			-Give Item has been added under the Commands tab.<br>
+			-Auction Tweaked a bit, additionally  - unique items are not auctionable.<br>
+			-Added some fixes to the Tournament Code.<br>
+			-A delay option was added under Edit, it will set your delay to 0(use at your own risk)<br>
+			-You can no longer sell Unique items on Auction<br>
+			-You can no longer attack while in the Stat screen<br>
+			-Fixed bug that would allow you to maintain your previous Bankai when using Zan Manager<br>
+			-Fixed bugs that would allow you to go into Shikai when in Bankai<br>
+			-You can now disable Global Chat from Options.It is no longer under Commands.<br>
+			-Fixes for some inventory and sub items related bugs<br>
+			-Fixed Party and Local chat - It should not interfere with Global chat anymore<br>
+			-Byakuya Scatter petals damage increased and now also includes your Kidou level<br>
+			-Fixed Bug with Ichigo Bankai Hair - it should now keep the color you want.<br>
+			-Donators now have all inventory slots unlocked.<br>
+			-EXP gained from killing monsters has been slightly increased<br>
+			-You can now use Shift-Click to add multiple Trait points<br>
+			-Restat was removed from Respeccer forthe time being.<br>
+			-Byakuya Petal steam does level based damage including kidou and MGC and Fire Dragon and Ice dragon now also do more damage if you increase your Kidou<br>
+			-You are now able to turn off Global chat - in the Commands tab <br>
+			-You can now only bid on an auction when an auction is started<br>
+			-Restore Point now works as described.<br>
+			-The damage of Bala was reduced while the damage of Cero was boosted<br>
+			-Fire ring has been boosted and the Rei cost has been slightly lowered<br>
+			-Items bought with credits can be sold on auction.<br>
+			-All subs will now receive 6 credits a month. 6 month subs will start with 10 credits, Lifetime with 20.<br>
+			-Subs will only get 1 extra stat instead of two! However, a new Donator only NPC has been added in Arial with nice items.<br>
+			-Added a simple Auction system, under Commands <br>
+			-Fixed a few bugs with houses and squads.<br>
+			-Added Temporary Squad Houses (will be redesigned)<br>
+			-Fixed a few message bugs when Promoting a squad member<br>
+			-Last gasp should now not activate in Tournaments<br>
+			-Added a simple Gotei13 list under Commands Tab<br>
+			-Captain Icon added. <br>
+			-Squads are in!<br>
+			-Guild Wars added (might have a few bugs)<br>
+			-You can now make Guild names using html<br>
+			-Donators can now set their own Bankai world message<br>
+			-Subscribers can now Change their name color <br>
+			-You can now choose to only reset your stats at the Respeccer<br>
+			-Shift Clicking a stat to level it up will now let you choose how many points<br>
+			-Made Bosses a little stronger<br>
+			-Add new macro CTRL - A for Guild chat.<br>
+			-Recalculated and made the drop rate for some rare monsters rarer. <br>
+			-Fixed some icons issues and a few nasty bugs relating to stats and Tourney.<br>
+			-If you Respec, all stats bought from Exchanger will be included now<br>
+			-Fixed some bugs in the Tournament code.<br>
+			-Raised Max Level to 200 in preparation for a future update :P <br>
+			-Players level 150 or above will gain 1 honor for killing any hollow.<br>
+			-Increased the amount of Honor gained from killing other players.<br>
+			-Reduced the amount of Honor required to purchase stats. <br>
+			-Added a new weapon to the Gear Vendor.<br>
+			-Added 2 new RARE weapons and 2 new RARE armor as drops from ALL hollows.<br>
+			-Added the Honor Exchanger NPC!<br>
+			-Added a Tournament system.<br>
+			-Fixed a bug that was causing the server to freeze.<br>
+			-Added Guilds! Enjoy.<br>
+			-New command added! Give Money.<br>
+			-Yama's Fire Blast is now based on MGC damage instead of STR.<br>
+			-Gin's Shikai and Bankai skills have had their Reiatsu Requierement lowered.<br>
+			-Quincy characters now start with 10 MGC instead of STR.<br>
+			<p>
+			-Version 1.02<br>
+			-Double Xp verb added to the game code for admins.<br>
+			-Yamamoto - Fire Ring now does damage based on MGC.<br>
+			-Soi Fon shikai speed reduced - it was in par with Ichigo Bankai.<br>
+			-Fixed tons of loops and pointless GOTO's in code.<br>
+			-Added GM categories - Mod/GM<br>
+			-Subscribers gain more experience and gold both solo and in party.<br>
+			<p>
+			-Version 1.01<br>
+			-Decided to stop listing updates.<br>
+			-Fuse added.<br>
+			-Show stats now dont show yourself on the list.<br>
+			-Show stats now show yourself your stats.<br>
+			-Limited Show stats to once per minute(Millamber.)<br>
+			-Hopefully fixxed non-sub respec for sub stats.(Gabzzy)<br>
+			-You can now show stats by hitting Ctrl+S.<br>
+			-Fixxed Bount Evo Pet Attack bug.<br>
+			-Subs now gain 2 extra stat points and 1 extra trait and skill point per level.<br>
+			-Updated Bounto Chain Combo.<br>
+			-Reimplamented the AFK Booter!<br>
+			-Level Cap Raised!<br>
+			-Bounts are now going under a complete revision!<br>
+			-Changed the forum link.<br>
+			-Added Lisa Vaizard Mask!<br>
+			-Added the song "Sorry".<br>
+			-Added Shinji Vaizard Mask!<br>
+			-New GM Figure.<br>
+			-Fixxed RGB Problems from what i know.<br>
+			-Fixxed the ',",>,< Problem.<br>
+			-<b><u><font color=red>We Have a New Host!</font></u></b><p>

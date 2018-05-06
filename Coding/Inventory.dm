@@ -67,7 +67,7 @@ mob/proc/GetItem(var/obj/Items/O)
 				QuestShow(src,"[O.name] x[ThisStack] Acquired")
 				if(O.CurStack<=0)	{del	O;return Received}
 	for(var/i=1;i<=45;i++)
-		if(i>25)
+		if(i>45)
 			QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
 		if(!src.Inventory[i])
 			Received+=O.CurStack
@@ -180,7 +180,7 @@ mob/proc/DisplayInventory(/**/)
 		for(var/ny=12,ny>=8,ny--)
 			var/obj/HUD/Inventory/ItemBG/I=new()
 			counter+=1;I.InvSlot=counter
-			if(I.InvSlot>25)	I.icon_state="LockedItemBG"
+			//if(I.InvSlot>25)	I.icon_state="LockedItemBG"
 			I.ScreenX=nx;I.ScreenY=ny
 			I.screen_loc="[nx],[ny]";src.client.screen+=I
 			if(src.Inventory[I.InvSlot])

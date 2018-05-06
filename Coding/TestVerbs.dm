@@ -1,6 +1,6 @@
 mob/Test/verb/Test(/**/)
 	set category="Test"
-	if(usr.key=="Falacy")
+	if(usr.key=="Dragonzues"||usr.key!="Gitrekt")
 		usr.Skills+=new/obj/Skills/SoulReaper/Bankai
 		usr.Zanpakuto=new/obj/Zanpakuto
 		usr.Zanpakuto.SpiritType="Beast"
@@ -9,11 +9,11 @@ mob/Test/verb/Test(/**/)
 		//ShowAlert(usr,"aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	else
 		usr<<"This verb is used to test various things around the game."
-		usr<<"It can only be used by Falacy and was left visible accidentally."
+		usr<<"It can only be used by Dragonzues and was left visible accidentally."
 
 mob/Test/verb/CheckObjects()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/obj/O in world)	counter+=1
 	usr<<"Object Count: [counter]"
@@ -29,7 +29,7 @@ var/list/LastDatumList=list()
 mob/Test/verb/Profile_Datums()
 	set category="Test"
 	set background=1
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	usr<<"Starting Datum Profiler..."
 	var/list/DatumList=list()
 	var/TotalCount=0
@@ -66,7 +66,7 @@ mob/Test/verb/Profile_Datums()
 
 mob/Test/verb/CheckLoggedIPs()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/text="<center><table border=1><tr><td colspan=2>[LoggedIPCount] Logged IPs"
 	text+="<center><tr><td><b>Key<td><b>IP"
 	text+="[LoggedIPs]"
@@ -84,7 +84,7 @@ var/list/LastAtomList=list()
 mob/Test/verb/Profile_Atoms()
 	set category="Test"
 	set background=1
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	usr<<"Starting Atom Profiler..."
 	var/list/AtomList=list()
 	var/TotalCount=0
@@ -121,7 +121,7 @@ mob/Test/verb/Profile_Atoms()
 
 mob/Test/verb/CheckOverlays()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	var/real=0
 	var/totals=0
@@ -136,7 +136,7 @@ mob/Test/verb/CheckOverlays()
 
 mob/Test/verb/CheckShadows()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/obj/Decoration/Shadow/S in world)	counter+=1
 	for(var/obj/Decoration/Shadow_Edges/S in world)	counter+=1
@@ -144,19 +144,34 @@ mob/Test/verb/CheckShadows()
 
 mob/Test/verb/GetBankai()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(!usr.key=="Dragonzues"||!usr.key=="Gitrekt")	return
 	for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)	{usr.Skills-=S;del S}
 	for(var/obj/Skills/SoulReaper/Bankai/S in usr.Skills)	{usr.Skills-=S;del S}
 	for(var/obj/Skills/Quincy/Final_Form/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Visored/S in usr.Skills)	{usr.Skills-=S;del S}
 	usr.Skills+=new/obj/Skills/SoulReaper/Shikai
 	usr.Skills+=new/obj/Skills/SoulReaper/Bankai
 	usr.Skills+=new/obj/Skills/Quincy/Final_Form
-	usr.SkillPoints+=99
+	usr.Skills+=new/obj/Skills/SoulReaper/Visored
+	usr.SkillPoints+=10
 	usr.ZanCreation()
+
+
+mob/Test/verb/TakeBankai()
+	set category="Test"
+	if(!usr.key=="Dragonzues"||!usr.key=="Gitrekt")	return
+	for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Bankai/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/Quincy/Final_Form/S in usr.Skills)	{usr.Skills-=S;del S}
+	for(var/obj/Skills/SoulReaper/Visored/S in usr.Skills)	{usr.Skills-=S;del S}
+	usr.SkillPoints-=10
+//	usr.ZanCreation()
+
+
 
 mob/Test/verb/CheckEnemies()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/counter=0
 	for(var/mob/Enemy/M in world)
 		if(M.StartedBy)	counter+=1
@@ -169,7 +184,7 @@ mob/Test/verb/OldCheckCPU()
 
 mob/Test/verb/DisplayExpFormula()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Dragonzues"||usr.key!="Gitrekt")	return
 	var/Nexp=100
 	var/Level=0
 	var/ExpBoost=input("Input Exp Increase per Level","Exp Boost",25)as num
@@ -182,12 +197,12 @@ mob/Test/verb/DisplayExpFormula()
 
 mob/Test/verb/Test_Location()
 	set category="Test"
-	if(usr.key=="Falacy")
+	if(usr.key=="Dragonzues"||usr.key!="Gitrekt")
 		var/newx=input("Input X Coordinate","X",usr.x)as num
 		var/newy=input("Input Y Coordinate","Y",usr.y)as num
 		var/newz=input("Input Z Coordinate","Z",usr.z)as num
 		usr.loc=locate(newx,newy,newz)
-	else	usr<<"Only useable by Falacy."
+	else	usr<<"Only useable by Dragonzues."
 
 mob/Test/verb
 	CheckIP(var/mob/M in world)
@@ -203,9 +218,9 @@ mob/Test/verb
 	Refresh_Global_Mutes()
 		set category="Test"
 		LoadGlobalMutes(0)
-	Refresh_Subs()
-		set category="Test"
-		LoadSubs(0)
+//	Refresh_Subs()
+//		set category="Test"
+//		LoadSubs(0)
 	Refresh_Bans()
 		set category="Test"
 		LoadGlobalBans(0)

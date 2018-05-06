@@ -7,7 +7,7 @@ obj
 		var/ReiCost=0
 		var/AttPower=0
 		var/Level=1
-		var/MaxLevel=5
+		var/MaxLevel=50
 		var/LevelDesc
 		var/SkillType
 		var/CoolDown=0
@@ -116,9 +116,9 @@ obj
 				MaxLevel=1;desc="Grants you the Knowledge to cast Mysticism type Spells"
 			White_Prostration
 				//Incantation="Hakufuku"
-				ReiCost=75;AttPower=0.75
-				icon_state="White Prostration";desc="Causes a target to lose consciousness for 0.75 Seconds. > Consumes 75 Reiatsu"
-				LevelDesc="+0.75 Seconds per Level"
+				ReiCost=35;AttPower=0.10
+				icon_state="White Prostration";desc="Causes a target to lose consciousness for 0.1 Seconds. > Consumes 35 Reiatsu"
+				LevelDesc="+0.10 Seconds per Level"
 			Mirror_Gate
 				//Incantation="Kyoumon"
 				MaxLevel=1

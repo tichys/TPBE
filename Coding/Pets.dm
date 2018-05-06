@@ -47,6 +47,13 @@ mob/Pets
 		Nibblet
 			icon='Nibblet.dmi'
 	BountPets
+		Hollow_Doll
+			icon='TadPoleHollow.dmi'
+
+		Origami_Doll
+			icon='PlaceHolderEnemy.dmi'
+
+
 		Fly_Trap
 			icon='BountPet.dmi'
 

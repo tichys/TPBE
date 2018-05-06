@@ -47,7 +47,7 @@ turf
 		Door
 			Entered(mob/M)
 				if(ismob(M) && M.client)
-					sleep(8);if(!M)	return
+					if(!M)	return
 					if(M.loc==src)
 						M.loc=locate(src.newx,src.newy,src.newz)
 						if(src.newdir)	M.dir=src.newdir
@@ -61,7 +61,115 @@ turf
 					M.loc=locate(src.newx,src.newy,src.newz)
 					if(src.newdir)	M.dir=src.newdir
 					M.SetRespawn();M.TutLevel=5
+
+
+
+
+
+
+
+/*
+obj
+	var/Level2Add
+	SpawnerTwo
+		Level2Add = 3
+
+/*
+	Just made this obsolete
+		bound_x= -64	//Start Bound box.x 1 tile to the left
+		bound_y= -64	//Start Bound box.y 1 tile to the south
+		bound_height=128	//End Bound box.x 96 from begining so about 3 tiles
+		bound_width=128	//End Bound box.y 96 from begining so about 3 tiles
+
+			[]	[]	[]	[]	[]<TR
+			[]	[]	[]	[]	[]
+			[]	[]	[]	[]	[]
+			[]	[]	[]	[]	[]
+		BL>	[]	[]	[]	[]	[]
+*/
+
+		New()
+			SearchLoop()
+*/
 area
+	monsterspawn
+		layer = 10
+
+
+obj
+	Spawners
+		New()
+			Spawnmonster()
+		var/mob/Enemy
+		proc
+			Spawnmonster()
+				new Enemy(src)
+				Enemy.loc=src.loc
+				..()
+		Level3
+			Enemy = new/mob/Enemy/Hollows/Flyte
+		Level4
+			Enemy = new/mob/Enemy/Hollows/Pounder
+		Level6
+			Enemy = new/mob/Enemy/Hollows/Flying_Hollow
+		Level7
+			Enemy = new/mob/Enemy/Hollows/Ground_Hollow
+		Level9
+			Enemy = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+		Level12
+			Enemy = new/mob/Enemy/Hollows/Spyder
+		Level15
+			Enemy = new/mob/Enemy/Hollows/Mantaur
+		Level18
+			Enemy = new/mob/Enemy/Hollows/Treezer
+		Level21
+			Enemy = new/mob/Enemy/Hollows/Slithar
+		Level24
+			Enemy = new/mob/Enemy/Hollows/Sea_Spine
+		Level27
+			Enemy = new/mob/Enemy/Hollows/Spire_Gull
+		Level30
+			Enemy = new/mob/Enemy/Hollows/Tadite
+		Level33
+			Enemy = new/mob/Enemy/Hollows/Frogling
+		Level36
+			Enemy = new/mob/Enemy/Hollows/Wulf
+		Level39
+			Enemy = new/mob/Enemy/Hollows/Howler
+		Level42
+			Enemy = new/mob/Enemy/Hollows/Growler
+		Level45
+			Enemy = new/mob/Enemy/Hollows/Squishy
+		Level48
+			Enemy = new/mob/Enemy/Hollows/Gator
+		Level51
+			Enemy = new/mob/Enemy/Hollows/Ratt
+		Level54
+			Enemy = new/mob/Enemy/Hollows/Forest_Bat
+		Level57
+			Enemy = new/mob/Enemy/Hollows/Forest_Spider
+		Level60
+			Enemy = new/mob/Enemy/Hollows/Gekko
+		Level63
+			Enemy = new/mob/Enemy/Hollows/Giant_Lizard
+		Level66
+			Enemy = new/mob/Enemy/Hollows/Lost_Hobo
+		Level69
+			Enemy = new/mob/Enemy/Hollows/Walking_Corpse
+		Level72
+			Enemy = new/mob/Enemy/Hollows/Skeleton_Brute
+		Level75
+			Enemy = new/mob/Enemy/Hollows/Skeletal_Knight
+		Level78
+			Enemy = new/mob/Enemy/Hollows/Goblin
+
+
+
+area
+	var
+		Level
+		list/Count=list()
+		list/Create=list()
 	DenseOpacity
 		icon='turfs.dmi'
 		icon_state="Black"
@@ -80,6 +188,298 @@ area
 		icon='Lava.dmi';icon_state="RedGlow"
 		New()
 			src.layer=9.1;return ..()
+
+	BossSpawner
+		Level = 45
+		layer=10
+		New()
+			BossSearchLoop()
+		Entered()
+			QuestShow(usr,"You Entered Boss Area Lv.[src.Level]")
+
+	Spawner
+		Level = 3
+		layer=10
+		New()
+
+			SearchLoop()
+		Entered()
+			QuestShow(usr,"You Entered Lv.[src.Level] Area")
+
+
+
+
+	BossEventSpawner
+		Level = 1
+		layer=10
+		New()
+			BESLoop()
+		Entered()
+			QuestShow(usr,"You Entered Boss Event")
+
+
+
+
+
+	proc
+
+		SearchLoop()
+			for(var/mob/Player/M in view(src))
+				SpawnCheck()
+			spawn(300)
+				SearchLoop()
+/*
+			for(var/area/Spawner/S in src.loc)
+				for(var/mob/Player/M in S.loc)
+					EnteredCheck(M)
+*/
+
+		BossSearchLoop()
+			for(var/area/BossSpawner/S in view(src))
+				for(var/mob/Player/M in S)
+					BossEnteredCheck(M)
+			spawn(300)	BossSearchLoop()
+
+
+		BESLoop()
+			for(var/area/BossEventSpawner/BES in view(src))
+				for(var/mob/Player/M in BES)
+					BossEventStart(M)
+			for(var/mob/Enemy/Bosses/B in view(9,src))
+				B.Level +=100
+				B.LevelShift()
+				B.AddName()
+				B.AddLevel(" ([B.Level])")
+			spawn(50)	BESLoop()
+
+
+
+
+
+
+		BossEventStart(var/mob/Player/M,var/mob/Enemy/Bosses/F)
+			F = pick(new/mob/Enemy/Bosses/Frawg,new/mob/Enemy/Bosses/Urahara,new/mob/Enemy/Bosses/Roach_Lord,new/mob/Enemy/Bosses/Phoenix,new/mob/Enemy/Bosses/Ice_Golem,new/mob/Enemy/Bosses/Kenyan_Mangrove_Crab,new/mob/Enemy/Bosses/Inner_Hollow,new/mob/Enemy/Bosses/Zanpakuto_Spirit,new/mob/Enemy/Bosses/Aizen)
+			F.BEStart = 1
+			F.loc=M.loc
+			step(F,pick(1,2,4,8))
+			spawn(300)	del F
+			return
+
+
+
+
+
+		BossEnteredCheck(var/mob/Player/M,var/mob/Enemy/Bosses/F)
+			//spawn(rand(20,30))
+			if(M.key)
+				if(src.Level==3)
+					F = pick(new/mob/Enemy/Bosses/Frawg)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(300)	del F
+					return
+
+
+
+
+
+
+
+		SpawnCheck()
+			var/mob/Enemy/F
+			var/mob/Enemy/G
+			var/mob/Enemy/H
+			var/mob/Enemy/I
+			var/mob/Enemy/J
+			if(src.Level==3)
+				F = pick(new/mob/Enemy/Hollows/Flyte,new/mob/Enemy/Hollows/Pounder)
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==6)
+				F = pick(new/mob/Enemy/Hollows/Flying_Hollow,new/mob/Enemy/Hollows/Ground_Hollow)
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==9)
+				F = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==12)
+				F = new/mob/Enemy/Hollows/Spyder
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==15)
+				F = new/mob/Enemy/Hollows/Mantaur
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				G = new/mob/Enemy/Hollows/Mantaur
+				G.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				H = new/mob/Enemy/Hollows/Mantaur
+				H.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				I = new/mob/Enemy/Hollows/Mantaur
+				I.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				J = new/mob/Enemy/Hollows/Mantaur
+				J.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		EnteredCheck(var/mob/Player/M,var/mob/Enemy/F)
+			//spawn(rand(20,30))
+			if(M.key)
+				if(src.Level==3)
+					F = pick(new/mob/Enemy/Hollows/Flyte,new/mob/Enemy/Hollows/Pounder)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(200)	del F
+					return
+				if(src.Level==6)
+					F = pick(new/mob/Enemy/Hollows/Flying_Hollow,new/mob/Enemy/Hollows/Ground_Hollow)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(200)	del F
+					return
+				if(src.Level==9)
+					F = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==12)
+					F = new/mob/Enemy/Hollows/Spyder
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==15)
+					F = new/mob/Enemy/Hollows/Mantaur
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==18)
+					F = new/mob/Enemy/Hollows/Treezer
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==21)
+					F = new/mob/Enemy/Hollows/Slithar
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==24)
+					F = new/mob/Enemy/Hollows/Sea_Spine
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==27)
+					F = new/mob/Enemy/Hollows/Spire_Gull
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==30)
+					F = new/mob/Enemy/Hollows/Tadite
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==33)
+					F = new/mob/Enemy/Hollows/Frogling
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==36)
+					F = new/mob/Enemy/Hollows/Wulf
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==39)
+					F = new/mob/Enemy/Hollows/Howler
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==42)
+					F = new/mob/Enemy/Hollows/Growler
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==45)
+					F = new/mob/Enemy/Hollows/Squishy
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==48)
+					F = new/mob/Enemy/Hollows/Gator
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==51)
+					F = new/mob/Enemy/Hollows/Ratt
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==54)
+					F = new/mob/Enemy/Hollows/Forest_Bat
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==57)
+					F = new/mob/Enemy/Hollows/Forest_Spider
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==60)
+					F = new/mob/Enemy/Hollows/Gekko
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==63)
+					F = new/mob/Enemy/Hollows/Giant_Lizard
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==66)
+					F = new/mob/Enemy/Hollows/Lost_Hobo
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==69)
+					F = new/mob/Enemy/Hollows/Walking_Corpse
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==72)
+					F = new/mob/Enemy/Hollows/Skeleton_Brute
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==75)
+					F = new/mob/Enemy/Hollows/Skeletal_Knight
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==78)
+					F = new/mob/Enemy/Hollows/Goblin
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+
+
+
+
+
 
 obj/Decoration
 	icon='Decoration.dmi'
@@ -247,7 +647,7 @@ turf
 		Dirt
 			icon_state="Dirt"
 		Bridge
-			icon='Bridge.dmi'
+			icon='Bridge2.dmi'
 			icon_state="M"
 		WaterCliff
 			density=1
@@ -390,6 +790,114 @@ turf
 					else
 						spawn()
 							ShowText(M,"You Must Complete the Tutorial Before Moving Forward!");return
+
+		HighLevelOne
+			TutLevel=250
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelTwo
+			TutLevel=300
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelThree
+			TutLevel=400
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelFour
+			TutLevel=600
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelFive
+			TutLevel=850
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelSix
+			TutLevel=1150
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelSeven
+			TutLevel=1400
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelEight
+			TutLevel=1800
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelNine
+			TutLevel=2300
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelTen
+			TutLevel=3000
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelEleven
+			TutLevel=5000
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+
 		Entered(var/mob/M)
 			if(ismob(M))
 				ShowEffect(src,'Effects.dmi',"BodyRing",src,5,0)

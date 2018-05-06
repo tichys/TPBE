@@ -346,6 +346,7 @@ obj
 					if(usr.FinalFormSkills.len>0)
 						OtherCats+=1;usr.client.screen+=new/obj/HUD/SkillListTypes/SpecialSkillList(OtherCats,usr.FinalFormSkills,"FinalFormBut")
 						usr.WriteLine(14,1,17-OtherCats,11,"SkillNames","Final Form Skills",0)
+
 					src.icon_state="Selecting Skill"
 					usr.client.screen+=new/obj/HUD/SkillListTypes/SkillList
 					usr.WriteLine(14,1,17,11,"SkillNames","Skills",0)
@@ -524,6 +525,8 @@ obj
 				if(usr.Class=="Bount")	usr.client.eye=locate(48,124,2)
 				if(usr.Class=="Quincy")	usr.client.eye=locate(10,29,2)
 				if(usr.Class=="Soul Reaper")	usr.client.eye=locate(29,29,2)
+				if(usr.Class=="Hollow"||usr.Class == "Arrancar")	usr.client.eye=locate(29,143,2)
+			//	if(usr.Class=="Arrancar")	usr.client.eye=locate(10,143,2)
 				usr.LoadSkillTree()
 				if(src in usr.client.screen)	usr.client.screen-=src
 		UnLearned_Skill
@@ -677,6 +680,9 @@ mob/proc/HUD(/**/)
 		for(var/obj/HUD/LevelOrb/O in src.client.screen)
 			O.icon_state="LvlFlash"
 	if(src.Class=="Soul Reaper")
+		src.client.screen+=new/obj/HUD/ComboSysHud(0)
+		src.client.screen+=new/obj/HUD/ComboSysHud
+	if(src.Class=="Hollow")
 		src.client.screen+=new/obj/HUD/ComboSysHud(0)
 		src.client.screen+=new/obj/HUD/ComboSysHud
 	//setup bount hud - pet display
