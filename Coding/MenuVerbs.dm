@@ -5,9 +5,7 @@ obj/Supplemental/BeastIntel
 		for(var/mob/Enemy/M in world)	if(M.name==src.name)
 			//if(M.MultiCore)	M=M.MultiCore
 			var/Multiplyer=1;var/InitialLevel=initial(M.Level)-1
-			if(istype(M,/mob/Enemy/Bosses))	Multiplyer=6
-			if(istype(M,/mob/Enemy/Special_Bosses))	Multiplyer=8
-			if(istype(src,/mob/Enemy/Evolved_Hollows))	Multiplyer=2
+			if(istype(M,/mob/Enemy/Bosses))	Multiplyer=3
 			winset(usr,"BeastiaryWindow.NAME","text='[initial(M.name)]'")
 			winset(usr,"BeastiaryWindow.ELEMENT","text='[initial(M.Element)]'")
 			winset(usr,"BeastiaryWindow.LEVEL","text='[InitialLevel+1]'")
@@ -71,8 +69,6 @@ mob/verb
 		winset(usr,"OptionsWindow.PMVolume","text='[usr.PMVol]'")
 		if(usr.LoopMusic)	winset(usr,"OptionsWindow.LoopButton","is-checked=true")
 		else	winset(usr,"OptionsWindow.LoopButton","is-checked=false")
-		if(usr.Globaloff)	winset(usr,"OptionsWindow.Globaloff","is-checked=true")
-		else	winset(usr,"OptionsWindow.Globaloff","is-checked=false")
 		if(usr.AllowPMs)	winset(usr,"OptionsWindow.AllowPMs","is-checked=true")
 		else	winset(usr,"OptionsWindow.AllowPMs","is-checked=false")
 		if(usr.AutoTargetFace)	winset(usr,"OptionsWindow.AutoTargetFace","is-checked=true")
@@ -100,8 +96,6 @@ mob/verb
 		if(winget(usr,"OptionsWindow.LoopButton","is-checked")=="true")	usr.LoopMusic=1
 		else	usr.LoopMusic=0
 
-		if(winget(usr,"OptionsWindow.Globaloff","is-checked")=="true")	usr.Globaloff=1
-		else	usr.Globaloff=0
 		if(winget(usr,"OptionsWindow.AllowPMs","is-checked")=="true")	usr.AllowPMs=1
 		else	usr.AllowPMs=0
 
@@ -132,7 +126,7 @@ mob/verb
 		winset(usr,"MainWindow.MapMain","focus=true")
 	ZoneChat()
 		set hidden=1
-		usr.ChatMode="Squad"
+		usr.ChatMode="Zone"
 		winset(usr,"MainWindow.GlobalChat","background-color=#000000")
 		winset(usr,"MainWindow.ZoneChat","background-color=#252525")
 		winset(usr,"MainWindow.LocalChat","background-color=#000000")
@@ -163,8 +157,7 @@ mob/verb
 		usr.UpdateBL()
 	ViewMap()
 		set hidden=1
-		//QuestShow(usr,"Maps Temporarily Disabled");return
-		if(usr.z==2 || usr.z==5 || usr.z==8 || src.z>10)
+		if(usr.z==2 || usr.z==5 || usr.z==8)
 			QuestShow(usr,"No Map Available for this Area");return
 		if(usr.client.eye!=usr || !usr.icon)
 			if(usr.client.eye==locate(10,67,2))
@@ -172,7 +165,7 @@ mob/verb
 				PlayMenuSound(usr,'OOT_MainMenu_Cancel.wav')
 				for(var/obj/HUD/UnLearned_Skill/O in usr.client.screen)	del O
 			return
-		//PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
+		PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
 		usr.client.eye=locate(10,67,2)
 		for(var/O in usr.client.screen)
 			if(!istype(O,/obj/Items)&&O!=src)	del O
@@ -226,8 +219,8 @@ mob/verb
 		winset(usr,"MainWindow","Size=1024x768;is-maximized=false;pos=0,0")
 	WindowReset(/**/)
 		set hidden=1
-		var/list/Tracks=list("Asterisk","Ichirin No Hana","Life is Like a Boat","Never Meant to Belong","Siam Shade Dreams","Tecnolife","Will of the Heart","Wing Stock Piano","Wing Stock Violin","Sorry")
-		for(var/i=1;i<=10;i+=1)
+		var/list/Tracks=list("Asterisk","Ichirin No Hana","Life is Like a Boat","Never Meant to Belong","Siam Shade Dreams","Tecnolife","Will of the Heart","Wing Stock Piano","Wing Stock Violin")
+		for(var/i=1;i<=9;i+=1)
 			var/ThisTrack=Tracks[i];var/MesTag="<a href='?src=\ref[src];action=PlayTrack;TrackNum=[i]'>"
 			usr<<output("[MesTag][ThisTrack]</a>","OptionsWindow.MusicSelect:1,[i]")
 		winset(usr,"MainWindow.input1","text='Press Enter to Chat'")
@@ -257,45 +250,31 @@ mob/proc/WhoProc(var/list/SortedPlayers)
 		var/list/AllPlayers=list();SortedPlayers=list()
 		for(var/mob/Player/M in world)
 			if(M.client)	AllPlayers+=M
-			if(M.key=="Millamber") AllPlayers-=M
 		while(AllPlayers.len>=1)
 			var/HighestLevel=0;var/ThisMob
 			for(var/mob/M in AllPlayers)
 				if(M.Level>HighestLevel)	{HighestLevel=M.Level;ThisMob=M}
 			AllPlayers-=ThisMob;SortedPlayers+=ThisMob
 	var/LevelSort="<a href='?src=\ref[src];action=SortWho;SortBy=Level'>Level</a>"
-	var/RankSort="<a href='?src=\ref[src];action=SortWho;SortBy=src.guild_rank'>Play Time</a>"
-	var/OOCstat="<a href='?src=\ref[src];action=SortWho;SortBy=src.guild_rank'>GlobalChat</a>"
-	var/SquadRank="<a href='?src=\ref[src];action=SortWho;SortBy=src.Squad'><center>Gotei 13</a>"
+	var/PlayTimeSort="<a href='?src=\ref[src];action=SortWho;SortBy=PlayTime'>Play Time</a>"
 	var/TextList="<html><body bgcolor=black><b><font color=gray>"
 	TextList+="<title>Who List</title>"
 	TextList+="<center><table border=1 bgcolor=black bordercolor=gray>"
-	TextList+="<tr><td colspan=20><center><b><font color=gray>[PlayerCount] Players Online"
+	TextList+="<tr><td colspan=6><center><b><font color=gray>[PlayerCount] Players Online"
 	TextList+="<tr><td><b><font color=gray>Name<td><b><font color=gray>Key"
 	TextList+="<td><b><font color=gray>[LevelSort]<td><b><font color=gray>Class"
-	TextList+="<td colspan=2><b><font color=gray>[SquadRank]"
-	TextList+="<td colspan=2><b><font color=gray>[RankSort]"
-	TextList+="<td colspan=3><b><font color=gray>[OOCstat]"
-	var/Gl="<td align=center><b><font color=gray>"
+	TextList+="<td colspan=2><b><font color=gray>[PlayTimeSort]"
 	var/FM="<td align=right><b><font color=gray>"
 	for(var/mob/M in SortedPlayers)
 		var/Phours=round(M.PlayTime/60/60)
 		var/Pminutes=round(M.PlayTime/60-(60*Phours))
 		var/SubStar=""
-		if(M.Subscriber)	SubStar="* "
-		var/Global=""
-		if(M.Globaloff==1)
-			Global="Off"
-		else
-			Global="On"
+//		if(M.Subscriber)	SubStar="* "
 		//var/Pseconds=round(M.PlayTime-(60*Pminutes)-(60*Phours*60))
 		TextList+="<tr><td><b><font color=gray><a href='?src=\ref[src];CheckPlayer=\ref[M]'>[M.name]"
 		TextList+="<td><b><font color=gray>[SubStar][M.key]"
 		TextList+="<td><b><font color=gray><center>[M.Level]<td><b><font color=gray>[M.Class]"
-		TextList+="<td><b><font color=gray><center>Squad [M.Squad] [M.Squadrank]"
-		TextList+="<td><b>[FM][Phours]h[FM][Pminutes]m"
-		TextList+="<td><b>[Gl][Global]"
-	TextList+="<tr><td colspan=20><b><font color=gray><center>[SortedPlayers.len] Players Online"
+		TextList+="[FM][Phours]h[FM][Pminutes]m"
+	TextList+="<tr><td colspan=6><b><font color=gray><center>[SortedPlayers.len] Players Online"
 	usr<<browse("[TextList]","window=WhoBrowser")
 	winset(usr,"WhoWindow","is-visible=true")
-

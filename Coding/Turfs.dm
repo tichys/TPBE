@@ -47,7 +47,7 @@ turf
 		Door
 			Entered(mob/M)
 				if(ismob(M) && M.client)
-					sleep(8);if(!M)	return
+					if(!M)	return
 					if(M.loc==src)
 						M.loc=locate(src.newx,src.newy,src.newz)
 						if(src.newdir)	M.dir=src.newdir
@@ -61,19 +61,115 @@ turf
 					M.loc=locate(src.newx,src.newy,src.newz)
 					if(src.newdir)	M.dir=src.newdir
 					M.SetRespawn();M.TutLevel=5
-		Door2
-			Entered(mob/M)
-				if(ismob(M) && M.client)
-					sleep(8);if(!M)	return
-					if(M.Level >=200)
-						if(M.loc==src)
-							M.loc=locate(100,14,15)
-							if(src.newdir)	M.dir=src.newdir
-					else
-						if(M.loc==src)
-							M.loc=locate(src.newx,src.newy,src.newz)
-							if(src.newdir)	M.dir=src.newdir
+
+
+
+
+
+
+
+/*
+obj
+	var/Level2Add
+	SpawnerTwo
+		Level2Add = 3
+
+/*
+	Just made this obsolete
+		bound_x= -64	//Start Bound box.x 1 tile to the left
+		bound_y= -64	//Start Bound box.y 1 tile to the south
+		bound_height=128	//End Bound box.x 96 from begining so about 3 tiles
+		bound_width=128	//End Bound box.y 96 from begining so about 3 tiles
+
+			[]	[]	[]	[]	[]<TR
+			[]	[]	[]	[]	[]
+			[]	[]	[]	[]	[]
+			[]	[]	[]	[]	[]
+		BL>	[]	[]	[]	[]	[]
+*/
+
+		New()
+			SearchLoop()
+*/
 area
+	monsterspawn
+		layer = 10
+
+
+obj
+	Spawners
+		New()
+			Spawnmonster()
+		var/mob/Enemy
+		proc
+			Spawnmonster()
+				new Enemy(src)
+				Enemy.loc=src.loc
+				..()
+		Level3
+			Enemy = new/mob/Enemy/Hollows/Flyte
+		Level4
+			Enemy = new/mob/Enemy/Hollows/Pounder
+		Level6
+			Enemy = new/mob/Enemy/Hollows/Flying_Hollow
+		Level7
+			Enemy = new/mob/Enemy/Hollows/Ground_Hollow
+		Level9
+			Enemy = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+		Level12
+			Enemy = new/mob/Enemy/Hollows/Spyder
+		Level15
+			Enemy = new/mob/Enemy/Hollows/Mantaur
+		Level18
+			Enemy = new/mob/Enemy/Hollows/Treezer
+		Level21
+			Enemy = new/mob/Enemy/Hollows/Slithar
+		Level24
+			Enemy = new/mob/Enemy/Hollows/Sea_Spine
+		Level27
+			Enemy = new/mob/Enemy/Hollows/Spire_Gull
+		Level30
+			Enemy = new/mob/Enemy/Hollows/Tadite
+		Level33
+			Enemy = new/mob/Enemy/Hollows/Frogling
+		Level36
+			Enemy = new/mob/Enemy/Hollows/Wulf
+		Level39
+			Enemy = new/mob/Enemy/Hollows/Howler
+		Level42
+			Enemy = new/mob/Enemy/Hollows/Growler
+		Level45
+			Enemy = new/mob/Enemy/Hollows/Squishy
+		Level48
+			Enemy = new/mob/Enemy/Hollows/Gator
+		Level51
+			Enemy = new/mob/Enemy/Hollows/Ratt
+		Level54
+			Enemy = new/mob/Enemy/Hollows/Forest_Bat
+		Level57
+			Enemy = new/mob/Enemy/Hollows/Forest_Spider
+		Level60
+			Enemy = new/mob/Enemy/Hollows/Gekko
+		Level63
+			Enemy = new/mob/Enemy/Hollows/Giant_Lizard
+		Level66
+			Enemy = new/mob/Enemy/Hollows/Lost_Hobo
+		Level69
+			Enemy = new/mob/Enemy/Hollows/Walking_Corpse
+		Level72
+			Enemy = new/mob/Enemy/Hollows/Skeleton_Brute
+		Level75
+			Enemy = new/mob/Enemy/Hollows/Skeletal_Knight
+		Level78
+			Enemy = new/mob/Enemy/Hollows/Goblin
+
+
+
+area
+	var
+		Level
+		list/Count=list()
+		list/Create=list()
 	DenseOpacity
 		icon='turfs.dmi'
 		icon_state="Black"
@@ -92,6 +188,298 @@ area
 		icon='Lava.dmi';icon_state="RedGlow"
 		New()
 			src.layer=9.1;return ..()
+
+	BossSpawner
+		Level = 45
+		layer=10
+		New()
+			BossSearchLoop()
+		Entered()
+			QuestShow(usr,"You Entered Boss Area Lv.[src.Level]")
+
+	Spawner
+		Level = 3
+		layer=10
+		New()
+
+			SearchLoop()
+		Entered()
+			QuestShow(usr,"You Entered Lv.[src.Level] Area")
+
+
+
+
+	BossEventSpawner
+		Level = 1
+		layer=10
+		New()
+			BESLoop()
+		Entered()
+			QuestShow(usr,"You Entered Boss Event")
+
+
+
+
+
+	proc
+
+		SearchLoop()
+			for(var/mob/Player/M in view(src))
+				SpawnCheck()
+			spawn(300)
+				SearchLoop()
+/*
+			for(var/area/Spawner/S in src.loc)
+				for(var/mob/Player/M in S.loc)
+					EnteredCheck(M)
+*/
+
+		BossSearchLoop()
+			for(var/area/BossSpawner/S in view(src))
+				for(var/mob/Player/M in S)
+					BossEnteredCheck(M)
+			spawn(300)	BossSearchLoop()
+
+
+		BESLoop()
+			for(var/area/BossEventSpawner/BES in view(src))
+				for(var/mob/Player/M in BES)
+					BossEventStart(M)
+			for(var/mob/Enemy/Bosses/B in view(9,src))
+				B.Level +=100
+				B.LevelShift()
+				B.AddName()
+				B.AddLevel(" ([B.Level])")
+			spawn(50)	BESLoop()
+
+
+
+
+
+
+		BossEventStart(var/mob/Player/M,var/mob/Enemy/Bosses/F)
+			F = pick(new/mob/Enemy/Bosses/Frawg,new/mob/Enemy/Bosses/Urahara,new/mob/Enemy/Bosses/Roach_Lord,new/mob/Enemy/Bosses/Phoenix,new/mob/Enemy/Bosses/Ice_Golem,new/mob/Enemy/Bosses/Kenyan_Mangrove_Crab,new/mob/Enemy/Bosses/Inner_Hollow,new/mob/Enemy/Bosses/Zanpakuto_Spirit,new/mob/Enemy/Bosses/Aizen)
+			F.BEStart = 1
+			F.loc=M.loc
+			step(F,pick(1,2,4,8))
+			spawn(300)	del F
+			return
+
+
+
+
+
+		BossEnteredCheck(var/mob/Player/M,var/mob/Enemy/Bosses/F)
+			//spawn(rand(20,30))
+			if(M.key)
+				if(src.Level==3)
+					F = pick(new/mob/Enemy/Bosses/Frawg)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(300)	del F
+					return
+
+
+
+
+
+
+
+		SpawnCheck()
+			var/mob/Enemy/F
+			var/mob/Enemy/G
+			var/mob/Enemy/H
+			var/mob/Enemy/I
+			var/mob/Enemy/J
+			if(src.Level==3)
+				F = pick(new/mob/Enemy/Hollows/Flyte,new/mob/Enemy/Hollows/Pounder)
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==6)
+				F = pick(new/mob/Enemy/Hollows/Flying_Hollow,new/mob/Enemy/Hollows/Ground_Hollow)
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==9)
+				F = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==12)
+				F = new/mob/Enemy/Hollows/Spyder
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+				return
+			if(src.Level==15)
+				F = new/mob/Enemy/Hollows/Mantaur
+				F.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				G = new/mob/Enemy/Hollows/Mantaur
+				G.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				H = new/mob/Enemy/Hollows/Mantaur
+				H.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				I = new/mob/Enemy/Hollows/Mantaur
+				I.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+				J = new/mob/Enemy/Hollows/Mantaur
+				J.loc=locate(src.x+rand(-2,2),src.y+rand(-2,2),src.z)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		EnteredCheck(var/mob/Player/M,var/mob/Enemy/F)
+			//spawn(rand(20,30))
+			if(M.key)
+				if(src.Level==3)
+					F = pick(new/mob/Enemy/Hollows/Flyte,new/mob/Enemy/Hollows/Pounder)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(200)	del F
+					return
+				if(src.Level==6)
+					F = pick(new/mob/Enemy/Hollows/Flying_Hollow,new/mob/Enemy/Hollows/Ground_Hollow)
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					if(F.loc==M.loc)
+						step(F,pick(1,2,4,8))
+					spawn(200)	del F
+					return
+				if(src.Level==9)
+					F = new/mob/Enemy/Soul_Reapers/Students/First_Year_Student
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==12)
+					F = new/mob/Enemy/Hollows/Spyder
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==15)
+					F = new/mob/Enemy/Hollows/Mantaur
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==18)
+					F = new/mob/Enemy/Hollows/Treezer
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==21)
+					F = new/mob/Enemy/Hollows/Slithar
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==24)
+					F = new/mob/Enemy/Hollows/Sea_Spine
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==27)
+					F = new/mob/Enemy/Hollows/Spire_Gull
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==30)
+					F = new/mob/Enemy/Hollows/Tadite
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==33)
+					F = new/mob/Enemy/Hollows/Frogling
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==36)
+					F = new/mob/Enemy/Hollows/Wulf
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==39)
+					F = new/mob/Enemy/Hollows/Howler
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==42)
+					F = new/mob/Enemy/Hollows/Growler
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==45)
+					F = new/mob/Enemy/Hollows/Squishy
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==48)
+					F = new/mob/Enemy/Hollows/Gator
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==51)
+					F = new/mob/Enemy/Hollows/Ratt
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==54)
+					F = new/mob/Enemy/Hollows/Forest_Bat
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==57)
+					F = new/mob/Enemy/Hollows/Forest_Spider
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==60)
+					F = new/mob/Enemy/Hollows/Gekko
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==63)
+					F = new/mob/Enemy/Hollows/Giant_Lizard
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==66)
+					F = new/mob/Enemy/Hollows/Lost_Hobo
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==69)
+					F = new/mob/Enemy/Hollows/Walking_Corpse
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==72)
+					F = new/mob/Enemy/Hollows/Skeleton_Brute
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==75)
+					F = new/mob/Enemy/Hollows/Skeletal_Knight
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+				if(src.Level==78)
+					F = new/mob/Enemy/Hollows/Goblin
+					F.loc=locate(M.x+rand(-2,2),M.y+rand(-2,2),M.z)
+					spawn(rand(200,300))	del F
+					return
+
+
+
+
+
 
 obj/Decoration
 	icon='Decoration.dmi'
@@ -135,14 +523,12 @@ obj/Decoration
 			icon_state="Table"
 		BigTable
 			icon_state="TableTL"
-
 		Chair
 			density=0;icon_state="ChairT"
 		Crate
 			icon_state="Crate"
 		CrateLoop
 			icon_state="CrateLoopB"
-
 		Barrel
 			icon_state="Barrel"
 		Spears
@@ -202,62 +588,7 @@ obj/Decoration
 			icon_state="JunkPile"
 		Pot
 			icon_state="Pot"
-	Royal_Interior
-		icon='RoyalInt.dmi'
 
-		Royal_C
-			icon_state="11"
-			density=0
-		Piano
-			icon_state="1"
-			density=0
-		Chair
-			icon_state="12"
-			density=0
-		Chair2
-			icon_state="13"
-			density=0
-		Chair3
-			icon_state="14"
-			density=0
-		Chair4
-			icon_state="15"
-			density=0
-
-	SpecialDecor
-		icon='1 Special S,L turfs.dmi'
-
-		Chair
-			icon_state="31"
-			density=0
-		Chair2
-			icon_state="32"
-			density=0
-		Chair3
-			icon_state="33"
-			density=0
-		Chair4
-			icon_state="34"
-			density=0
-		throne1
-			icon_state="28"
-			density=1
-		throne2
-			icon_state="29"
-			density=1
-		throne3
-			icon_state="30"
-			density=0
-
-	SpecialDecor2
-		icon='2 Special S,L turfs.dmi'
-
-		Piano
-			icon_state="1"
-			density=0
-		Throne
-			icon_state="11"
-			density=0
 
 turf
 	icon='Turfs.dmi'
@@ -316,7 +647,7 @@ turf
 		Dirt
 			icon_state="Dirt"
 		Bridge
-			icon='Bridge.dmi'
+			icon='Bridge2.dmi'
 			icon_state="M"
 		WaterCliff
 			density=1
@@ -350,433 +681,6 @@ turf
 			icon_state="1"
 			density=0
 			layer=9
-
-	AASpecialSlicons6
-		icon='6 Special S,L turfs.dmi'
-		lavafall1
-			icon_state="1"
-			density=1
-	AASpecialSlicons5
-		icon='5 Special S,L turfs.dmi'
-		lavapit
-			icon_state="1"
-			density=1
-		biglava1
-			icon_state="2"
-			density=1
-		biglava2
-			icon_state="3"
-			density=1
-		biglava3
-			icon_state="4"
-			density=1
-		biglava4
-			icon_state="5"
-			density=1
-	AASpecialSlicons4
-		icon='4 Special S,L turfs.dmi'
-		house1
-			icon_state="1"
-			density=0
-			layer=15
-		house2
-			icon_state="2"
-			density=0
-			layer=15
-		house3
-			icon_state="3"
-			density=0
-			layer=15
-	AASpecialSlicons3
-		icon='3 Special S,L turfs.dmi'
-		tree
-			icon_state="1"
-			density=0
-			layer=9
-		cbench
-			icon_state="2"
-			density=0
-		well
-			icon_state="3"
-			density=0
-			layer=10
-	AASpecialSlicons2
-		icon='2 Special S,L turfs.dmi'
-		piano
-			icon_state="1"
-			density=1
-		flag
-			icon_state="2"
-			density=0
-		gold
-			icon_state="3"
-			density=1
-		cross
-			icon_state="4"
-			density=1
-		ctable
-			icon_state="5"
-			density=1
-		cbench
-			icon_state="6"
-			density=0
-		cwindow
-			icon_state="7"
-			density=1
-		pilar
-			icon_state="8"
-			density=1
-		coffin
-			icon_state="9"
-			density=1
-		Magic_circle
-			icon_state="10"
-			density=0
-		Royal_C
-			icon_state="11"
-			density=0
-	AASpecialSlicons
-		icon='1 Special S,L turfs.dmi'
-		carp1
-			icon_state="1"
-			density=0
-		carp2
-			icon_state="2"
-			density=0
-		carp3
-			icon_state="3"
-			density=0
-		carp4
-			icon_state="4"
-			density=0
-		flo1
-			icon_state="5"
-			density=0
-		carp5
-			icon_state="6"
-			density=0
-		carp6
-			icon_state="7"
-			density=0
-		carp7
-			icon_state="8"
-			density=0
-		carp8
-			icon_state="9"
-			density=0
-		carp9
-			icon_state="10"
-			density=0
-		wall1
-			icon_state="11"
-			density=1
-		stair1
-			icon_state="12"
-		wall2
-			icon_state="13"
-			density=1
-		wall3
-			icon_state="14"
-			density=1
-		stair2
-			icon_state="15"
-			density=0
-		stair3
-			icon_state="16"
-			density=0
-		stair4
-			icon_state="17"
-			density=0
-		wall4
-			icon_state="18"
-			density=1
-		wall5
-			icon_state="19"
-			density=1
-		wall6
-			icon_state="20"
-			density=1
-		wall7
-			icon_state="21"
-			density=1
-		wall8
-			icon_state="22"
-			density=1
-		wall9
-			icon_state="23"
-			density=1
-		wall10
-			icon_state="24"
-			density=1
-		wall11
-			icon_state="25"
-			density=1
-		knight_head
-			icon_state="26"
-			density=1
-		knight_body
-			icon_state="27"
-			density=1
-		trone_up
-			icon_state="28"
-			density=1
-		trone_mid
-			icon_state="29"
-			density=1
-		trone_down
-			icon_state="30"
-			density=0
-		chair1
-			icon_state="31"
-			density=0
-		chair2
-			icon_state="32"
-			density=0
-		chair3
-			icon_state="33"
-			density=0
-		chair4
-			icon_state="34"
-			density=0
-		table1
-			icon_state="35"
-			density=1
-		table2
-			icon_state="36"
-			density=1
-		table3
-			icon_state="37"
-			density=1
-		table4
-			icon_state="38"
-			density=1
-		table5
-			icon_state="39"
-			density=1
-		table6
-			icon_state="40"
-			density=1
-		table7
-			icon_state="41"
-			density=1
-		table8
-			icon_state="42"
-			density=1
-		table9
-			icon_state="43"
-			density=1
-		gold1
-			icon_state="44"
-			density=0
-		cwall1
-			icon_state="45"
-			density=1
-		cwall2
-			icon_state="46"
-			density=1
-		cwall3
-			icon_state="47"
-			density=1
-		cwall4
-			icon_state="48"
-			density=1
-		cwall5
-			icon_state="49"
-			density=1
-		cwall6
-			icon_state="50"
-			density=1
-		cwall7
-			icon_state="51"
-			density=1
-		cwall8
-			icon_state="52"
-			density=1
-		cwall9
-			icon_state="53"
-			density=1
-		ccarp1
-			icon_state="54"
-			density=0
-		ccarp2
-			icon_state="55"
-			density=0
-		ccarp3
-			icon_state="56"
-			density=0
-		ccarp4
-			icon_state="57"
-			density=0
-		ccarp5
-			icon_state="58"
-			density=0
-		ccarp6
-			icon_state="59"
-			density=0
-		ccarp7
-			icon_state="60"
-			density=0
-		ccarp8
-			icon_state="61"
-			density=0
-		ccarp9
-			icon_state="62"
-			density=0
-		cflo1
-			icon_state="63"
-			density=0
-		lavafloor1
-			icon_state="64"
-			density=0
-		lavafloor2
-			icon_state="65"
-			density=0
-		lavafloor3
-			icon_state="66"
-			density=0
-		lavafloor4
-			icon_state="67"
-			density=0
-		lavafloor5
-			icon_state="68"
-			density=0
-		lavafloor6
-			icon_state="70"
-			density=0
-		C1
-			icon_state="108"
-			density=0
-		C2
-			icon_state="109"
-			density=0
-		C3
-			icon_state="110"
-			density=0
-		C4
-			icon_state="111"
-			density=0
-		C5
-			icon_state="112"
-			density=0
-		C6
-			icon_state="113"
-			density=0
-
-	Creepy
-		icon='1 Special S,L turfs.dmi'
-		CrFloor1
-			icon_state="71"
-			density=1
-		CrFloor2
-			icon_state="72"
-			density=1
-		CrFloor3
-			icon_state="73"
-			density=0
-		CrFloor4
-			icon_state="74"
-			density=0
-		CrFloor5
-			icon_state="75"
-			density=1
-		CrFloor6
-			icon_state="76"
-			density=1
-		CrFloor7
-			icon_state="77"
-			density=1
-		CrFloor8
-			icon_state="78"
-			density=1
-		CrFloor9
-			icon_state="79"
-			density=1
-		CrFloor10
-			icon_state="80"
-			density=1
-		CrFloor11
-			icon_state="81"
-			density=1
-		CrFloor12
-			icon_state="82"
-			density=1
-		CrFloor13
-			icon_state="83"
-			density=1
-		CrFloor14
-			icon_state="104"
-			density=1
-		CrFloor15
-			icon_state="105"
-			density=1
-		CrFloor16
-			icon_state="106"
-			density=1
-		CrFloor17
-			icon_state="107"
-			density=1
-		CrWall1
-			icon_state="84"
-			density=1
-		CrWall2
-			icon_state="85"
-			density=1
-		CrWall3
-			icon_state="86"
-			density=1
-		CrWall4
-			icon_state="87"
-			density=1
-		CrWall6
-			icon_state="88"
-			density=1
-		CrWall7
-			icon_state="89"
-			density=1
-		CrWall8
-			icon_state="90"
-			density=1
-		CrWall9
-			icon_state="91"
-			density=1
-		CrWall10
-			icon_state="92"
-			density=1
-		CrWall11
-			icon_state="93"
-			density=1
-		CrWall12
-			icon_state="94"
-			density=1
-		CrWall13
-			icon_state="95"
-			density=1
-		CrWall14
-			icon_state="96"
-			density=1
-		CrWall15
-			icon_state="97"
-			density=1
-		CrWall16
-			icon_state="98"
-			density=1
-		CrWall17
-			icon_state="99"
-			density=1
-		CrWall18
-			icon_state="100"
-			density=1
-		CrWall19
-			icon_state="101"
-			density=1
-		CrWall20
-			icon_state="102"
-			density=1
-		CrWall21
-			icon_state="103"
-			density=1
-
-
 	Arena
 		icon='Arena.dmi'
 		Wall
@@ -886,6 +790,114 @@ turf
 					else
 						spawn()
 							ShowText(M,"You Must Complete the Tutorial Before Moving Forward!");return
+
+		HighLevelOne
+			TutLevel=250
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelTwo
+			TutLevel=300
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelThree
+			TutLevel=400
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelFour
+			TutLevel=600
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelFive
+			TutLevel=850
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelSix
+			TutLevel=1150
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+		HighLevelSeven
+			TutLevel=1400
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelEight
+			TutLevel=1800
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelNine
+			TutLevel=2300
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelTen
+			TutLevel=3000
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+		HighLevelEleven
+			TutLevel=5000
+			Enter(var/mob/M)
+				if(ismob(M))
+					if(M.Level>=src.TutLevel)	return 1
+					else
+						spawn()
+							ShowText(M,"You Must Crazy The Enemies Out Here Are [TutLevel]+!");return
+
+
+
 		Entered(var/mob/M)
 			if(ismob(M))
 				ShowEffect(src,'Effects.dmi',"BodyRing",src,5,0)

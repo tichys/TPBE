@@ -28,7 +28,6 @@ mob/proc/CancelMovement()
 
 mob/proc/MovementLoop()
 	if(src.Moving)	return
-	if("Petal Stream" in src.ToggledSkills)	src.Petal_Stream_Release()
 	else	src.Moving=1
 	walk(src,0)
 	var/FirstStep=1

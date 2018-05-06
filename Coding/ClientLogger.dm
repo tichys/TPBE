@@ -22,7 +22,6 @@ proc/LoadClientLog()
 
 world/New()
 	LoadClientLog()
-	loadSecurity()
 	return ..()
 
 mob/proc/LogClient()
@@ -31,5 +30,5 @@ mob/proc/LogClient()
 	var/LogMsg="<td>[src.key]<td>[src.client.address]<td>[src.client.computer_id]"
 	if(!findtext(ClientLog,LogMsg,1,0))
 		ClientLogCount+=1
-		ClientLog+="<tr><td>[ClientLogCount][LogMsg][time2text(world.realtime)]\n"
+		ClientLog+="<tr><td>[ClientLogCount][LogMsg]\n"
 		SaveClientLog()

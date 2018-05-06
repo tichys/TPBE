@@ -15,14 +15,11 @@ obj/HUD/Inventory
 		screen_loc="6:7,13:-10"
 		icon='Main.dmi';icon_state="Gold"
 	SilverIcon
-		screen_loc="8:7,13:-10"
+		screen_loc="7:23,13:-10"
 		icon='Main.dmi';icon_state="Silver"
 	CopperIcon
 		screen_loc="9:7,13:-10"
 		icon='Main.dmi';icon_state="Copper"
-	PlatIcon
-		screen_loc="11:7,13:-10"
-		icon='Main.dmi';icon_state="Platinum"
 	InvTL
 		screen_loc="6,13"
 		icon='HUD.dmi';icon_state="InvTL"
@@ -67,65 +64,16 @@ mob/proc/GetItem(var/obj/Items/O)
 				src.CollectCheck(O);Received+=ThisStack
 				O.CurStack-=ThisStack;O.UpdateCount()
 				PlaySoundEffect(src,'Menu.wav')
-				if(src.onscreen == 0)
-					QuestShow(src,"[O.name] x[ThisStack] Acquired")
+				QuestShow(src,"[O.name] x[ThisStack] Acquired")
 				if(O.CurStack<=0)	{del	O;return Received}
 	for(var/i=1;i<=45;i++)
-		if(!src.Subscriber &&i>25)
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
-		//	QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
-		if(src.Subscriber&&i>=45)
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
+		if(i>45)
+			QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
 		if(!src.Inventory[i])
 			Received+=O.CurStack
 			src.CollectCheck(O);src.Inventory[i]=O
 			PlaySoundEffect(src,'Menu.wav')
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Acquired")
-			if(src.InventoryOpen)	src.DisplayInventory()
-			return Received
-	return Received
-
-mob/proc/GetItem2(var/obj/Items/O)
-	var/Received=0
-	for(var/obj/Items/I in src.Inventory)
-		if(I.type==O.type)
-			if(I.Unique)
-				QuestShow(src,"You can only carry 1 of these at a time");return Received
-			if(I.CurStack<I.MaxStack)
-				var/FullStack=I.MaxStack-I.CurStack
-				var/ThisStack=min(FullStack,O.CurStack)
-				I.CurStack+=ThisStack;I.UpdateCount()
-				src.CollectCheck(O);Received+=ThisStack
-				O.CurStack-=ThisStack;O.UpdateCount()
-				PlaySoundEffect(src,'Menu.wav')
-				if(src.onscreen == 0)
-					QuestShow(src,"[O.name] x[ThisStack] Acquired")
-				if(O.CurStack<=0)	{del	O;return Received}
-	for(var/i=1;i<=45;i++)
-		if(!src.Subscriber &&i>25)
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Inventory Full; Item Banked");src.bank.DepositItem2(new O.type)
-				return Received
-			else
-				QuestShow(src,"[O.name] x[O.CurStack] Inventory Full; Item Banked");src.bank.DepositItem2(new O.type)
-				return Received
-		//	QuestShow(src,"[O.name] x[O.CurStack] Lost; Inventory Full");return Received
-		if(src.Subscriber&&i>45)
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Inventory Full; Item Banked");src.bank.DepositItem2(new O.type)
-				return Received
-			else
-				QuestShow(src,"[O.name] x[O.CurStack] Inventory Full; Item Banked");src.bank.DepositItem2(new O.type)
-				return Received
-		if(!src.Inventory[i])
-			Received+=O.CurStack
-			src.CollectCheck(O);src.Inventory[i]=O
-			PlaySoundEffect(src,'Menu.wav')
-			if(src.onscreen == 0)
-				QuestShow(src,"[O.name] x[O.CurStack] Acquired")
+			QuestShow(src,"[O.name] x[O.CurStack] Acquired")
 			if(src.InventoryOpen)	src.DisplayInventory()
 			return Received
 	return Received
@@ -162,17 +110,12 @@ mob/proc/BasicInventory()
 	src.client.screen+=new/obj/HUD/Inventory/GoldIcon
 	src.client.screen+=new/obj/HUD/Inventory/SilverIcon
 	src.client.screen+=new/obj/HUD/Inventory/CopperIcon
-	src.client.screen+=new/obj/HUD/Inventory/PlatIcon
-	src.WriteLine(6,17,13,2,"InventoryMsg","[num2text(round(src.Gold),1000000)]",0)
-	src.WriteLine(8,1,13,2,"InventoryMsg","[round(src.Silver)]",0)
-	src.WriteLine(9,17,13,2,"InventoryMsg","[round(src.Copper)]",0)
-	src.WriteLine(11,17,13,2,"InventoryMsg","[round(src.Platinum)]",0)
+	src.WriteLine(6,17,13,2,"InventoryMsg","[src.Gold]",0)
+	src.WriteLine(8,1,13,2,"InventoryMsg","[src.Silver]",0)
+	src.WriteLine(9,17,13,2,"InventoryMsg","[src.Copper]",0)
 
 mob/proc/DisplayShop(var/obj/NPC/Shops/ShopKeep)
 	if(src.client.eye!=src)	return
-	if(src.trading==1)
-		QuestShow(src,"Can not shop during Auction")
-		return
 	src.ClearInventory()
 	src.InventoryOpen=1
 	src.Shopping=ShopKeep
@@ -192,9 +135,6 @@ mob/proc/DisplayShop(var/obj/NPC/Shops/ShopKeep)
 
 mob/proc/DisplaySell(var/obj/NPC/Shops/ShopKeep)
 	if(src.client.eye!=src)	return
-	if(src.trading==1)
-		QuestShow(src,"Can not shop during Auction")
-		return
 	src.ClearInventory()
 	src.InventoryOpen=1
 	src.Selling=ShopKeep
@@ -205,19 +145,16 @@ mob/proc/DisplaySell(var/obj/NPC/Shops/ShopKeep)
 		for(var/ny=12,ny>=8,ny--)
 			var/obj/HUD/Inventory/ItemBG/I=new()
 			counter+=1;I.InvSlot=counter
-			if(I.InvSlot>25 &&!src.Subscriber)	I.icon_state="LockedItemBG"
+			if(I.InvSlot>25)	I.icon_state="LockedItemBG"
 			I.ScreenX=nx;I.ScreenY=ny
 			I.screen_loc="[nx],[ny]";src.client.screen+=I
-			if(src.Inventory[I.InvSlot])
+			if(usr.Inventory[I.InvSlot])
 				var/obj/Items/O=src.Inventory[I.InvSlot];O.InvSlot=I.InvSlot
 				O.screen_loc="[nx],[ny]";src.client.screen+=O
 				O.ScreenX=nx;O.ScreenY=ny
 
 mob/proc/DisplayInventory(/**/)
 	if(src.client.eye!=src || src.Chatting)	return
-	if(src.z==13)
-		src <<"Can not open inventory whilst in a Tournament"
-		return
 	if(src.Selling)	{src.DisplaySell(src.Selling);return}
 	if(src.Shopping)	{src.DisplayShop(src.Shopping);return}
 	src.ClearInventory()
@@ -243,7 +180,7 @@ mob/proc/DisplayInventory(/**/)
 		for(var/ny=12,ny>=8,ny--)
 			var/obj/HUD/Inventory/ItemBG/I=new()
 			counter+=1;I.InvSlot=counter
-			if(I.InvSlot>25 &&!src.Subscriber)	I.icon_state="LockedItemBG"
+			//if(I.InvSlot>25)	I.icon_state="LockedItemBG"
 			I.ScreenX=nx;I.ScreenY=ny
 			I.screen_loc="[nx],[ny]";src.client.screen+=I
 			if(src.Inventory[I.InvSlot])

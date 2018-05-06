@@ -83,7 +83,7 @@ obj
 			screen_loc="15,18 to 18,18"
 			Click()
 				PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
-				usr<<link("http://ichirin.freeforums.org/index.php")
+				usr<<link("http://www.byond.com/members/Falacy/forum")
 		Class_Display
 			icon='NewHUD.dmi'
 			screen_loc="4,19"
@@ -226,7 +226,7 @@ obj
 			PVP_Toggle
 				icon_state="PVP"
 				Click()
-					if(usr.PVPWait>0 || usr.tourny==1 || WorldPVP == 1 || usr.jailed == 1)
+					if(usr.PVPWait>0)
 						QuestShow(usr,"Cannot Toggle PVP Yet!");return
 					usr.PVP=!usr.PVP
 					usr.PVPWait=10
@@ -256,7 +256,7 @@ obj
 				Click()
 					if(usr.LastClicked && (usr.LastClicked in usr.Pets))
 						var/mob/ThisClicked=usr.LastClicked
-						ThisClicked.name=copytext(sd.ProcessHTML(input("Input the new name for your pet:","Change Pet Name",ThisClicked.name)as text),1,25)
+						ThisClicked.name=copytext(html_encode(input("Input the new name for your pet:","Change Pet Name",ThisClicked.name)as text),1,25)
 						if(ThisClicked)	ThisClicked.AddName()
 					if(usr)	usr.ClearCharOptions()
 			Duel
@@ -264,7 +264,6 @@ obj
 				Click()
 					if(usr.LastClicked)
 						var/mob/M=usr.LastClicked
-						if(M.jailed==1)	{QuestShow(usr,"You may not duel while Jailed");goto ClearSpot}
 						if(M.PendingRequest)	{QuestShow(usr,"[M] already Pending an Invite");goto ClearSpot}
 						if(M.Chatting)	{QuestShow(usr,"[M] is not Currently Available");goto ClearSpot}
 						if(M.PVPingAgainst)	{QuestShow(usr,"[M] is Dueling [M.PVPingAgainst]");goto ClearSpot}
@@ -283,12 +282,6 @@ obj
 				Click()
 					if(!usr.LastClicked)	return
 					usr.CheckPlayer(usr.LastClicked)
-					usr.ClearCharOptions()
-			Inspect
-				icon_state="Look"
-				Click()
-					if(!usr.LastClicked)	return
-					usr.InspectPlayer(usr.LastClicked)
 					usr.ClearCharOptions()
 			Kick
 				icon_state="Kick"
@@ -350,12 +343,10 @@ obj
 					if(usr.BankaiSkills.len>0)
 						OtherCats+=1;usr.client.screen+=new/obj/HUD/SkillListTypes/SpecialSkillList(OtherCats,usr.BankaiSkills,"BankaiBut")
 						usr.WriteLine(14,1,17-OtherCats,11,"SkillNames","Bankai Skills",0)
-					if(usr.VaizardSkills.len>0)
-						OtherCats+=1;usr.client.screen+=new/obj/HUD/SkillListTypes/SpecialSkillList(OtherCats,usr.VaizardSkills,"VaizardBut")
-						usr.WriteLine(14,1,17-OtherCats,11,"SkillNames","Vaizard Skills",0)
 					if(usr.FinalFormSkills.len>0)
 						OtherCats+=1;usr.client.screen+=new/obj/HUD/SkillListTypes/SpecialSkillList(OtherCats,usr.FinalFormSkills,"FinalFormBut")
 						usr.WriteLine(14,1,17-OtherCats,11,"SkillNames","Final Form Skills",0)
+
 					src.icon_state="Selecting Skill"
 					usr.client.screen+=new/obj/HUD/SkillListTypes/SkillList
 					usr.WriteLine(14,1,17,11,"SkillNames","Skills",0)
@@ -376,7 +367,6 @@ obj
 					for(var/obj/Skills/S in usr.Skills)
 						if(S in usr.ShikaiSkills)	continue
 						if(S in usr.BankaiSkills)	continue
-						if(S in usr.VaizardSkills)	continue
 						if(S in usr.FinalFormSkills)	continue
 						if(S.SkillType=="Attack"||S.SkillType=="Active"||S.SkillType=="Support")
 							usr.client.screen+=new/obj/HUD/Skill_Display(ypos,initial(S.name),S.icon)
@@ -470,7 +460,6 @@ obj
 			icon_state="WorldMap"
 			screen_loc="19,19"
 			Click()
-				//QuestShow(usr,"Maps Temporarily Disabled");return
 				if(usr.InventoryOpen)	usr.ClearInventory()
 				usr.ViewMap()
 		Mail_System
@@ -484,9 +473,6 @@ obj
 			screen_loc="19,18"
 			Click()
 				PlayMenuSound(usr,'menu.wav')
-				if(usr.trading==1)
-					usr<<"<b><font color=red>Wait until you have finished trading!"
-					return
 				if(usr.InventoryOpen)	usr.ClearInventory()
 				else	usr.DisplayInventory()
 		ExpOrb
@@ -495,22 +481,15 @@ obj
 			screen_loc="5,19"
 			layer=19
 			Click()
-				if(usr.checked ==1)
-					usr <<"<b>You much wait before clicking the ExpOrb again!"
-					return
 				var/HtmlText="<title>Exp Log</title><body bgcolor=black>"
 				HtmlText+="<center><table bgcolor=black bordercolor=yellow border=1>"
 				HtmlText+="<tr><td><center><b><font color=green>"
-				//HtmlText+="[num2text(round(usr.Exp),1000000000)] / [num2text(round(usr.Nexp),1000000000)]<br>"
-				HtmlText+="[round(usr.Exp/usr.Nexp*100)]% EXP | [num2text(round(usr.Nexp-usr.Exp),10000000000)] TNL<br>"
-				/*for(var/x in usr.ExpLog)
-					HtmlText+="<tr><td><b><font color=green>[x]"*/
-				HtmlText+="SQUAD EXP: [num2text(round(usr.Squadexp),1000)] of [num2text(round(usr.Squadnexp),1000)] "
+				HtmlText+="[usr.Exp] / [usr.Nexp]<br>"
+				HtmlText+="[round(usr.Exp/usr.Nexp*100)]% EXP | [usr.Nexp-usr.Exp] TNL"
+				for(var/x in usr.ExpLog)
+					HtmlText+="<tr><td><b><font color=green>[x]"
 				HtmlText+="</table>"
 				usr<<browse(HtmlText,"window=GenericBrowser")
-				usr.checked=1
-				sleep(300)
-				usr.checked=0
 		QuestOrb
 			icon='NewHUD.dmi'
 			icon_state="QuestOrb"
@@ -534,10 +513,8 @@ obj
 					usr.HUD()
 					return
 				if(usr.RegenWait>=0)	{QuestShow(usr,"Cannot Access During Combat");return}
-				if(usr.invisibility==1)	{QuestShow(usr,"You must remove any item that renders you invisible.");return}
 				if(usr.PVP)	{QuestShow(usr,"Cannot Access During PVP");return}
 				if(usr.Arena)	{QuestShow(usr,"Cannot Access Inside Arena");return}
-				if(usr.spectating)	{QuestShow(usr,"Cannot Access while spectating");return}
 				usr.invisibility=1
 				usr.OnLevelScreen=1
 				usr<<browse(null,"window=Quests")
@@ -548,6 +525,8 @@ obj
 				if(usr.Class=="Bount")	usr.client.eye=locate(48,124,2)
 				if(usr.Class=="Quincy")	usr.client.eye=locate(10,29,2)
 				if(usr.Class=="Soul Reaper")	usr.client.eye=locate(29,29,2)
+				if(usr.Class=="Hollow"||usr.Class == "Arrancar")	usr.client.eye=locate(29,143,2)
+			//	if(usr.Class=="Arrancar")	usr.client.eye=locate(10,143,2)
 				usr.LoadSkillTree()
 				if(src in usr.client.screen)	usr.client.screen-=src
 		UnLearned_Skill
@@ -701,6 +680,9 @@ mob/proc/HUD(/**/)
 		for(var/obj/HUD/LevelOrb/O in src.client.screen)
 			O.icon_state="LvlFlash"
 	if(src.Class=="Soul Reaper")
+		src.client.screen+=new/obj/HUD/ComboSysHud(0)
+		src.client.screen+=new/obj/HUD/ComboSysHud
+	if(src.Class=="Hollow")
 		src.client.screen+=new/obj/HUD/ComboSysHud(0)
 		src.client.screen+=new/obj/HUD/ComboSysHud
 	//setup bount hud - pet display

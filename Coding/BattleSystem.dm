@@ -10,18 +10,15 @@ mob/proc
 			if(!src.Shikai && !src.Bankai)	{QuestShow(src,"Shikai to Use this Skill");return}
 		if(Skill2Call in BankaiSkillNames)
 			if(!src.Bankai)	{QuestShow(src,"Bankai to Use this Skill");return}
-		if(Skill2Call in VaizardSkillNames)
-			if(!src.Vaizard)	{QuestShow(src,"Must Be Hollowfied to Use this Skill.");return}
 		if(src.Stunned)	return
 		if(src.Chatting)	return
 		if(src.SkillBeingCharged)	return
 		for(var/obj/O in src.Skills+src.Kidous+src.Spells)
 			if(O.name==Skill2Call)
-				if(O.name!="Petal Stream")
-					if(O:CoolDown)
-						//QuestShow(src,"[O:CoolDown/10] Second CoolDown");return
-						return
-					O:CoolDown=O:MaxCoolDown;break
+				if(O:CoolDown)
+					//QuestShow(src,"[O:CoolDown/10] Second CoolDown");return
+					return
+				O:CoolDown=O:MaxCoolDown-round(O:Level/3.3);break
 		if(src.Target)
 			if(MyGetDist(src,src.Target)<=src.SightRange)
 				if(src.AutoSkillFace)	src.dir=get_dir(src,src.Target)
@@ -43,6 +40,7 @@ mob/verb
 		if(src.Chatting)	return
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(1)
+			if(src.Class=="Hollow")	src.Attack(1)
 			if(src.Class=="Quincy")	src.CreateArrow()
 			if(src.Class=="Bount")
 				for(var/mob/Pets/P in src.Pets)	if(MyGetDist(src,P)<=9)
@@ -52,18 +50,16 @@ mob/verb
 		if(src.Chatting)	return
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(2)
+			if(src.Class=="Hollow")	src.Attack(2)
 			if(src.Class=="Quincy")	src.PullArrow()
 			if(src.Class=="Bount")
-				for(var/mob/Pets/P in src.Pets)
-					if(MyGetDist(src,P)<=9)
-						P.ActivateAI()
+				for(var/mob/Pets/P in src.Pets)	if(MyGetDist(src,P)<=9)
+					P.ActivateAI()
 	HighAttack()
 		set hidden=1
 		src.overlays-=PressF
 		if(src.Chatting)
 			for(var/obj/HUD/OnScreenText/Next/T in src.client.screen)	T.Click(src)
-			return
-		if(OnLevelScreen ==1)
 			return
 		for(var/obj/NPC/N in get_step(src,src.dir))
 			for(var/datum/QuestDatum/D in src.Quests)
@@ -74,11 +70,13 @@ mob/verb
 							src.QuestComplete(D.ExpReward,D.name,D.GoldReward,D.SilverReward,D.CopperReward,D.ItemReward)
 			N.DblClick(src)
 			return
+		for(var/obj/Mining/M in get_step(src,src.dir))
+			M.DblClick(src)
 		if(src.SpiritForm)
 			if(src.Class=="Soul Reaper")	src.Attack(3)
 			if(src.Class=="Quincy")	src.FireArrow()
 			if(src.Class=="Bount")	src.Attack(3)
-
+			if(src.Class=="Hollow")	src.Attack(3)
 	Defend()
 		set hidden=1
 		if(!src.CanBlock())	return
@@ -96,8 +94,6 @@ mob/verb
 	EnterBody()
 		set hidden=1
 		if(!src.SpiritForm)	return
-		if(src.Transforming) return
-		if(src.z==13)	{QuestShow(src,"Cannot be Activated inside the Tournament Arena");return}
 		if(src.icon_state=="CreateArrow"||src.icon_state=="PullArrow")	return
 		src.Revert()
 
@@ -112,19 +108,13 @@ mob/verb
 				src.TargetMob(M)
 	AutoTarget()
 		set hidden=1
-		if(usr.OnLevelScreen == 1)
-			return
 		for(var/mob/Enemy/M in oview(src,src.SightRange))
-			if(M.invisibility>src.see_invisible)
-				return
 			src.TargetMob(null)
 			if(src.AutoTargetFace)	src.dir=get_dir(src,M)
 			src.TargetMob(M);return
 
 mob/proc/FlashAssault(var/mob/M)
 	for(var/obj/Skills/SoulReaper/Flash_Assault/F in src.Skills)
-		if(M.invisibility>src.see_invisible)
-			return
 		if(MyGetDist(src,M)>=2 && MyGetDist(src,M)<=F.Level*2)
 			var/turf/T=get_step(M,get_dir(src,M))
 			if(T && T.Enter(src))
@@ -156,14 +146,13 @@ mob/verb/CancelTarget()
 	if(usr.icon_state=="Stance")	usr.icon_state=""
 
 mob/proc/TargetMob(var/mob/Enemy/M)
-	if("Blood Mist Shield" in src.ToggledSkills)	return
 	if(src.client)	for(var/image/I in src.client.images)	if(I.name=="TargetUnder")	{src.client.images-=I;del I}
 	if(!M)	{src.Target=null;return}
 	if(istype(M,/mob/Enemy))
 		if(istype(src,/mob/Enemy))	return
 		if(!M.StartedBy && M.z!=8)
 			M.TargetMob(src);M.StartedBy=src
-			src.LevelShiftEnemy(M)
+			//src.LevelShiftEnemy(M)
 			spawn(rand(0,5))	if(M)	M.EnemyAI()
 	src.Target=M
 	if(src.client)
@@ -177,10 +166,8 @@ mob/proc/CanBlock()
 	if(!src.SpiritForm)	return
 	if(src.SkillBeingCharged)	return
 	if(src.Class!="Soul Reaper")	return
-	if(src.Zanpakuto && src.Bankai)
-		if(src.Zanpakuto.SpiritType=="Hornet")	return
 	if("Scatter" in src.ToggledSkills)	return
-	if("Blood Mist Shield" in src.ToggledSkills)	return
+	if("Bankai Scatter" in src.ToggledSkills)	return
 	if(!src.CanMove && src.ComboCount<=1)	return
 	return 1
 
@@ -196,27 +183,12 @@ obj/Projectile
 			icon='IceDragon.dmi'
 		FireDragon
 			icon='FireDragon.dmi'
-	Blasts
-		CanonBlast
-			icon='HealingCanon.dmi'
-		FireBeam
-			icon='FireBeast.dmi'
-		SwordBeam
-			icon='GodSpear.dmi'
-		ReikiBlast
-			icon='Benihime.dmi'
-	Ceros
-		Cero
-			icon='Cero.dmi'
-	BalaBlast
-		icon='SkillEffects.dmi'
-		icon_state="Bala"
-	Suzume
-		icon='Hornet.dmi'
-		icon_state="Rocket"
 	FireBall
 		icon='Effects.dmi'
 		icon_state="Red Flame Cannon"
+	Petals
+		icon='Petals.dmi'
+		icon_state="Head"
 	Arrow
 		icon='SkillEffects.dmi'
 		icon_state="Arrow"
@@ -229,12 +201,45 @@ obj/Projectile
 		Black_Getsuga
 			icon='Effects.dmi'
 			icon_state="BlackGetsuga"
-		Fire_Slash_Move
-			icon='FireBeast.dmi'
-			icon_state="FireSlash"
-		Fire_Blast
-			icon='Effects.dmi'
-			icon_state="FireBlast"
+/*		New(var/Nstr,var/Ndist,var/Ndir,var/atom/Nloc,var/Nowner,var/Ncenter)
+			src.Center=Ncenter
+			if(src.Center)	src.icon_state="invis"
+			else
+				if(Ndir==NORTH)
+					var/obj/Projectile/ThreeWide/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_x=32;src.overlays+=OA
+					var/obj/Projectile/ThreeWide/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_x=-32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x+1,Nloc.y,Nloc.z),Nowner,OA)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x-1,Nloc.y,Nloc.z),Nowner,OB)
+					src.Parts=list(A,B)
+				else if(Ndir==SOUTH)
+					var/obj/Projectile/ThreeWide/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_x=-32;src.overlays+=OA
+					var/obj/Projectile/ThreeWide/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_x=32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x-1,Nloc.y,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x+1,Nloc.y,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+				else if(Ndir==EAST)
+					var/obj/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_y=-32;src.overlays+=OA
+					var/obj/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_y=32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y+1,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+				else if (Ndir==WEST)
+					var/obj/OA=new;OA.icon=src.icon;OA.icon_state="[src.icon_state]L";OA.pixel_y=32;src.overlays+=OA
+					var/obj/OB=new;OB.icon=src.icon;OB.icon_state="[src.icon_state]R";OB.pixel_y=-32;src.overlays+=OB
+					var/A=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y+1,Nloc.z),Nowner,src)
+					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
+					src.Parts=list(A,B)
+			return ..(Nstr,Ndist,Ndir,Nloc,Nowner)
+
+*/
+
+
+
+
+
+
+
+
 		New(var/Nstr,var/Ndist,var/Ndir,var/atom/Nloc,var/Nowner,var/Ncenter)
 			src.Center=Ncenter
 			if(src.Center)	src.icon_state="invis"
@@ -264,6 +269,11 @@ obj/Projectile
 					var/B=new src.type(Nstr,Ndist,Ndir,locate(Nloc.x,Nloc.y-1,Nloc.z),Nowner,src)
 					src.Parts=list(A,B)
 			return ..(Nstr,Ndist,Ndir,Nloc,Nowner)
+
+//*/
+
+
+
 	New(var/Nstr,var/Ndist,var/Ndir,var/Nloc,var/Nowner,var/NTarget=null,var/AT)
 		spawn()
 			src.ArrowType=AT
@@ -277,6 +287,7 @@ obj/Projectile
 				if((src.dir!=NORTH && src.dir!=SOUTH) || src.ArrowType=="Rapid Fire")	src.pixel_y=rand(-8,8)
 				if((src.dir!=EAST && src.dir!=WEST) || src.ArrowType=="Rapid Fire")	src.pixel_x=rand(-8,8)
 			if(src.ArrowType=="Rapid Fire")	src.Str=round(src.Str/2)
+
 			for(var/i=0,i<=src.Dist,i++)//moves the target for preset distance
 				if(!src.MyTarget)	step(src,src.dir)
 				else	step(src,get_dir(src,src.MyTarget))
@@ -294,25 +305,15 @@ obj/Projectile
 			src:Center.Bump(M);return ..()
 		if(src.type!=M.type)
 			if(istype(src,/obj/Projectile/Dragons))	MyFlick("Destroy",src)
-			if(istype(src,/obj/Projectile/Blasts))	MyFlick("Destroy",src)
-			if(istype(src,/obj/Projectile/Ceros))	MyFlick("Destroy",src)
-			if(istype(src,/obj/Projectile/Suzume))	MyFlick("Destroy",src)
-				//for(var/mob/M2 in oview(1,src.loc))
-				//	var/Damage;Damage=250
-				//	src.Owner.InstantAttack(M2,"Explosion",Damage,0,"Fire")
-				//for(var/turf/T in oview(1,src.loc))
-					//if(!T.density)
-						//var/obj/Supplemental/Suzume_Destroy/MT=new(T)
-						//spawn(10)	del MT
 			else	MyFlick("[src.name]Hit",src)
 			if(!istype(src,/obj/Projectile/ThreeWide))	src.loc=locate(M.x,M.y,M.z)
 		else
 			var/obj/Projectile/O=M
 			if(src.Owner==O.Owner)	return ..()
 			else	{del src;return}
-		if(istype(src,/obj/Projectile/ThreeWide))
-			for(var/obj/O in src:Parts)	del O
-			src.loc=locate(get_step(src,src.dir))
+		//if(istype(src,/obj/Projectile/ThreeWide))
+		//	for(var/obj/O in src:Parts)	del O
+		//	src.loc=locate(get_step(src,src.dir))
 		if(src.Owner)
 			if(istype(M,/obj/Bankai/Chains))	src.Owner.DamageChain(M,src.Str+rand(-5,5))
 			if(ismob(M))
@@ -324,8 +325,8 @@ obj/Projectile
 					var/NewDir=src.DeflectionDirection()
 					if(src.dir!=NewDir)	{src.dir=NewDir;return}
 				if(src.Owner.CanPVP(M))
-					var/damage=max(0,(src.Str+src.Dist)+rand(-5,5))
-					for(var/obj/Skills/Quincy/Power_Arrow/G in src.Owner.Skills)	damage+=round(damage*(G.Level/10))
+					var/damage=100//max(0,(src.Str+src.Dist)+rand(-5,5))
+					//for(var/obj/Skills/Quincy/Power_Arrow/G in src.Owner.Skills)	damage+=round(damage*(G.Level/10))
 					var/CurStm=M.STM
 					if(istype(src,/obj/Projectile/Dragons) && rand(1,100)<=10)
 						if(src.Owner && src.Owner.Element=="Ice")	M.StunProc(2,"Freeze",src.Owner)
@@ -421,42 +422,53 @@ mob/proc
 			if(src.ArrowType=="Homing Arrow" && src.Target)	NTarget=src.Target
 			new/obj/Projectile/Arrow((src.ArrowStr*PveArrDam/5)+src.MGC,src.ArrowDist,src.dir,src.loc,src,NTarget,src.ArrowType)
 			if(src.ArrowType=="Spread Shot")	src.SpreadShot()
+
+
+
+
 			if(src.ArrowType=="Rapid Fire")
 				var/Numbar=0;for(var/obj/Skills/Quincy/Rapid_Fire/F in src.Skills)	Numbar=F.Level
 				src.BarrageProc((src.ArrowStr*PveArrDam/5)+src.ArrowDist,src.ArrowDist,Numbar)
+
+
+
+
+
+
 			if(src.FinalForm/* && src.icon_state=="PullArrow"*/)
 				src.FinalForm=2;sleep(3)
 				if(src && src.FinalForm==2)	src.FinalForm=1
 				return
 			src.ArrowStr=0;src.ArrowDist=0
 			src.TurnMode=0;src.CanMove=1
-	Attack(var/Height)
+	Attack(var/Height,var/Button="S")
+
 		if("Scatter" in src.ToggledSkills)	return
-		if("Blood Mist Shield" in src.ToggledSkills)	return
-		if(src.Zanpakuto && src.Bankai)
-			if(src.Zanpakuto.SpiritType=="Hornet")	return
+		if("Bankai Scatter" in src.ToggledSkills)	return
 		if(src.SkillBeingCharged)	return
 		if(src.Blocking)	return
 		if(src.Stunned)	return
-		var/Button="S"
-		if(Height==2)	Button="D"
-		if(Height==3)	Button="F"
-		if(src.Zanpakuto&&src.Shikai)
-			var/obj/Zanpakuto/Z=src.Zanpakuto
-			if(Z.SpiritType=="Hornet" && src.ComboReady)	goto ComboUp
-		if(src.icon=='IchBankai.dmi' && src.ComboReady)	goto ComboUp
-		if("[Button][src.ComboCount+1]" in src.ComboList)
-			if(src.ComboCount>=1 && src.ComboReady)	goto ComboUp
+		if(Height==2)
+			Button="D"
+		if(Height==3)
+			Button="F"
+		if(src.icon=='Bankai.dmi' && src.ComboReady)	goto ComboUp
+		//if("[Button][src.ComboCount+1]" in src.ComboList)
+		for(var/obj/Skills/SoulReaper/Combat_Mastery/CM in usr.Skills)
+			if(src.ComboCount+1<=CM.Level)
+				if(src.ComboCount>=1 && src.ComboReady)	goto ComboUp
+
 		if(!src.CanMove)	return
 		ComboUp
 		if(src.client)
 			for(var/obj/HUD/ComboSysHud/C in src.client.screen)
-				if(C.screen_loc=="7,18")	C.icon_state="[copytext(num2text(src.ComboCount+1),1,2)]"
+				if(C.screen_loc=="7,18")	C.icon_state="[copytext(num2text(ComboCount+1),1,2)]"
 		if(src.Target)	src.FlashAssault(src.Target)
 		src.CanMove=0
 		src.AttackHeight=Height
 		src.ComboReady=0
 		src.ComboCount+=1
+		//src << "Current Combo [src.ComboCount]"
 		src.ComboStopper=rand(1,999999)
 		var/ThisCombo=src.ComboStopper
 		if(src.client && src.Target)
@@ -465,18 +477,11 @@ mob/proc
 				if(src.AutoAttackFace)	src.dir=get_dir(src,src.Target)
 		if(src.client)
 			PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-			if(src.Zanpakuto && src.Shikai)
-				var/obj/Zanpakuto/Z=src.Zanpakuto
-				if(Z.SpiritType=="Hornet")
-					src.icon_state="SuzumeStance"
-				else	src.icon_state="Stance"
-			if(src.icon=='IchBankai.dmi')	MyFlick("Combo",src)
-			if(src.Zanpakuto && src.Shikai)
-				var/obj/Zanpakuto/Z=src.Zanpakuto
-				if(Z.SpiritType=="Hornet")
-					MyFlick("SuzumeSlash",src)
-			if(src.Class=="Bount")	MyFlick("Attack",src)
-			else	MyFlick("[Button][src.ComboCount]",src)
+			src.icon_state="Stance"
+			if(src.icon=='Bankai.dmi')	MyFlick("Combo",src)
+			else if(src.Class=="Bount"||src.Class=="Hollow"|| src.Class=="Arrancar")	MyFlick("Attack",src)
+
+			else	MyFlick(/*[Button][rand(1,5)]*/"Attack",src)
 		//else	MyFlick("Attack",src)
 		for(var/mob/M in get_step(src,src.dir))
 			if(istype(M,/mob/Enemy) && istype(src,/mob/Enemy))	continue
@@ -493,61 +498,18 @@ mob/proc
 							if(!NT.Enter(src))	{TurfList-=NT;goto RePick}
 							ShowEffect(src.loc,'Effects.dmi',"Warp","",5,NewDir=get_dir(src,NT))
 							src.loc=NT;src.dir=get_dir(src,M)
-			if(src.Shikai && src.Zanpakuto.SpiritType=="Hornet")
-				for(var/obj/Skills/Shikais/Hornet/Speed_Combo/F in src.Skills)
-					var/Bonus=0;for(var/obj/Skills/Shikais/Hornet/Float_Like_A_Butterfly/F2 in src.Skills)	Bonus+=F2.Level * 2
-					if(rand(1,100)<=10+((F.Level-1)*2)+Bonus)
-						var/list/TurfList=block(locate(M.x-1,M.y-1,M.z),locate(M.x+1,M.y+1,M.z))-M.loc-src.loc-get_step(M,M.dir)
-						RePick
-						var/turf/NT
-						if(TurfList.len)	NT=pick(TurfList)
-						if(NT)
-							if(!NT.Enter(src))	{TurfList-=NT;goto RePick}
-							ShowEffect(src.loc,'Effects.dmi',"Warp","",5,NewDir=get_dir(src,NT))
-							src.loc=NT;src.dir=get_dir(src,M)
 			if(src.OverDriveOn)
 				src.KnockBack(M,src);src.KnockBackFollow(M)
-			var/damage=src.STR/2+rand(-5,5) //change strength
+			var/damage=src.STR+rand(0,1)
 			if(!M.client)	damage*=PveDam
-			if(src.OverDriveOn)	damage+=damage*0.2
-			if(src.Zanpakuto)
-				if(src.Shikai || src.Bankai)
-					var/obj/Zanpakuto/Z=src.Zanpakuto
-					if(Z.SpiritType=="Healing Canon")
-						var/Heal=0
-						Heal=damage
-						damage=0
-						ShowEffect(M,'Effects.dmi',"Soul Glow Cross","",10,0,1)
-						M.STM=min(M.MaxSTM,M.STM+Heal)
-						M.StmBar();DamageShow(M,Heal,'HealNums.dmi')
-						goto HEALED
-					if(Z.SpiritType=="Hornet")
-						for(var/obj/Skills/Shikais/Hornet/Sting_Like_A_Bee/F in src.Skills)
-							if(rand(1,100)<=20+((F.Level-1)*10))
-								damage*=2
-								ShowEffect(M,'Effects.dmi',"HellButterfly","",10,0,1)
-					if(Z.SpiritType=="Paitence")
-						if(M.Slowed==1)
-							goto suki
-						else
-							M.Slowed=1
-							M.MovementSpeed*=13
-							M.CanShunpo=0
-							src.ShieldBonus+=70
-							spawn(200)
-								M.MovementSpeed/=13
-								M.CanShunpo=1
-								M.Slowed=0
-								src.ShieldBonus-=70
-
-			suki
+			if(src.OverDriveOn)	damage+=damage*0.5
 			src.Damage(M,damage,src.Element,1,"Melee")
-		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,src.STR+rand(-5,5))
-		HEALED
+		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,src.STR+rand(0,1))
 		var/SpawnTime=Height*5
 		if(src.client)
-			SpawnTime=15
+			SpawnTime=round(7.5*src.MovementSpeed)
 			spawn(3)	src.ComboReady=1
+		if(istype(src,/mob/Enemy))	SpawnTime=round(3.0*src.MovementSpeed)
 		if(src.icon=='Bankai.dmi')	SpawnTime=4
 		spawn(3)	if(src)	src.AttackHeight=0
 		spawn(SpawnTime)
@@ -559,9 +521,6 @@ mob/proc
 			if(src.client)
 				for(var/obj/HUD/ComboSysHud/C in src.client.screen)
 					if(C.icon_state!="Hit")	C.icon_state="No"
-
-
-
 	Guard()
 		if(!src.CanBlock())	return
 		src.CanMove=0
@@ -576,22 +535,44 @@ mob/proc
 			if(!src.Blocking)	return
 			src.CanMove=1
 			src.Blocking=0
-			if(src.icon_state=="Block")
-				var/obj/Zanpakuto/Z=src.Zanpakuto
-				if(src.Zanpakuto && src.Shikai && Z.SpiritType=="Hornet")
-					src.icon_state="SuzumeStance"
-				else	src.icon_state="Stance"
+			if(src.icon_state=="Block")	src.icon_state="Stance"
+
+
+
 	BarrageProc(var/Damage,var/Dist,var/Numbar)
-		for(var/i=1,i<=Numbar,i++)
-			MyFlick("FireArrow",src)
-			PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-			new/obj/Projectile/Arrow(Damage,Dist,src.dir,src.loc,src,null,"Rapid Fire")
+		for(var/i=1,i<=round(Numbar/5)+1,i++)
+			if(usr.Class=="Quincy")
+				MyFlick("FireArrow",src)
+				PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
+				if(src.dir==NORTH||src.dir==SOUTH)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(rand(src.x-1,src.x+1),src.y,src.z),src,null,"Rapid Fire")
+				if(src.dir==EAST||src.dir==WEST)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(src.x,rand(src.y-1,src.y+1),src.z),src,null,"Rapid Fire")
+				//new/obj/Projectile/Arrow(Damage,Dist,src.dir,src.loc,src,null,"Rapid Fire")
+
+
+
+	Ice_BarrageProc(var/Damage,var/Dist,var/Numbar)
+		for(var/i=1,i<=round(Numbar/5)+1,i++)
+			if(usr.Zanpakuto.SpiritType=="Rukia")
+				if(src.dir==NORTH||src.dir==SOUTH)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(rand(src.x-1,src.x+1),src.y,src.z),src,null,"Ice")
+				if(src.dir==EAST||src.dir==WEST)
+					new/obj/Projectile/Arrow(Damage,Dist,src.dir,locate(src.x,rand(src.y-1,src.y+1),src.z),src,null,"Ice")
+
+
+
+
+
+
 	SpreadShot()
 		var/Damage=(src.ArrowStr*PveArrDam/5)
 		if(src.dir==NORTH)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,NORTHWEST,src.loc,src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,NORTHEAST,src.loc,src)
 		if(src.dir==SOUTH)
+			//new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTH,locate(src.x-1,src.y,src.z),src)
+			//new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTH,locate(src.x+1,src.y,src.z),src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTHWEST,src.loc,src)
 			new/obj/Projectile/Arrow(Damage+src.MGC,src.ArrowDist,SOUTHEAST,src.loc,src)
 		if(src.dir==EAST)

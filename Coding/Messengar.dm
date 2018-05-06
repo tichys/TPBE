@@ -17,10 +17,6 @@ proc/SortBuddyList()
 
 mob/proc/UpdateBL(/**/)
 	if(!src.client)	return
-	for(var/mob/x in BuddyList)
-		if(src.key in x.IgnoreList)
-			src<<"That user has placed on you on Ignore"
-			return
 	winset(src,"PMWindow.Grid","cells=1x[BuddyList.len]")
 	if(!src)	return
 	var/Html="<body bgcolor=black link=yellow alink=yellow vlink=yellow>\
