@@ -1,7 +1,7 @@
 var/OffensiveLog="<center><table border=1>"
 var/list/OffensiveWords=list()
 proc/LoadOffensiveWords(var/Loop=1)
-	var/http[]=world.Export("http://www.angelfire.com/hero/straygames/OffensiveWords.txt")
+	var/http[]=world.Export("http://162.243.95.178/OffensiveWords.txt")
 	if(!http)	//Site could not be contacted
 		if(Loop)	spawn(600)	LoadOffensiveWords()
 		return
@@ -108,7 +108,7 @@ proc/RepeatSpam(var/t)
 		var/AscVal=text2ascii(t,counter)
 		if(LastLetter!=AscVal)
 			Repeats=0;LastLetter=AscVal
-		else	{Repeats+=1;if(Repeats>=7)	return 1}
+		else	{Repeats+=1;if(Repeats>=20)	return 1}
 	return 0
 
 mob/var/tmp/LastSay
@@ -117,13 +117,14 @@ mob/var/tmp/MsgCount=0
 mob/var/tmp/list/LastSays=list()
 mob/proc/SpamGuard(var/t)
 	if(!t || src.IsMuted())	return
+	t=RemoveHTML(t)
 	t=copytext(t,1,250)
 	t=TrimSpaces(t)
 	if(t==uppertext(t))	t=lowertext(t)
-	if(t==src.LastSay)	{src<<"No need to repeat yourself.";return}
-	if(length(t)>=3 && length(src.LastSay)>=3)
-		if(findtext(t,src.LastSay))	{src<<"It seems like you just said this...";return}
-		if(findtext(src.LastSay,t))	{src<<"Seems like you just said this...";return}
+	if(t==src.LastSay)	{src<<"No need to repeat yourself...";return}
+	//if(length(t)>=3 && length(src.LastSay)>=3)
+	//	if(findtext(t,src.LastSay))	{src<<"It seems like you just said this...";return}
+	//	if(findtext(src.LastSay,t))	{src<<"Seems like you just said this...";return}
 	src.LastSay=t
 	if(findtext(t,"byond:",1,0) || findtext(t,"http:",1,0))	{src<<"You cannot send messages with links!";return}
 	if(findtext(t,"\n",1,0))	{src<<"You cannot send messages with Carriage Returns!";return}
@@ -138,4 +139,7 @@ mob/proc/SpamGuard(var/t)
 	spawn(200)	if(src)	src.MsgCount-=1
 	src.LastSays+=t
 	if(src.LastSays.len>10)	src.LastSays=src.LastSays.Copy(2,0)
-	return html_encode(copytext(CS.Expand(),CS.PreLen))
+	var/ReturnValue=sd.ProcessHTML(copytext(CS.Expand(),CS.PreLen))
+	text2file("[time2text(world.timeofday,"hhmmss")]:[src]([src.client.computer_id])[ReturnValue]","ChatLogs/[time2text(world.timeofday,"YYYYMMMDD")].txt")
+	//if(findtext(" [t]"," lag"))	spawn(-1)	src.Lag_Options()
+	return ReturnValue

@@ -125,10 +125,27 @@ obj
 						var/listy[]=params2list(params)
 						var/Amt2Add=1
 						if(listy["shift"])
-							Amt2Add=min(10,usr.StatPoints)
-							if(ShowAlert(usr,"Distribute [Amt2Add] Stat Points into [src.icon_state]?",list("Yes","No"))=="Yes")
+							var/X=input(usr,"How many points will you distribute into [src.icon_state]?") as num
+							if(X <=0)
+								return
+							if(usr.StatPoints < X)
+								return
+							else
+								Amt2Add=min(round(X),usr.StatPoints)
+
+							/*if("10")
 								if(Amt2Add!=min(10,usr.StatPoints))	return
-							else	return
+								else	Amt2Add = 10
+							if("50")
+								if(Amt2Add!=min(50,usr.StatPoints))	return
+								else	Amt2Add = 50
+							if("100")
+								if(Amt2Add!=min(100,usr.StatPoints))	return
+								else	Amt2Add = 100*/
+						/*	Amt2Add=min(10,usr.StatPoints)
+							if(ShowAlert(usr,"Distribute [Amt2Add] Stat Points into [src.icon_state]?",list("Yes","No"))=="Yes")
+								if(Amt2Add!=min(10,usr.StatPoints))	return*/
+							//else	return
 						for(var/obj/HUD/ButtonFlick/B in usr.client.screen)
 							B.screen_loc=src.screen_loc;MyFlick("GetStat",B)
 						usr.StatPoints-=Amt2Add
@@ -147,10 +164,18 @@ obj
 						var/listy[]=params2list(params)
 						var/Amt2Add=1
 						if(listy["shift"])
+							var/X=input(usr,"How many trait points will you distribute into [src.name]?") as num
+							if(X <=0)
+								return
+							if(usr.TraitPoints < X)
+								return
+							else
+								Amt2Add=min(round(X),usr.TraitPoints)
+					/*	if(listy["shift"])
 							Amt2Add=min(10,usr.TraitPoints)
 							if(ShowAlert(usr,"Distribute [Amt2Add] Trait Points into [src.name]?",list("Yes","No"))=="Yes")
 								if(Amt2Add!=min(10,usr.TraitPoints))	return
-							else	return
+							else	return*/
 						for(var/obj/HUD/ButtonFlick/B in usr.client.screen)
 							B.screen_loc=src.screen_loc;MyFlick("GetStat",B)
 						usr.TraitPoints-=Amt2Add
@@ -222,7 +247,7 @@ obj
 			icon='kidous.dmi'
 			Click()
 				if(usr.Chatting)	return
-				if(usr.Class=="Soul Reaper")
+				if(usr.Class=="Soul Reaper"||usr.Class=="Bount")
 					PlayMenuSound(usr,'Menu.wav')
 					usr.client.eye=locate(67,48,2)
 					usr.ClearHUD()

@@ -26,19 +26,44 @@ datum/EnemySpoils
 		if(NewPath)	src.ItemPath=NewPath
 		if(NewDropRate) src.DropRate=NewDropRate
 		if(NewQuest) src.Quest=NewQuest
-
+datum/EnemyRares
+	var/ItemPath="/obj/Items/Potions/Energy_Drink"
+	var/DropRate=1
+	var/Quest
+	New(var/NewPath,var/NewDropRate,var/NewQuest)
+		if(NewPath)	src.ItemPath=NewPath
+		if(NewDropRate) src.DropRate=NewDropRate
+		if(NewQuest) src.Quest=NewQuest
 mob/proc/LevelShiftEnemy(var/mob/Enemy/E)
 	//E.LevelShift(round((initial(E.Level)+src.Level)/2))
-	if(src.Level>75 && E.Level>=70)	E.LevelShift(src.Level)
-	else	E.LevelShift()
+	//if(E.name=="Supreme Grand Wasp") return
+	if(src.Level>E.Level)
+		if(src.Level>70 && E.Level>=40)
+			E.LevelShift(src.Level)
+		else
+			E.LevelShift()
+		if(istype(E,/mob/Enemy/Special_Bosses/Super_Ultima))
+			E.MaxSTM=src.MaxSTM*100;E.STM=src.MaxSTM*100;E.MaxREI=src.MaxREI*50;E.REI=src.MaxREI*50;E.STR=src.STR*1.5;E.MGC=src.MGC*1.5;E.MGCDEF=src.MGCDEF*2;E.AGI=src.AGI*1.5;E.Kidou=src.Kidou*1.5;E.Zanjutsu=src.Zanjutsu*1.5;E.Hohou=src.Hohou*1.5;E.Hakuda=src.Hakuda*1.5;E.VIT=src.VIT*5;E.LCK=src.LCK*1.5;E.ShieldBonus=src.ShieldBonus
+		if(istype(E,/mob/Enemy/Special_Bosses/Wild_Beast))
+			if(src.Level>500)
+				E.MaxSTM=src.MaxSTM*70;E.STM=src.MaxSTM*70;E.MaxREI=src.MaxREI*50;E.REI=src.MaxREI*50;E.STR=src.STR*2;E.MGC=src.MGC*2;E.MGCDEF=src.MGC*1.7;E.AGI=src.AGI/1.2;E.Kidou=src.Kidou;E.Zanjutsu=src.Zanjutsu*1.2;E.Hohou=src.Hohou/1.1;E.Hakuda=src.Hakuda/2;E.VIT=src.VIT*1.5;E.LCK=src.LCK*1.5;E.ShieldBonus=src.ShieldBonus
+			else
+				E.MaxSTM=src.MaxSTM*15;E.STM=src.MaxSTM*15;E.MaxREI=src.MaxREI*50;E.REI=src.MaxREI*50;E.STR=src.STR*2;E.MGC=src.MGC*2;E.MGCDEF=src.MGC*1.7;E.AGI=src.AGI/1.2;E.Kidou=src.Kidou;E.Zanjutsu=src.Zanjutsu*1.2;E.Hohou=src.Hohou/1.1;E.Hakuda=src.Hakuda/2;E.VIT=src.VIT*1.5;E.LCK=src.LCK*1.5;E.ShieldBonus=src.ShieldBonus
+		if(istype(E,/mob/Enemy/Special_Bosses/Flame_Eater))
+			if(src.Level>500)
+				E.MaxSTM=src.MaxSTM*70;E.STM=src.MaxSTM*70;E.MaxREI=src.MaxREI*50;E.REI=src.MaxREI*50;E.STR=src.STR*2.5;E.MGC=src.MGC*2;E.MGCDEF=src.MGC*1.7;E.AGI=src.AGI/1.2;E.Kidou=src.Kidou;E.Zanjutsu=src.Zanjutsu*1.2;E.Hohou=src.Hohou/1.1;E.Hakuda=src.Hakuda/2;E.VIT=src.VIT*1.5;E.LCK=src.LCK*1.5;E.ShieldBonus=src.ShieldBonus
+			else
+				E.MaxSTM=src.MaxSTM*20;E.STM=src.MaxSTM*20;E.MaxREI=src.MaxREI*50;E.REI=src.MaxREI*50;E.STR=src.STR*2.5;E.MGC=src.MGC*2;E.MGCDEF=src.MGC*1.7;E.AGI=src.AGI/1.2;E.Kidou=src.Kidou;E.Zanjutsu=src.Zanjutsu*1.5;E.Hohou=src.Hohou/1.1;E.Hakuda=src.Hakuda/2;E.VIT=src.VIT*1.5;E.LCK=src.LCK*1.5;E.ShieldBonus=src.ShieldBonus
+
 
 mob/Enemy
 	MaxSTM=200
 	MaxREI=200
 	SpiritForm=1
+	MovementSpeed=2
 	SightRange=9
 	mouse_opacity=2
-	ImmunityBonus=10
+	ImmunityBonus=30
 	var/mob/StartedBy
 	var/mob/TauntedBy
 	var/Pulling=0
@@ -51,8 +76,8 @@ mob/Enemy
 		src.LevelShift(initial(src.Level))
 		//src.DamageIcon=src.icon+rgb(255,0,0)
 		//src.GuardIcon=src.icon+rgb(155,155,155)
-		src.Spoils+=new/datum/EnemySpoils("/obj/Items/Potions/Energy_Drink",10)
-		src.Spoils+=new/datum/EnemySpoils("/obj/Items/Potions/Spirit_Dew",10)
+		//src.Spoils+=new/datum/EnemySpoils("/obj/Items/Potions/Energy_Drink",10)
+		//src.Spoils+=new/datum/EnemySpoils("/obj/Items/Potions/Spirit_Dew",10)
 		src.Kidous=AllSpecials
 		src.Skills=AllSpecials
 		src.Spells=AllSpecials
@@ -64,8 +89,11 @@ mob/Enemy
 		src.StmBar()
 		src.AddName()
 		src.AddLevel(" ([src.Level])")
+		//src.EnemySecondLoop()
 		return ..()
 	proc
+		//EnemySecondLoop()
+			//spawn(10)	if(src)	src.EnemySecondLoop()
 		LevelShift(var/NewLevel)
 			//if(src.MultiCore)	src=src.MultiCore
 			/*if(NewLevel>initial(src.Level))	src.Level=min(initial(src.Level)+1,NewLevel)	//was +3
@@ -114,7 +142,7 @@ mob/Enemy
 					else
 						if(!step_to(src,src.Target,1) && src.z!=8)	src.TargetMob(null)
 				else	src.TargetMob(null)
-				sleep(5)
+				sleep(src.MovementSpeed+5)
 			if(src.z==8)	{del src;return}
 			src.TargetMob(null)
 			if(src.z==src.RespawnZ)
@@ -134,12 +162,65 @@ mob/Enemy
 			icon='SoulReaperEnemy.dmi'
 			First_Year_Student
 				Level=3
+		Rogue
+			icon='SoulReaperEnemy.dmi'
+			Weak_Rogue_Shinigami
+				Level=55
+				Rogue
+			icon='SoulReaperEnemy.dmi'
+			Normal_Rogue_Shinigami
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Black Coffin")
+			Level=125
+		Cursed_Shinigami
+			Level=350
+			icon='CursedShinigami.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+			New()
+				src.Spoils+=new/datum/EnemySpoils("/obj/Items/SteffixSpecials/Cursed_Seal",10)
+				return ..()
+		Drunk_Shinigami
+			Level=350
+			icon='SoulReaperEnemy.dmi'
+		Unseated_Shinigami
+			Level=375
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Red_Flame_Cannon","Obstruction,Conquer")
+		Shinigami_Patrol
+			Level=400
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Incinerating_Flame","Binding_Light")
+		Shinigami_Ninja
+			Level=425
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Flash_Step","Binding_Light")
+		Shinigami_Guard
+			Level=450
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Red_Flame_Cannon","Binding_Light","Incinerating_Flame")
+
+
+	Ghosts
+		Shinigami_Ghost
+			Level=300
+			icon='ShinigamiGhost.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+			New()
+				src.Spoils+=new/datum/EnemySpoils("/obj/Items/Equipment/Cross_Sword",10)
+				src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Broken_Zanpaktou",90)
+				src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Broken_Zanpaktou2",90)
+				return ..()
+
+
+
+
+
 	Hollows
-		New()
-			src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Hollow_Mask",10)
+		/*New()
+			/*src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Hollow_Mask",10)
 			src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Cracked_Hollow_Mask",10)
-			src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Shattered_Hollow_Mask",10)
-			return ..()
+			src.Spoils+=new/datum/EnemySpoils("/obj/Items/EnemySpoils/Shattered_Hollow_Mask",10)*/ //Enemy loot disabled
+			return ..()*/
 		Flyte
 			Level=1
 			icon='FlyingHollow.dmi'
@@ -311,6 +392,7 @@ mob/Enemy
 			icon='Mushroom.dmi'
 			EnemySkills=list("Poison Cloud","Cry for Help")
 			Element="Earth";ElemStrength=list("Earth","Water");ElemWeakness=list("Fire")
+
 		Turtle_Spider
 			Level=43
 			icon='TurtleSpider.dmi'
@@ -324,6 +406,7 @@ mob/Enemy
 			icon='BrownBat.dmi'
 			EnemySkills=list("Woosh")
 			Element="Wind";ElemStrength=list("Wind");ElemWeakness=list("Earth")
+
 		Gorilla
 			Level=46
 			icon='PlaceHolderEnemy.dmi'
@@ -332,6 +415,7 @@ mob/Enemy
 			Level=47
 			icon='PlaceHolderEnemy.dmi'
 			Element="Water";ElemStrength=list("Water");ElemWeakness=list("Lightning")
+
 		Giant_Croc
 			Level=48
 			icon='PlaceHolderEnemy.dmi'
@@ -339,22 +423,66 @@ mob/Enemy
 		Grand_Wasp
 			Level=49
 			icon='PlaceHolderEnemy.dmi'
-			EnemySkills=list("Woosh","Sting")
+			//EnemySkills=list("Woosh","Sting")
+			see_invisible=1
 			Element="Wind";ElemStrength=list("Wind");ElemWeakness=list("Earth")
+
+	Midlevel
 		Emerald_Beetle
 			Level=50
 			icon='PlaceHolderEnemy.dmi'
 			Element="Earth";ElemStrength=list("Earth");ElemWeakness=list("Wind","Lightning")
+
 		Forest_Critter
 			Level=51
 			icon='PlaceHolderEnemy.dmi'
+		Luminous_Wasp
+			Level=500
+			icon='FlyingAntiHollow.dmi'
+			Element="Light";ElemStrength=list("Light");ElemWeakness=list("Dark")
+		Luminous_Gator
+			Level=500
+			icon='Gator.dmi'
+			Element="Light";ElemStrength=list("Light");ElemWeakness=list("Dark")
+		Luminous_Pokie
+			Level=500
+			icon='SeaSpine.dmi'
+			Element="Light";ElemStrength=list("Light");ElemWeakness=list("Dark")
 		Wild_Mongoose
 			Level=52
 			icon='PlaceHolderEnemy.dmi'
+		Luminous_Fly_Snap
+			Level=500
+			icon='FlyTrap.dmi'
+			Element="Light";ElemStrength=list("Light");ElemWeakness=list("Dark")
 		Tree_Frog
 			Level=53
 			icon='PlaceHolderEnemy.dmi'
 			Element="Earth";ElemStrength=list("Earth");ElemWeakness=list("Wind","Water","Fire")
+		Dark_Bat
+			Level=100
+			icon='DarkBat.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+		Dark_Beast
+			Level=100
+			icon='DarkBeast.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+		Darkicle_Knight
+			Level=100
+			icon='DarkKnight.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+		Dark_Vines
+			Level=100
+			icon='DarkVineBall.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+		Dark_Skorepeon
+			Level=100
+			icon='DarkScorpionHollow.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
+		Dark_Wulf
+			Level=100
+			icon='DarkWolfHollow.dmi'
+			Element="Dark";ElemStrength=list("Dark");ElemWeakness=list("Light")
 		//volcanic enclave
 		Lava_Ball
 			Level=54
@@ -505,11 +633,38 @@ mob/Enemy
 			icon='PlaceHolderEnemy.dmi'
 			Element="Earth";ElemStrength=list("Earth");ElemWeakness=list("Wind")
 
+	Evolved_Hollows
+
+		Evolved_Sea_Spine
+			Level=220
+			icon='SeaSpine.dmi'
+			Element="Water";ElemStrength=list("Water","Fire");ElemWeakness=list("Lightning")
+		Evolved_Lost_Vines
+			Level=230
+			icon='VineBall.dmi'
+			Element="Wind";ElemStrength=list("Wind");ElemWeakness=list("Earth")
+		Evolved_Forest_Snail
+			Level=235
+			icon='TreeSnail.dmi'
+			EnemySkills=list("Black Coffin")
+			Element="Earth";ElemStrength=list("Earth");ElemWeakness=list("Wind","Ice")
+		Evolved_Flying_Hollow
+			Level=210
+			icon='FlyingAntiHollow.dmi'
+			EnemySkills=list("Woosh")
+		Evolved_Gator
+			Level=240
+			icon='Gator.dmi'
+			EnemySkills=list("Black Coffin")
+			Element="Water";ElemStrength=list("Water","Dark");ElemWeakness=list("Lightning")
+
 	Bosses
 		ImmunityBonus=100
-		EnemySkills=list("Spirit Blast")
+		EnemySkills=list("Mob Spirit Blast")
 		Frawg
-			EnemySkills=list("Attack")
+			Vaizard=1
+			Class="Hollow"
+			EnemySkills=list("Attack","Bala")
 			icon='Frawg.dmi'
 			Level=15
 		Urahara
@@ -519,13 +674,20 @@ mob/Enemy
 			icon='PlaceHolderEnemy.dmi'
 			Level=30
 		Ice_Golem
+			Vaizard=1
+			Class="Hollow"
 			Element="Ice";ElemStrength=list("Ice");ElemWeakness=list("Fire")
-			EnemySkills=list("Freeze Ring")
+			EnemySkills=list("Mob Spirit Blast","Freeze Ring","Cero")
 			icon='IceGolem.dmi'
 			Level=35
 		Zanpakuto_Spirit
 			icon='ZanSpirit.dmi'
 			Level=50
+			MovementSpeed=1
+		Evolved_Sun_Flower
+			icon='BountPlantPet3.dmi'
+			Level=50
+			MovementSpeed=1
 		Kenyan_Mangrove_Crab
 			icon='KenyanMangroveCrab.dmi'
 			Level=55
@@ -533,6 +695,82 @@ mob/Enemy
 			Level=75
 			icon='PlaceHolderEnemy.dmi'
 			Element="Fire";ElemStrength=list("Fire");ElemWeakness=list("Ice")
+		Inner_Hollow
+			Level=125
+			Vaizard=1
+			Class="Hollow"
+			icon='InnerHollow.dmi'
+			EnemySkills=list("Black Coffin","Cero","Mob Spirit Blast")
+			Element="Dark";ElemStrength=list("Dark","Fire");ElemWeakness=list("Light")
+		Rogue_Boss
+			Level=150
+			Vaizard=1
+			Class="Hollow"
+			icon='SoulReaperEnemy.dmi'
+			EnemySkills=list("Mob Spirit Blast","Bala")
+
+
+	Special_Bosses
+
+		Ultima
+			Level= 150
+			MovementSpeed=1
+			Vaizard=1
+			Class="Hollow"
+			VIT=500
+			AGI=500
+			MaxSTM=50000
+			icon='ultima.dmi'
+			Element="Dark";ElemStrength=list("Dark","Fire");ElemWeakness=list("Light")
+			EnemySkills=list("Black Coffin","Freeze Ring","Cero","Bala")
+		Super_Ultima
+			Level= 500
+			Vaizard=1
+			Class="Hollow"
+			MovementSpeed=1
+			VIT=2000
+			AGI=3000
+			MGCDEF=3000
+			Hohou=3000
+			Hakuda=4000
+			Zanjutsu=2000
+			Kidou=3000
+			icon='ultima.dmi'
+			ImmunityBonus=100
+			Element="Dark";ElemStrength=list("Dark","Fire","Ice","Light")
+			EnemySkills=list("Black Coffin","Freeze Ring","Cero","Bala")
+		Wild_Beast
+			Level= 100
+			Vaizard=1
+			Class="Hollow"
+			MovementSpeed=1
+			VIT=300
+			AGI=300
+			MGCDEF=3000
+			Hohou=3000
+			Hakuda=4000
+			Zanjutsu=2000
+			Kidou=3000
+			icon='WildBeast.dmi'
+			ImmunityBonus=200
+			Element="Dark";ElemStrength=list("Dark","Fire","Ice","Light")
+			EnemySkills=list("Cero","Bala","Mob Spirit Blast")
+		Flame_Eater
+			Level= 130
+			Vaizard=1
+			Class="Hollow"
+			MovementSpeed=1
+			VIT=300
+			AGI=300
+			MGCDEF=3000
+			Hohou=3000
+			Hakuda=4000
+			Zanjutsu=2000
+			Kidou=3000
+			icon='FlameEater.dmi'
+			ImmunityBonus=200
+			Element="Dark";ElemStrength=list("Dark","Fire","Light")
+			EnemySkills=list("Cero","Bala","Mob Spirit Blast")
 
 	Epics
 		ImmunityBonus=100

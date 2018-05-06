@@ -18,7 +18,7 @@ obj
 		var/ReiCost=25
 		var/CoolDown=0
 		var/MaxCoolDown=30
-		Click()
+		Click(location,control,params)
 			var/Learnable=1
 			var/SubMax=5
 			if(usr.Subscriber)	SubMax=5
@@ -37,8 +37,19 @@ obj
 				ShowAlert(usr,"[OverDesc] > > [LI][src.LevelDesc]",list("Close"))
 			if(Learnable==2)
 				var/LD="[src.LevelDesc]"
-				if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Level","Close"))=="Level")
-					if(usr.SkillPoints<=0)	return
+				var/listy[]=params2list(params)
+				if(listy["shift"])
+					var/Amt2Add=(SubMax-MS.Level)
+					Amt2Add=min(Amt2Add,usr.SkillPoints)
+					if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Level","Close"))=="Level")
+						if(Amt2Add!=min(Amt2Add,usr.SkillPoints))	return
+						if(MS.Level<SubMax)
+							for(var/obj/Kidous/S in usr.Kidous)
+								if(S.name==src.name)
+									S.Level+=Amt2Add;break
+							usr.SkillPoints-=Amt2Add;usr.LoadKidouTree();usr.LevelOrbGlow()
+					else	return
+				else	if(ShowAlert(usr,"[OverDesc] > > [LI][LD]",list("Level","Close"))=="Level")
 					if(MS.Level<SubMax)
 						for(var/obj/Kidous/S in usr.Kidous)
 							if(S.name==src.name)

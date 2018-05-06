@@ -1,8 +1,8 @@
-/*var/RequiredByondVersion
+var/RequiredByondVersion
 
 proc/VerifyByondVersion()
 	var/Retries=0;RETRY;Retries+=1
-	var/http[]=world.Export("http://www.angelfire.com/hero/straygames/ByondVersion.txt")
+	var/http[]=world.Export("http://162.243.95.178/RequiredBE.txt")
 	if(!http)
 		world<<"BYOND Version could not be Verified!"
 		if(Retries<=10)	{world<<"Retry Attempt # [Retries]";goto RETRY}
@@ -29,4 +29,4 @@ world/New()
 
 mob/Login()
 	src.CheckByondVersion()
-	return ..()*/
+	return ..()

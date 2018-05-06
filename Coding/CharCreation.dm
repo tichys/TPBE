@@ -17,9 +17,9 @@ mob/proc/SaveFileHUD()
 			F["HairB"]>>M.HairB
 			F["HairStyle"]>>M.HairStyle
 			//Used for Global Save
-			/*var/Text=world.Export("byond://166.82.8.113:4440?RequestLoad[ckey(src.key)][i]")
+			/*var/Text=world.Export("byond://localhost:4104?RequestLoad[ckey(src.key)][i]")
 			var/CurSpot=1
-			var/mob/M=new
+			//var/mob/M=new
 			M.Class=copytext(Text,CurSpot,findtext(Text,"|",CurSpot+1,0));CurSpot=findtext(Text,"|",CurSpot+1,0)+1
 			M.Level=copytext(Text,CurSpot,findtext(Text,"|",CurSpot,0));CurSpot=findtext(Text,"|",CurSpot,0)+1
 			M.name=copytext(Text,CurSpot,findtext(Text,"|",CurSpot,0));CurSpot=findtext(Text,"|",CurSpot,0)+1
@@ -32,13 +32,18 @@ mob/proc/SaveFileHUD()
 			src.WriteLine(6,12,ySpot,12,"LoadScreen","[M.name]",0)
 			src.WriteLine(6,12,ySpot,2,"LoadScreen","Level [M.Level] [M.Class]",0)
 			M.screen_loc="14,[ySpot-1]:4";M.icon_state="Stance";src.client.screen+=M
-			if(M.Class=="Soul Reaper")	M.icon='SoulReaper.dmi'
+			if(M.Class=="Soul Reaper" && M.Squadrank=="Captain")
+				M.icon='captain.dmi'
+			else
+				if(M.Class=="Soul Reaper")
+					M.icon='SoulReaper.dmi'
 			if(M.Class=="Quincy")	M.icon='Quincy.dmi'
 			if(M.Class=="Bount")
 				if(usr.gender!="female")	M.icon='School.dmi'
 				else	M.icon='SchoolFemale.dmi'
 		else	src.WriteLine(8,16,ySpot,-4,"LoadScreen","Empty Save Slot",0)
 	usr.Loading=0
+
 
 turf
 	CharCreation
@@ -93,7 +98,7 @@ turf
 							usr.Load();return
 					else
 						if(!usr.Subscriber && src.Slot>=3)
-							ShowAlert(usr,"Additional Save Slots Available for Subscribers")
+							ShowAlert(usr,"Additional Save Slots Available for Donators")
 							if(!usr)	return
 							usr.loc=locate(86,10,2);usr.SaveFileHUD()
 							usr.Loaded=0;return
@@ -111,6 +116,8 @@ turf
 					PlayMenuSound(usr,'OOT_MainMenu_Cancel.wav')
 					usr.ClearHUD();usr.loc=locate(10,10,2)
 					if(FileExists("[ckey(usr.key)][src.Slot]"))
+						var/savefile/F = new("Players/[copytext(ckey(usr.key),1,2)]/[ckey(usr.key)][src.Slot].sav")
+						F["name"]>>usr.name
 						if(ShowAlert(usr,"Are you sure you want to Delete the Character in Slot [src.Slot]?",list("Delete","Cancel"))=="Delete")
 							usr.Chatting=1
 							if((input("Delete Character?  Are you sure?\nThis process cannot be reversed.\n\
@@ -122,6 +129,7 @@ turf
 					else	ShowAlert(usr,"No Character Saved to this Slot.  Cannot Delete File.")
 					if(usr)
 						usr.loc=locate(86,10,2);usr.SaveFileHUD()
+						SaveConfig()
 			ClassConstruction
 				mouse_opacity=2
 				Click()
@@ -151,12 +159,13 @@ turf
 								else	CP.icon='SchoolFemale.dmi'
 							var/obj/HP=new/obj/HUD/HairPreview
 							usr.client.screen+=HP
-							usr.name=html_encode(copytext(usr.key,1,15))
+							usr.name=sd.ProcessHTML(copytext(usr.key,1,15))
 							usr.WriteLine(7,7,16,11,"NameDisplay",usr.name,1)
 			Name
 				Click()
 					usr.ChangeName()
 					if(usr) usr.WriteLine(7,7,16,11,"NameDisplay",usr.name,1)
+					SaveConfig()
 			HairStyle
 				Click()
 					usr.HairColor()
@@ -186,6 +195,8 @@ turf
 					if(usr.Class=="Quincy")
 						usr.Skills+=new/obj/Skills/Quincy/Spirit_Arrow
 						usr.Skills+=new/obj/Skills/Universal/Flash_Step
+						usr.MGC = 30
+						usr.STR = 30
 						usr.CanShunpo=1
 						usr.StmRegenBonus=0
 					if(usr.Class=="Soul Reaper")
@@ -193,6 +204,8 @@ turf
 						usr.Skills+=new/obj/Skills/SoulReaper/Guard
 						usr.ComboList=list("S1","D1","F1","F2","F3")
 						usr.ReiRegenBonus=0
+						usr.STR = 30
+						usr.MGC = 30
 					if(usr.Class=="Bount")
 						usr.Skills+=new/obj/Skills/Bount/Summon_Pet
 						usr.Skills+=new/obj/Skills/Bount/Dismiss_Pet
@@ -200,16 +213,21 @@ turf
 						usr.Skills+=new/obj/Skills/Bount/Pet_Skills
 						usr.Pets+=new/mob/Pets/BountPets/Fly_Trap
 						for(var/mob/Pets/P in usr.Pets)	P.Owner=usr
-						usr.ComboList=list("F1")
+						usr.ComboList=list("F1","F2","F3")
+						usr.STR = 30
+						usr.MGC = 30
 					usr.Spells+=new/obj/Spells/Teleportation/Teleportation
 					usr.Spells+=new/obj/Spells/Teleportation/Recall
 					for(var/obj/Skills/O in usr.Skills)	O.Level=1
 					usr.QuestRefresh()
 					usr.loc=locate(50,88,1)
 					usr.invisibility=0
+					usr.banked=1
 					//usr.Save()
 					usr.CreatePlayerIcon()
+					usr.LoadBank()
 					PlayMenuSound(usr,'TP_Talk_Start.wav')
 					ShowAlert(usr,"This Game Uses an AutoSave Feature")
-					ShowText(usr,"Welcome to Bleach Eternity! > > ** Press the F Key to Advance Messages")
+					ShowText(usr,"Welcome to Bleach Eternity: Zeus! > > ** Press the F Key to Advance Messages")
 					ShowText(usr,"** NPCs with an ! over their head Have Important Information for you. > > ** Press the F Key to Talk with them")
+					ShowText(usr,"** You will gain extra experience from killing mobs until level 50.")

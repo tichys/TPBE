@@ -6,6 +6,13 @@ obj/NPC/Quest_Giver
 				if(usr.CompleteCheck(Q.name))//turning in the quest
 					if(Q.name=="Shikai Training"&&usr.Class=="Soul Reaper")	usr.Skills+=new/obj/Skills/SoulReaper/Shikai
 					if(Q.name=="Bankai Training"&&usr.Class=="Soul Reaper")	usr.Skills+=new/obj/Skills/SoulReaper/Bankai
+					if(Q.name=="Vaizard Training"&&usr.Class=="Soul Reaper")
+						usr.Skills+=new/obj/Skills/SoulReaper/Vaizard
+						var/VMC=rand(1,100)
+						if(VMC<=5)	usr.VaiMask="Lisa"
+						if(VMC>5 && VMC<=30)	usr.VaiMask="Shinji"
+						else	usr.VaiMask="Ichigo"
+					if(Q.name=="Merge Training"&&usr.Class=="Bount")	usr.Skills+=new/obj/Skills/Bount/Fuse
 					if(Q.name=="Sanrei Training"&&usr.Class=="Quincy")	usr.Skills+=new/obj/Skills/Quincy/Final_Form
 					for(var/datum/ObjectiveDatum/O in Q.Objectives)
 						if(O.Objective=="Collect")
@@ -54,7 +61,7 @@ obj/NPC/Quest_Giver
 			OD=new();OD.Objective="Kill";OD.Stat="Flying Hollow";OD.Goal=10
 			Q1.Objectives+=OD;src.Quests+=Q1
 			return ..()
-	Begining_Quester
+	Beginning_Quester
 		New()
 			var/datum/QuestDatum/Q=new()
 			Q.name="Starting Out";Q.ExpReward=150;Q.desc="To the West you'll find the Soul Reaper in charge of Training at this Facility.  Speak with him to get started. > > Objectives: Speak with the Training Reaper."
@@ -182,6 +189,25 @@ obj/NPC/Quest_Giver
 			var/datum/QuestDatum/Q1;var/datum/ObjectiveDatum/OD
 			Q1=new();Q1.name="Bankai Training";Q1.LevelReq=50;Q1.ExpReward=10000;Q1.desc="This special training will allow you to unleash your Bankai in just 3 days. > > Objectives: Find and Defeat your Zanpakuto's Spirit within 3 minutes."
 			OD=new();OD.Objective="Kill";OD.Stat="Zanpakuto Spirit";OD.Goal=1;Q1.TimeLimit=180
+			Q1.Objectives+=OD;src.Quests+=Q1
+			return ..()
+	RanTao
+		name="Ran'Tao"
+		icon='NPCs.dmi'
+		icon_state="Ran'Tao"
+		New()
+			var/datum/QuestDatum/Q1;var/datum/ObjectiveDatum/OD
+			Q1=new();Q1.name="Merge Training";Q1.LevelReq=50;Q1.ExpReward=10000;Q1.desc="This Training teaches you how to merge with your doll > > Objectives: Find and Defeat your Doll's Final Form within 5 minutes."
+			OD=new();OD.Objective="Kill";OD.Stat="Evolved Sun Flower";OD.Goal=1;Q1.TimeLimit=300
+			Q1.Objectives+=OD;src.Quests+=Q1
+			return ..()
+	Hiyori
+		icon='NPCs.dmi'
+		icon_state="Hiyori"
+		New()
+			var/datum/QuestDatum/Q1;var/datum/ObjectiveDatum/OD
+			Q1=new();Q1.name="Vaizard Training";Q1.LevelReq=125;Q1.ExpReward=100000;Q1.desc="This special training will allow you to Control your hollow in just a few days. > > Objectives: Find and Defeat your Inner Hollow within 5 minutes."
+			OD=new();OD.Objective="Kill";OD.Stat="Inner Hollow";OD.Goal=1;Q1.TimeLimit=300
 			Q1.Objectives+=OD;src.Quests+=Q1
 			return ..()
 	Arial
@@ -352,7 +378,7 @@ obj/NPC/Quest_Giver
 				OD=new();OD.Objective="Collect";OD.Stat="Sturdy Rock";OD.Goal=1;Q1.Objectives+=OD
 				src.Quests+=Q1
 
-				Q1=new();Q1.name="Healing Compound Delivery";Q1.ExpReward=3500;Q1.QuestReq="Healing Compound Materials";Q1.desc="Ah, good, you've collected everything we need.  Give me a moment and I'll put together the healing compound... > ... ... > ... ... ... > OK, its ready, take this to him and he should be fine. > > Objectives: Bring the Healing Compound to the Wounded Soul Reaper."
+				Q1=new();Q1.name="Healing Compound Delivery";Q1.ExpReward=3500;Q1.QuestReq="Healing Compound Materials";Q1.desc="Ah, good, you've collected everything we need.  mob/verb/GiveMoney(mob/M as mob in oview(src, 1), amount as num) me a moment and I'll put together the healing compound... > ... ... > ... ... ... > OK, its ready, take this to him and he should be fine. > > Objectives: Bring the Healing Compound to the Wounded Soul Reaper."
 				OD=new();OD.Objective="Speak With";OD.Stat="Wounded Reaper"
 				Q1.Objectives+=OD;src.Quests+=Q1
 				return ..()
@@ -464,6 +490,100 @@ obj/NPC/Quest_Giver
 				var/datum/QuestDatum/Q1;var/datum/ObjectiveDatum/OD
 				Q1=new();Q1.name="Sanrei Training";Q1.LevelReq=25;Q1.ExpReward=2500;Q1.desc="The Sanrei Gloves allows you to disperse spirit particles at a high level.  When you put it on and form a bow, if you can maintain it for 7 days and 7 nights, you will reach the pinnacle of a quincy's power.  When the glove is removed your ability to draw in spirit particles will have passed the limits of a quincy. > > Objectives: Fire your Quincy Bow 777 times."
 				OD=new();OD.Objective="Fire Bow";OD.Stat="Times";OD.Goal=777
+				Q1.Objectives+=OD;src.Quests+=Q1
+				return ..()
+	Zone18
+		Buntaka
+			icon='NPCs.dmi';icon_state="Native"
+			New()
+				var/datum/QuestDatum/Q1=new()
+				Q1.name="Pest Control";Q1.LevelReq=60;Q1.ExpReward=50000;Q1.GoldReward=5;Q1.desc="You look strong, I wonder if you can help me get rid of some of the hollows which seem to be infesting this area. Somewhere to the Northeast there are Crocogators, slay them and I will reward you.  > > Objectives: Defeat 100 Crocogators."
+				var/datum/ObjectiveDatum/OD=new();OD.Objective="Kill";OD.Stat="Crocogator";OD.Goal=100
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control II";Q1.ExpReward=100000;Q1.GoldReward=20;Q1.desc=" I have more work for you, if you are willing! Some Grand Wasps are polluting the area, slay them and I will make it worth your while. > > Objectives: Eliminate 500 Grand Wasps."
+				OD=new();OD.Objective="Kill";OD.Stat="Grand Wasp";OD.Goal=500
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control III";Q1.ExpReward=100000;Q1.GoldReward=20;Q1.desc="On a small island due NorthWest of here, some frog like monsters are roaming and preventing our people from fishing. Clear them out! > > Objectives: Eliminate 500 Tree Frogs."
+				OD=new();OD.Objective="Kill";OD.Stat="Tree Frog";OD.Goal=500
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control IV";Q1.ExpReward=150000;Q1.GoldReward=100;Q1.desc="To the NorthEast, some Gorillas are scaring away and even attacking the natives. Make them go away, and I will make it worth your while. > > Objectives: Eliminate 2000 Gorillas."
+				OD=new();OD.Objective="Kill";OD.Stat="Gorilla";OD.Goal=2000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control V";Q1.ExpReward=150000;Q1.GoldReward=200;Q1.desc="I am sure you must have noticed some Spiders near where those Gorillas roamed. Those forsaken things have been devouring our turtles and merging with them, corrupting them. You must put an end to this for us!. > > Objectives: Eliminate 5000 Turtle Spiders."
+				OD=new();OD.Objective="Kill";OD.Stat="Turtle Spider";OD.Goal=5000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control VI";Q1.ExpReward=150000;Q1.GoldReward=200;Q1.desc="Due North of here some Emerald Beetles have been spotted. While they may seem harmless, they do enough damage the local flora and fauna and must be eliminated. > > Objectives: Eliminate 5000 Emerald Beetles."
+				OD=new();OD.Objective="Kill";OD.Stat="Emerald Beetle";OD.Goal=5000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Wild Beast";Q1.ExpReward=200000;Q1.GoldReward=300;Q1.ItemReward="/obj/Items/Equipment/Head/Beastskin_helm";Q1.desc="I received a report that some Wild beast much stronger than anything else in this area is lurking around. I believe this monster is the leader of all the critters here. If you can destroy it, it should disorganize the rest and hopefully make them flee.!. > > Objectives: Eliminate Wild Beast."
+				OD=new();OD.Objective="Kill";OD.Stat="Wild Beast";OD.Goal=1
+				Q1.Objectives+=OD;src.Quests+=Q1
+				return ..()
+
+	Zone15
+		Apaparos
+			New()
+				var/datum/QuestDatum/Q1=new()
+				Q1.name="Pest Control VII";Q1.LevelReq=100;Q1.ExpReward=80000;Q1.GoldReward=50;Q1.desc="Ah, it's you. I have heard how you helped Buntaka and I can certainly use your help here as well. Help us get rid of the monsters residing in this area and you will be rewarded.  > > Objectives: Defeat 200 Lava Balls > Objectives: Defeat 200 Fire Walkers."
+				var/datum/ObjectiveDatum/OD=new();OD.Objective="Kill";OD.Stat="Lava Ball";OD.Goal=200
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Fire Walker";OD.Goal=200
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control VIII";Q1.ExpReward=130000;Q1.GoldReward=60;Q1.desc="I hope you've had your warm up because I have more work for you!. > > Objectives: Eliminate 400 Burning Blobs. > Objectives: Eliminate 400 Burning Blobs."
+				OD=new();OD.Objective="Kill";OD.Stat="Burning Blob";OD.Goal=400
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Fire Bat";OD.Goal=400
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control IX";Q1.ExpReward=1700000;Q1.GoldReward=60;Q1.desc="You are indeed quite strong, I hope you will not mind removing some Stingers and Rock Lava's that roam nearby! > > Objectives: Eliminate 500 Heated Stingers. > Objectives: Eliminate 700 Rock Lava."
+				OD=new();OD.Objective="Kill";OD.Stat="Heated Stinger";OD.Goal=500
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Rock Lava";OD.Goal=500
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control X";Q1.ExpReward=250000;Q1.GoldReward=100;Q1.desc="Apparently these monsters will not take a hint, especially those Dragons and salamanders, they keep popping out of nowhere and attacking us. Will you go pay them a visit please?. > > Objectives: Eliminate 700 Ember Dragons. > Objectives: Eliminate 700 Salamanders."
+				OD=new();OD.Objective="Kill";OD.Stat="Salamander";OD.Goal=700
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Ember Dragon";OD.Goal=700
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control XI";Q1.ExpReward=300000;Q1.GoldReward=200;Q1.desc="Things are going to get more challenging for you from now on! New monsters have spawned out of the lava, please destroy them. > > Objectives: Eliminate 1000 Crested Turtles. > Objectives: Eliminate 1000 Porcupines. > Objectives: Eliminate 1000 Volcanites."
+				OD=new();OD.Objective="Kill";OD.Stat="Crested Turtle";OD.Goal=1000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Porcupine";OD.Goal=1000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Volcanite";OD.Goal=1000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control XII";Q1.ExpReward=400000;Q1.GoldReward=300;Q1.desc="Well that did not take you too long, I should make it a bit more challenging for you then! Not like we have much of a choice anyway with the recent rampage of monsters. > > Objectives: Eliminate 2000 Crimson Crystals. > Objectives: Eliminate 2000 Flaming Boars. > Objectives: Eliminate 2000 Hellz Hoppers."
+				OD=new();OD.Objective="Kill";OD.Stat="Crimson Crystal";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Flaming Boar";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Hellz Hopper";OD.Goal=2000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Pest Control XIII";Q1.ExpReward=400000;Q1.GoldReward=400;Q1.desc="I have a large lot for you to clear this time, hopefully this will be the last. Do be careful and take frequent breaks, the heat down here can be unbearable.. > > Objectives: Eliminate 2000 Lava Bubbles. > Objectives: Eliminate 2000 Molten Man. > Objectives: Eliminate 2000 Molten Slugs. > Objectives: Eliminate 2000 Lava Puddles. > Objectives: Eliminate 2000 Hellion Harpies."
+				OD=new();OD.Objective="Kill";OD.Stat="Lava Bubble";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Molten Man";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Molten Slug";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Lava Puddle";OD.Goal=2000
+				Q1.Objectives+=OD
+				OD=new();OD.Objective="Kill";OD.Stat="Hellion Harpy";OD.Goal=2000
+				Q1.Objectives+=OD;src.Quests+=Q1
+
+				Q1=new();Q1.name="Flame Eater";Q1.ExpReward=500000;Q1.GoldReward=500;Q1.ItemReward="/obj/Items/Equipment/Feet/Beastskin_Boots";Q1.desc="It seems we have located a rather dangerous monster in this area, I believe it could be the leader of the rest of these ungodly things. If you can slay it, I will be eternally grateful to you.!. > > Objectives: Eliminate Flame Eater."
+				OD=new();OD.Objective="Kill";OD.Stat="Flame Eater";OD.Goal=1
 				Q1.Objectives+=OD;src.Quests+=Q1
 				return ..()
 

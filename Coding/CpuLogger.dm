@@ -16,7 +16,7 @@ proc/LogCPU()
 
 mob/Test/verb/CheckCPU()
 	set category="Test"
-	if(usr.key!="Falacy")	return
+	if(usr.key!="Millamber")	return
 	usr<<"Highest CPU: [HighestCPU]% | Highest Players: [HighestPlayers]"
 	usr<<"100% Usage Ticks: [TicksOver100] | Total Ticks: [TotalTicks]"
 	usr<<"<b>Average CPU:</b> [round(TotalCPU/TotalTicks)]% | <b>Average Players:</b> [round(TotalPlayers/TotalTicks)]"

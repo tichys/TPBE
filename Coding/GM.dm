@@ -76,12 +76,12 @@ mob/proc/staffCheck()
 proc
 	saveSecurity(save as text)
 		switch(save)
-/*			if("Lotto")
+			if("Lotto")
 				var/savefile/Lotto=new("eSecurity/Lotto.sav")
 				Lotto["TicketsHanded"]<<TicketsHanded
 			if("Lotto2")
 				var/savefile/Lotto2=new("eSecurity/Lotto2.sav")
-				Lotto2["TicketsRolled"]<<TicketsRolled*/
+				Lotto2["TicketsRolled"]<<TicketsRolled
 			if("Mods")
 				var/savefile/Mods=new("eSecurity/Mods.sav")
 				Mods["Mods_keys"]<<Mods_keys
@@ -177,8 +177,8 @@ proc
 	loadSecurity()
 		var/savefile/Mods=new("eSecurity/Mods.sav")
 		var/savefile/GMs=new("eSecurity/GMs.sav")
-/*		var/savefile/Lotto=new("eSecurity/Lotto.sav")
-		var/savefile/Lotto2=new("eSecurity/Lotto.sav")*/
+		var/savefile/Lotto=new("eSecurity/Lotto.sav")
+		var/savefile/Lotto2=new("eSecurity/Lotto.sav")
 		var/savefile/Captain1=new("eSecurity/Captain1.sav")
 		var/savefile/Captain2=new("eSecurity/Captain2.sav")
 		var/savefile/Captain3=new("eSecurity/Captain3.sav")
@@ -209,8 +209,8 @@ proc
 		var/savefile/QuincyBrotherhood=new("eSecurity/QuincyBrotherhood.sav")
 		Mods["Mods_keys"]>>Mods_keys
 		GMs["GMs_keys"]>>GMs_keys
-/*		Lotto["TicketsHanded"]>>TicketsHanded
-		Lotto2["TicketsRolled"]>>TicketsRolled*/
+		Lotto["TicketsHanded"]>>TicketsHanded
+		Lotto2["TicketsRolled"]>>TicketsRolled
 		Captain1["CaptainOne"]>>CaptainOne
 		Captain2["CaptainTwo"]>>CaptainTwo
 		Captain3["CaptainThree"]>>CaptainThree
@@ -241,8 +241,8 @@ proc
 		QuincyBrotherhood["Quincy1"]>>Quincy1
 		if(!length(GMs_keys)) GMs_keys=list()
 		if(!length(Mods_keys)) Mods_keys=list()
-/*		if(!length(TicketsHanded)) TicketsHanded=list()
-		if(!length(TicketsRolled)) TicketsRolled=list()*/
+		if(!length(TicketsHanded)) TicketsHanded=list()
+		if(!length(TicketsRolled)) TicketsRolled=list()
 		if(!length(Squad1)) Squad1=list()
 		if(!length(Squad2)) Squad2=list()
 		if(!length(Squad3)) Squad3=list()
@@ -372,7 +372,7 @@ mob/Mod/verb
 				M.Save()
 			src<<"<b><Font color=green size=3>EZ CHECK ENDED"
 
-/*	Disable_VoteMute()
+	Disable_VoteMute()
 		set category="GM"
 		set name ="Enable/Disable Mute Voting"
 		if(DisableMute == 0)
@@ -381,7 +381,7 @@ mob/Mod/verb
 		else
 			DisableMute=0
 			world <<"<b><font color=green size=2>GM: </font><font color=white size=2><b> Vote Muting has been enabled."
-		SaveConfig()*/
+		SaveConfig()
 
 	Jail()
 		set category="GM"
@@ -503,13 +503,13 @@ mob/Mod/verb
 
 mob/GM/verb
 
-/*	Check_Tourney_Status()
+	Check_Tourney_Status()
 		set category = "GM"
 		set name="Click this if Tournament Bugs"
 		if(Tournament == 1)
 			Tournament_AI()
 			usr << "Tournament Checked"
-		text2file("[time2text(world.realtime)]:[usr] clicked Tournament Debug button<br>","gmlog.html")*/
+		text2file("[time2text(world.realtime)]:[usr] clicked Tournament Debug button<br>","gmlog.html")
 
 	Summon_Player()
 		set category = "GM"
@@ -574,7 +574,7 @@ mob/GM/verb
 		world << "<font size=2><font color = Green><b><center>[usr] Announces:<center><br><font color=white font size=2>[txt]"
 		usr.verbcd=0
 
-/*	Reset_Auction()
+	Reset_Auction()
 		set category ="GM"
 		set name = "Reset all Auctions"
 		for(var/mob/Player/M in world)
@@ -589,7 +589,7 @@ mob/GM/verb
 		Highest_Bidder2="No one"
 		AuctionON=0
 		for(var/mob/Player/M in world)	M.trading=0
-		world << "<b><font color=teal>{AUCTION} <font color=red>All auctions have been reset.</font></b>"*/
+		world << "<b><font color=teal>{AUCTION} <font color=red>All auctions have been reset.</font></b>"
 
 
 	Reboot()
@@ -615,14 +615,14 @@ mob/GM/verb
 		if(!M)
 			usr.verbcd=0
 			return
-/*		if(M.tourny==1)
+		if(M.tourny==1)
 			usr<<"<b>You can't ban someone from a Tourney"
 			usr.verbcd=0
 			return
 	/*	if(M.waraa==1)
 			usr<<"You wish you could ban someone in a war"
 			usr.verbcd=0
-			return*/
+			return
 		if(M.warbb==1)
 			usr<<"You wish you could ban someone in a war"
 			usr.verbcd=0
@@ -720,7 +720,7 @@ mob/GM/verb
 			staffCheck(t)
 
 
-/*	PVP_Event()
+	PVP_Event()
 		set category = "GM"
 		set name ="Enable/Disable World PvP"
 		if(WorldPVP == 0)
@@ -737,7 +737,7 @@ mob/GM/verb
 				M.PVPWait=0
 				M.overlays-=PVPicon
 			world <<"<b><font color=green size=2>PVP EVENT: </font><font color=white size=2><b> World PVP has been deactivated."
-		SaveConfig()*/
+		SaveConfig()
 
 	Rename_Player()
 		set category="GM"
@@ -957,7 +957,7 @@ mob/HeadGM/verb
 				usr.loc=M.loc
 		text2file("[time2text(world.realtime)]:[usr] teleported to Enemy [M]. <br>","gmlog.html")
 
-/*	PVP_All()
+	PVP_All()
 		set category="GM"
 		if(src.key=="Millamber")
 			if(!src.PVPAll)
@@ -967,7 +967,7 @@ mob/HeadGM/verb
 				src.PVPAll=0
 				src<<"You can no longer attack players without PVP."
 		else	return
-*/
+
 	Adminsay(msg as text)
 		set category = "Admin"
 		for(var/mob/X in world)
@@ -1049,7 +1049,7 @@ mob/HeadGM/verb
 			M.Skills+=new/obj/Skills/Quincy/Final_Form
 			text2file("[time2text(world.realtime)]:[usr] gave Final Form skill to [M]. <br>","gmlog.html")
 
-/*	Give_Vaizard()
+	Give_Vaizard()
 		set category = "GM"
 		var/list/listy=list()
 		for(var/mob/Player/M in world)
@@ -1058,9 +1058,9 @@ mob/HeadGM/verb
 		if(!M) return
 		if(alert("Give Vaizard to [M]?","Give Vaizard","Yes","Cancel")=="Yes")
 			M.Skills+=new/obj/Skills/SoulReaper/Vaizard
-			text2file("[time2text(world.realtime)]:[usr] gave Vaizard to [M]. <br>","gmlog.html")*/
+			text2file("[time2text(world.realtime)]:[usr] gave Vaizard to [M]. <br>","gmlog.html")
 
-/*	Give_Fuse()
+	Give_Fuse()
 		set category = "GM"
 		var/list/listy=list()
 		for(var/mob/Player/M in world)
@@ -1069,7 +1069,7 @@ mob/HeadGM/verb
 		if(!M) return
 		if(alert("Give Fuse to [M]?","Give Fuse","Yes","Cancel")=="Yes")
 			M.Skills+=new/obj/Skills/Bount/Fuse
-			text2file("[time2text(world.realtime)]:[usr] gave Fusion to [M]. <br>","gmlog.html")*/
+			text2file("[time2text(world.realtime)]:[usr] gave Fusion to [M]. <br>","gmlog.html")
 
 	Give_Shikai()
 		set category = "GM"
@@ -1126,7 +1126,7 @@ mob/HeadGM/verb
 					M.Respec()
 					M<<"<b><font color=red>[src] has changed your race to Soul Reaper.</font></b>"
 					text2file("[time2text(world.realtime)]:[usr] changed [M] to a Soul Reaper. <br>","gmlog.html")
-/*				if("Bount")
+				if("Bount")
 					M.Class="Bount"
 					M.Skills+=new/obj/Skills/Bount/Summon_Pet
 					M.Skills+=new/obj/Skills/Bount/Dismiss_Pet
@@ -1141,7 +1141,7 @@ mob/HeadGM/verb
 					leaveSquad2(M)
 					M.Respec()
 					M<<"<b><font color=red>[src] has changed your race to Bount.</font></b>"
-					text2file("[time2text(world.realtime)]:[usr] changed [M] to a Bounto. <br>","gmlog.html")*/
+					text2file("[time2text(world.realtime)]:[usr] changed [M] to a Bounto. <br>","gmlog.html")
 
 	Edit_Zanpakuto()
 		set category = "GM"
@@ -1233,7 +1233,7 @@ mob/HeadGM/verb
 
 
 
-/*
+
 	Check_Userbank()
 		set category = "Admin"
 		var/list/listy=list()
@@ -1252,7 +1252,7 @@ mob/HeadGM/verb
 					M.bank.WithdrawItem(O)
 					QuestShow(usr,"You withdrew your [O].")
 				else
-					QuestShow(usr,"Bank Empty.")*/
+					QuestShow(usr,"Bank Empty.")
 
 	Kill_Player()
 		set category = "Admin"
@@ -1326,9 +1326,9 @@ mob/HeadGM/verb
 				text2file("[time2text(world.realtime)]:[usr] deleted [M]<br>","gmlog.html")
 			del M
 
-/*	Auto_Save()
+	Auto_Save()
 		set category="Admin"
-		Autosave()*/
+		Autosave()
 
 
 /*	Force_Niko()
@@ -1369,7 +1369,7 @@ mob/HeadGM/verb
 
 
 
-/*	Kill_Event()
+	Kill_Event()
 		set category = "Admin"
 		set name ="Enable/Disable MonsterBash "
 		if(KillEvent ==0)
@@ -1398,7 +1398,7 @@ mob/HeadGM/verb
 					X.verbs-= /mob/Event/verb/MonsterBash_Scores2
 					X.verbs-= /mob/Event/verb/MonsterBash_Scores3
 					X.verbs-= /mob/Event/verb/Lock_EXP
-					X.verbs-= /mob/Event/verb/unLock_EXP*/
+					X.verbs-= /mob/Event/verb/unLock_EXP
 
 	Gold_Event()
 		set category = "Admin"
@@ -1456,7 +1456,7 @@ mob/HeadGM/verb
 		for(var/mob/Player/M in world)
 			M<<browse(base,"window=new")
 
-/*	Create_Item()
+	Create_Item()
 		set category="Admin"
 		var/list/MobList=list()
 		for(var/mob/M in world)	if(M.client)	MobList+=M
@@ -1539,7 +1539,7 @@ mob/HeadGM/verb
 				M.bank.DepositItem(new /obj/Items/Other/The_Cloner)
 				M<<"<b>Your Cloner has been stored in your bank."
 				world<<"<b><font color=red size=2>[src]<font color=white> has rewarded [M] with <b><font color=#FF9933 size=3>The Cloner.</font>"
-				text2file("[time2text(world.realtime)]:[src] has created a Cloner for [M].<br>","gmlog.html")*/
+				text2file("[time2text(world.realtime)]:[src] has created a Cloner for [M].<br>","gmlog.html")
 
 	Play_Music()
 		set category="Admin"
@@ -1614,7 +1614,7 @@ mob/Owner/verb
 			for(var/obj/Items/N in X.Inventory)
 				del(N)
 
-/*
+
 	Force_Gift()
 		set category="Admin"
 		var/list/MobList=list()
@@ -1722,7 +1722,7 @@ mob/Owner/verb
 		if(!M)
 			return
 		M.bank.DepositItem(new /obj/Items/Equipment/Head/Too_Smexy_For_You)
-		M<<"<b>Your custom items have been stored in your Bank"*/
+		M<<"<b>Your custom items have been stored in your Bank"
 
 	Edit_Mode()
 		set category = "GM"
@@ -1730,7 +1730,7 @@ mob/Owner/verb
 		if(usr.client.show_popup_menus)	usr<<"Right Click to Edit"
 		else	usr<<"Normal Game Mode"
 
-/*	Lottery_Results()
+	Lottery_Results()
 		set category="Admin"
 		world<<"<b><font color=green>Server Info:</font>The Lottery has ended, the draw will commence now.</font>"
 		world<<"<b><font color=green>Server Info:</font>50 numbers will be picked, each number may possibly link to a unique prize.</font>"
@@ -1886,15 +1886,6 @@ mob/Owner/verb
 		world<<"<b><font color=green>Server Info:</font>And the twentieth number is : <font color=red>[t] (3000 badges).</font>"
 		sleep(50)
 		world<<"<b><font color=green>Server Info:</font>The lottery has ended! Thank you for participating.</font>"
-		saveSecurity("Lotto2")*/
+		saveSecurity("Lotto2")
 
-	Double_XP()
-		set category="Admin"
-		set name ="Turn on/off Double Exp"
-		if(Serverxp ==0)
-			world <<"<b><font color=green>GM: </font>[usr] has enabled Double XP! All enemies will now reward you more experience!"
-			Serverxp =1
-			return
-		else
-			Serverxp =0
-			world <<"<b><font color=green>GM: </font>[usr] has disabled Double XP! All enemies will now reward normal experience!"
+

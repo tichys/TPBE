@@ -61,6 +61,18 @@ turf
 					M.loc=locate(src.newx,src.newy,src.newz)
 					if(src.newdir)	M.dir=src.newdir
 					M.SetRespawn();M.TutLevel=5
+		Door2
+			Entered(mob/M)
+				if(ismob(M) && M.client)
+					sleep(8);if(!M)	return
+					if(M.Level >=200)
+						if(M.loc==src)
+							M.loc=locate(100,14,15)
+							if(src.newdir)	M.dir=src.newdir
+					else
+						if(M.loc==src)
+							M.loc=locate(src.newx,src.newy,src.newz)
+							if(src.newdir)	M.dir=src.newdir
 area
 	DenseOpacity
 		icon='turfs.dmi'
@@ -123,12 +135,14 @@ obj/Decoration
 			icon_state="Table"
 		BigTable
 			icon_state="TableTL"
+
 		Chair
 			density=0;icon_state="ChairT"
 		Crate
 			icon_state="Crate"
 		CrateLoop
 			icon_state="CrateLoopB"
+
 		Barrel
 			icon_state="Barrel"
 		Spears
@@ -188,7 +202,62 @@ obj/Decoration
 			icon_state="JunkPile"
 		Pot
 			icon_state="Pot"
+	Royal_Interior
+		icon='RoyalInt.dmi'
 
+		Royal_C
+			icon_state="11"
+			density=0
+		Piano
+			icon_state="1"
+			density=0
+		Chair
+			icon_state="12"
+			density=0
+		Chair2
+			icon_state="13"
+			density=0
+		Chair3
+			icon_state="14"
+			density=0
+		Chair4
+			icon_state="15"
+			density=0
+
+	SpecialDecor
+		icon='1 Special S,L turfs.dmi'
+
+		Chair
+			icon_state="31"
+			density=0
+		Chair2
+			icon_state="32"
+			density=0
+		Chair3
+			icon_state="33"
+			density=0
+		Chair4
+			icon_state="34"
+			density=0
+		throne1
+			icon_state="28"
+			density=1
+		throne2
+			icon_state="29"
+			density=1
+		throne3
+			icon_state="30"
+			density=0
+
+	SpecialDecor2
+		icon='2 Special S,L turfs.dmi'
+
+		Piano
+			icon_state="1"
+			density=0
+		Throne
+			icon_state="11"
+			density=0
 
 turf
 	icon='Turfs.dmi'
@@ -281,6 +350,433 @@ turf
 			icon_state="1"
 			density=0
 			layer=9
+
+	AASpecialSlicons6
+		icon='6 Special S,L turfs.dmi'
+		lavafall1
+			icon_state="1"
+			density=1
+	AASpecialSlicons5
+		icon='5 Special S,L turfs.dmi'
+		lavapit
+			icon_state="1"
+			density=1
+		biglava1
+			icon_state="2"
+			density=1
+		biglava2
+			icon_state="3"
+			density=1
+		biglava3
+			icon_state="4"
+			density=1
+		biglava4
+			icon_state="5"
+			density=1
+	AASpecialSlicons4
+		icon='4 Special S,L turfs.dmi'
+		house1
+			icon_state="1"
+			density=0
+			layer=15
+		house2
+			icon_state="2"
+			density=0
+			layer=15
+		house3
+			icon_state="3"
+			density=0
+			layer=15
+	AASpecialSlicons3
+		icon='3 Special S,L turfs.dmi'
+		tree
+			icon_state="1"
+			density=0
+			layer=9
+		cbench
+			icon_state="2"
+			density=0
+		well
+			icon_state="3"
+			density=0
+			layer=10
+	AASpecialSlicons2
+		icon='2 Special S,L turfs.dmi'
+		piano
+			icon_state="1"
+			density=1
+		flag
+			icon_state="2"
+			density=0
+		gold
+			icon_state="3"
+			density=1
+		cross
+			icon_state="4"
+			density=1
+		ctable
+			icon_state="5"
+			density=1
+		cbench
+			icon_state="6"
+			density=0
+		cwindow
+			icon_state="7"
+			density=1
+		pilar
+			icon_state="8"
+			density=1
+		coffin
+			icon_state="9"
+			density=1
+		Magic_circle
+			icon_state="10"
+			density=0
+		Royal_C
+			icon_state="11"
+			density=0
+	AASpecialSlicons
+		icon='1 Special S,L turfs.dmi'
+		carp1
+			icon_state="1"
+			density=0
+		carp2
+			icon_state="2"
+			density=0
+		carp3
+			icon_state="3"
+			density=0
+		carp4
+			icon_state="4"
+			density=0
+		flo1
+			icon_state="5"
+			density=0
+		carp5
+			icon_state="6"
+			density=0
+		carp6
+			icon_state="7"
+			density=0
+		carp7
+			icon_state="8"
+			density=0
+		carp8
+			icon_state="9"
+			density=0
+		carp9
+			icon_state="10"
+			density=0
+		wall1
+			icon_state="11"
+			density=1
+		stair1
+			icon_state="12"
+		wall2
+			icon_state="13"
+			density=1
+		wall3
+			icon_state="14"
+			density=1
+		stair2
+			icon_state="15"
+			density=0
+		stair3
+			icon_state="16"
+			density=0
+		stair4
+			icon_state="17"
+			density=0
+		wall4
+			icon_state="18"
+			density=1
+		wall5
+			icon_state="19"
+			density=1
+		wall6
+			icon_state="20"
+			density=1
+		wall7
+			icon_state="21"
+			density=1
+		wall8
+			icon_state="22"
+			density=1
+		wall9
+			icon_state="23"
+			density=1
+		wall10
+			icon_state="24"
+			density=1
+		wall11
+			icon_state="25"
+			density=1
+		knight_head
+			icon_state="26"
+			density=1
+		knight_body
+			icon_state="27"
+			density=1
+		trone_up
+			icon_state="28"
+			density=1
+		trone_mid
+			icon_state="29"
+			density=1
+		trone_down
+			icon_state="30"
+			density=0
+		chair1
+			icon_state="31"
+			density=0
+		chair2
+			icon_state="32"
+			density=0
+		chair3
+			icon_state="33"
+			density=0
+		chair4
+			icon_state="34"
+			density=0
+		table1
+			icon_state="35"
+			density=1
+		table2
+			icon_state="36"
+			density=1
+		table3
+			icon_state="37"
+			density=1
+		table4
+			icon_state="38"
+			density=1
+		table5
+			icon_state="39"
+			density=1
+		table6
+			icon_state="40"
+			density=1
+		table7
+			icon_state="41"
+			density=1
+		table8
+			icon_state="42"
+			density=1
+		table9
+			icon_state="43"
+			density=1
+		gold1
+			icon_state="44"
+			density=0
+		cwall1
+			icon_state="45"
+			density=1
+		cwall2
+			icon_state="46"
+			density=1
+		cwall3
+			icon_state="47"
+			density=1
+		cwall4
+			icon_state="48"
+			density=1
+		cwall5
+			icon_state="49"
+			density=1
+		cwall6
+			icon_state="50"
+			density=1
+		cwall7
+			icon_state="51"
+			density=1
+		cwall8
+			icon_state="52"
+			density=1
+		cwall9
+			icon_state="53"
+			density=1
+		ccarp1
+			icon_state="54"
+			density=0
+		ccarp2
+			icon_state="55"
+			density=0
+		ccarp3
+			icon_state="56"
+			density=0
+		ccarp4
+			icon_state="57"
+			density=0
+		ccarp5
+			icon_state="58"
+			density=0
+		ccarp6
+			icon_state="59"
+			density=0
+		ccarp7
+			icon_state="60"
+			density=0
+		ccarp8
+			icon_state="61"
+			density=0
+		ccarp9
+			icon_state="62"
+			density=0
+		cflo1
+			icon_state="63"
+			density=0
+		lavafloor1
+			icon_state="64"
+			density=0
+		lavafloor2
+			icon_state="65"
+			density=0
+		lavafloor3
+			icon_state="66"
+			density=0
+		lavafloor4
+			icon_state="67"
+			density=0
+		lavafloor5
+			icon_state="68"
+			density=0
+		lavafloor6
+			icon_state="70"
+			density=0
+		C1
+			icon_state="108"
+			density=0
+		C2
+			icon_state="109"
+			density=0
+		C3
+			icon_state="110"
+			density=0
+		C4
+			icon_state="111"
+			density=0
+		C5
+			icon_state="112"
+			density=0
+		C6
+			icon_state="113"
+			density=0
+
+	Creepy
+		icon='1 Special S,L turfs.dmi'
+		CrFloor1
+			icon_state="71"
+			density=1
+		CrFloor2
+			icon_state="72"
+			density=1
+		CrFloor3
+			icon_state="73"
+			density=0
+		CrFloor4
+			icon_state="74"
+			density=0
+		CrFloor5
+			icon_state="75"
+			density=1
+		CrFloor6
+			icon_state="76"
+			density=1
+		CrFloor7
+			icon_state="77"
+			density=1
+		CrFloor8
+			icon_state="78"
+			density=1
+		CrFloor9
+			icon_state="79"
+			density=1
+		CrFloor10
+			icon_state="80"
+			density=1
+		CrFloor11
+			icon_state="81"
+			density=1
+		CrFloor12
+			icon_state="82"
+			density=1
+		CrFloor13
+			icon_state="83"
+			density=1
+		CrFloor14
+			icon_state="104"
+			density=1
+		CrFloor15
+			icon_state="105"
+			density=1
+		CrFloor16
+			icon_state="106"
+			density=1
+		CrFloor17
+			icon_state="107"
+			density=1
+		CrWall1
+			icon_state="84"
+			density=1
+		CrWall2
+			icon_state="85"
+			density=1
+		CrWall3
+			icon_state="86"
+			density=1
+		CrWall4
+			icon_state="87"
+			density=1
+		CrWall6
+			icon_state="88"
+			density=1
+		CrWall7
+			icon_state="89"
+			density=1
+		CrWall8
+			icon_state="90"
+			density=1
+		CrWall9
+			icon_state="91"
+			density=1
+		CrWall10
+			icon_state="92"
+			density=1
+		CrWall11
+			icon_state="93"
+			density=1
+		CrWall12
+			icon_state="94"
+			density=1
+		CrWall13
+			icon_state="95"
+			density=1
+		CrWall14
+			icon_state="96"
+			density=1
+		CrWall15
+			icon_state="97"
+			density=1
+		CrWall16
+			icon_state="98"
+			density=1
+		CrWall17
+			icon_state="99"
+			density=1
+		CrWall18
+			icon_state="100"
+			density=1
+		CrWall19
+			icon_state="101"
+			density=1
+		CrWall20
+			icon_state="102"
+			density=1
+		CrWall21
+			icon_state="103"
+			density=1
+
+
 	Arena
 		icon='Arena.dmi'
 		Wall

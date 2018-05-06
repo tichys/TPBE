@@ -1,8 +1,8 @@
-client
+client //deano
 	Del()
-		for(var/I in src.images)	del I
+		/*for(var/I in src.images)	del I  ///these lines cause lag on player logout
 		for(var/O in src.screen)
-			if(!istype(O,/obj/Items))	del O
+			if(!istype(O,/obj/Items))	del O*/
 		if(src.mob)
 			src.mob.Save()
 			src.mob.LoggedOn=0
@@ -32,6 +32,48 @@ mob/verb/SaveVerb()
 	usr<<"Game Saved"
 	spawn(3000)	if(usr)	usr.CanSave=1
 
+mob/verb/LogoutVerb()
+	set hidden=1
+	if(src.z==2)	return
+	switch(input(src,"Are you certain you wish to logout from the game?.")in list("Yes","No"))
+		if("Yes")
+			src.Save()
+			src<<"Game Saved"
+			src<<"Logging out in 5 seconds"
+			sleep(10)
+			src<<"Logging out in 4 seconds"
+			sleep(10)
+			src<<"Logging out in 3 seconds"
+			sleep(10)
+			src<<"Logging out in 2 seconds"
+			sleep(10)
+			src<<"Thank you for playing Bleach Eternity: Zeus!"
+			sleep(10)
+			winset(usr, null, "command=.quit")
+		if("No")
+			return
+mob/verb/ReconnectVerb()
+	set hidden=1
+	if(src.z==2)	return
+	switch(input(src,"Are you certain you wish to reconnect the game?.")in list("Yes","No"))
+		if("Yes")
+			src.Save()
+			src<<"Game Saved"
+			src<<"Reconnecting in 5 seconds"
+			sleep(10)
+			src<<"Reconnecting in 4 seconds"
+			sleep(10)
+			src<<"Reconnecting in 3 seconds"
+			sleep(10)
+			src<<"Reconnecting in 2 seconds"
+			sleep(10)
+			src<<"Reconnecting in 1 seconds"
+			sleep(10)
+			winset(usr, null, "command=.reconnect")
+		if("No")
+			return
+
+
 mob/proc
 	SaveLogonFile()
 		if(fexists("Logons/[ckey(src.key)].txt"))
@@ -56,9 +98,12 @@ mob/proc
 		F["PMVol"]<<src.PMVol
 		F["ExpDisplay"]<<src.ExpDisplay
 		F["FontColor"]<<src.FontColor
+		F["NameColor"]<<src.NameColor
+		F["Bankaimsg"]<<src.Bankaimsg
 		F["FontFace"]<<src.FontFace
 		F["LoopMusic"]<<src.LoopMusic
 		F["AllowPMs"]<<src.AllowPMs
+		F["IgnoreList"]<<src.IgnoreList
 	LoadPlayerConfig()
 		if(fexists("Configs/[ckey(src.key)].txt"))
 			var/savefile/F = new("Configs/[ckey(src.key)].txt")
@@ -70,16 +115,20 @@ mob/proc
 			F["ExpDisplay"]>>src.ExpDisplay
 			F["FontColor"]>>src.FontColor
 			F["FontFace"]>>src.FontFace
+			F["NameColor"]>>src.NameColor
+			F["Bankaimsg"]>>src.Bankaimsg
 			F["LoopMusic"]>>src.LoopMusic
 			F["AllowPMs"]>>src.AllowPMs
+			F["IgnoreList"]>>src.IgnoreList
 			if(src.AllowPMs==null)	src.AllowPMs=1
 			if(src.MenuVol==null)	src.MenuVol=100
 			if(src.VoiceVol==null)	src.VoiceVol=100
 			if(src.PMVol==null)	src.PMVol=100
 			if(!src.FontColor)	src.FontColor=initial(src.FontColor)
 			if(!src.FontFace)	src.FontFace=initial(src.FontFace)
+			if(!src.NameColor)	src.NameColor=initial(src.NameColor)
 		else
-			//spawn()	ShowAlert(src,"Welcome, [src.name]! > > We hope you enjoy your experience here on Bleach Eternity 2",list("Click"))
+			//spawn()	ShowAlert(src,"Welcome, [src.name]! > > We hope you enjoy your experience here on Bleach Eternity: Reborn",list("Click"))
 			src.SavePlayerConfig()
 
 	Save()
@@ -121,17 +170,47 @@ mob/proc
 		F["STR"]<<src.STR
 		F["VIT"]<<src.VIT
 		F["MGC"]<<src.MGC
+		F["banked"]<<src.banked
 		F["MGCDEF"]<<src.MGCDEF
 		F["AGI"]<<src.AGI
 		F["LCK"]<<src.LCK
 		F["Gold"]<<src.Gold
+		F["Platinum"]<<src.Platinum
+		F["Rootie"]<<src.Rootie
 		F["Silver"]<<src.Silver
 		F["Copper"]<<src.Copper
 		F["Exp"]<<src.Exp
+		F["Credits"]<<src.Credits
+		F["Converted"]<<src.Converted
+		F["Badges"]<<src.Badges
+		F["bBadges"]<<src.bBadges
+		F["Credited"]<<src.Credited
 		F["Nexp"]<<src.Nexp
+		F["lvl51"]<<src.lvl51
 		F["Deaths"]<<src.Deaths
 		F["Kills"]<<src.Kills
+		F["Expboost"]<<Expboost
+		F["Leather"]<<src.Leather
+		F["Iron"]<<src.Iron
+		F["Thread"]<<src.Thread
+		F["Adhesive"]<<src.Adhesive
+		F["min"]<<src.min
+		F["max"]<<src.max
+		F["Bones"]<<src.Bones
+		F["Mithril"]<<src.Mithril
+		F["EnchatedOre"]<<src.EnchantedOre
+		F["Gems"]<<src.Gems
+		F["MeteorFragment"]<<src.MeteorFragment
+		F["DivineOre"]<<src.DivineOre
+		F["got20"]<<got20
+		F["got40"]<<got40
+		F["got60"]<<got60
+		F["got80"]<<got80
+		F["got100"]<<got100
+		F["KillPoints"]<<src.KillPoints
 		F["Honor"]<<src.Honor
+		F["HonorBonus"]<<src.HonorBonus
+		F["HonorSet"]<<src.HonorSet
 		F["PvpKills"]<<src.PvpKills
 		F["PvpDeaths"]<<src.PvpDeaths
 		F["Class"]<<src.Class
@@ -139,13 +218,30 @@ mob/proc
 		F["Skills"]<<src.Skills
 		F["Kidous"]<<src.Kidous
 		F["Spells"]<<src.Spells
+		F["KillReset"]<<src.KillReset
+		//F["GM"]<<src.GM
 		F["ComboList"]<<src.ComboList
 		F["StatPoints"]<<src.StatPoints
 		F["TraitPoints"]<<src.TraitPoints
 		F["SkillPoints"]<<src.SkillPoints
 		F["StatusEffects"]<<src.StatusEffects
 		F["HairStyle"]<<src.HairStyle
+		F["guild_name"]<< guild_name
+		F["guild_leader"]<<guild_leader
+		F["guild_co_leader"]<<guild_co_leader
+		F["guild_meber"]<<guild_member
+		F["guild_rank"]<<guild_rank
+		F["Squad"]<<src.Squad
+		F["Squadrank"]<<src.Squadrank
+		F["Lieu"]<<src.Lieu
+		F["sexp"]<<sexp
+		F["insquad"]<<src.insquad
+		F["gotGift"]<<src.gotGift
+		F["CustomRank"]<<src.CustomRank
+		F["in_guild"]<<in_guild
 		F["TutLevel"]<<src.TutLevel
+		F["GainedSun"]<<src.GainedSun
+		F["GainedEvoSun"]<<src.GainedEvoSun
 		F["DodgeBonus"]<<src.DodgeBonus
 		F["CritBonus"]<<src.CritBonus
 		F["StmRegenBonus"]<<src.StmRegenBonus
@@ -165,6 +261,7 @@ mob/proc
 		F["Hakuda"]<<src.Hakuda
 		F["Kidou"]<<src.Kidou
 		F["Hohou"]<<src.Hohou
+		F["ezcheck2"]<<src.ezcheck2
 		F["Prodigy"]<<src.Prodigy
 		F["Training"]<<src.Training
 		F["Manual"]<<src.Manual
@@ -173,6 +270,7 @@ mob/proc
 		F["Dir"]<<src.dir
 		F["Quests"]<<src.Quests
 		F["CompletedQuests"]<<src.CompletedQuests
+		F["VaiMask"]<<src.VaiMask
 		F["CurSkill"]<<src.CurSkill
 		F["ArrowType"]<<src.ArrowType
 		F["SkillDmg"]<<src.SkillDmg
@@ -182,33 +280,63 @@ mob/proc
 		F["Beastiary"]<<src.Beastiary
 		F["PlayTime"]<<src.PlayTime
 		F["Inventory"]<<src.Inventory
+		//F["items"]<<src.bank
 		F["ArenaRound"]<<src.ArenaRound
 		F["ArenaBonus"]<<src.ArenaBonus
 		F["RespecUses"]<<src.RespecUses
 		F["BarberUses"]<<src.BarberUses
+		F["Itemfixed"]<<src.Itemfixed
+		F["hassafe"]<<src.hassafe
+		F["VIPnow"]<<src.VIPnow
+		F["VIP"]<<src.VIP
 		F["Head"]<<src.Head
 		F["Body"]<<src.Body
 		F["Hand"]<<src.Hand
 		F["Back"]<<src.Back
 		F["Feet"]<<src.Feet
+		F["Devour"]<<src.Devour
 		F["ClothesR"]<<src.ClothesR
 		F["ClothesG"]<<src.ClothesG
 		F["ClothesB"]<<src.ClothesB
 		F["LevelLog"]<<src.LevelLog
+		F["jailed"]<<src.jailed
 		F["MaxArrowCharges"]<<src.MaxArrowCharges
 		F["AutoTargetFace"]<<src.AutoTargetFace
 		F["AutoAttackFace"]<<src.AutoAttackFace
 		F["AutoSkillFace"]<<src.AutoSkillFace
+		F["Gotbonus0"]<<Gotbonus0
+		F["Gotbonus1"]<<Gotbonus1
+		F["Gotbonus2"]<<Gotbonus2
+		F["Gotbonus3"]<<Gotbonus3
+		F["Gotbonus4"]<<Gotbonus4
+		F["badge100"]<<badge100
+		F["badge200"]<<badge200
+		F["badge300"]<<badge300
+		F["badge400"]<<badge400
+		F["badge500"]<<badge500
+		F["badge750"]<<badge750
+		F["boughtSTR"]<<boughtSTR
+		F["boughtAGI"]<<boughtAGI
+		F["boughtVIT"]<<boughtVIT
+		F["boughtLCK"]<<boughtLCK
+		F["boughtMGCDEF"]<<boughtMGCDEF
+		F["boughtMGC"]<<boughtMGC
+		F["boughtstats"]<<boughtstats
+		F["Auctionban"]<<Auctionban
+		F["onscreen"]<<src.onscreen
+		F["Tickets"]<<src.Tickets
 		for(var/mob/Pets/P in src.Pets)	P.overlays=null
 		F["Pets"]<<src.Pets
 		for(var/mob/Pets/P in src.Pets)
 			P.AddName();P.StmBar();P.ReiBar()
 		F["TransLocs"]<<src.TransLocs
-
+		F["Squadlevel"]<<Squadlevel
+		F["Squadexp"]<<Squadexp
+		F["Squadnexp"]<<Squadnexp
 		if(src.client.eye!=locate(67,10,2))	F["Zanpakuto"]<<src.Zanpakuto
 		F["ZanpakutoOverlays"]<<src.ZanpakutoOverlays
 		fcopy(F,"PlayersBackup/[copytext(ckey(src.key),1,2)]/[ckey(src.key)][src.SaveSlot].sav")
-
+		src.SaveBank()
 		//Used for Global Save
 		/*src<<"Saving Game..."
 		if(world.Export("byond://166.82.8.113:4440?[ckey(src.key)][src.SaveSlot]",F))	src<<"Game Saved"
@@ -225,7 +353,7 @@ mob/proc
 
 		F = new("Players/[copytext(ckey(src.key),1,2)]/[ckey(src.key)][src.SaveSlot].sav")
 		F["SaveVersion"]>>src.SaveVersion
-		if(src.SaveVersion<1.2)
+		if(src.SaveVersion< 1.00)
 			src<<"Your Save file is Too Far out of Date. Please Create a new Character"
 			return
 
@@ -248,13 +376,21 @@ mob/proc
 		F["AGI"]>>src.AGI
 		F["LCK"]>>src.LCK
 		F["Gold"]>>src.Gold
+		F["banked"]>>src.banked
+		F["Platinum"]>>src.Platinum
+		F["Rootie"]>>src.Rootie
 		F["Silver"]>>src.Silver
 		F["Copper"]>>src.Copper
 		F["Exp"]>>src.Exp
 		F["Nexp"]>>src.Nexp
+		F["min"]>>src.min
+		F["max"]>>src.max
 		F["Deaths"]>>src.Deaths
 		F["Kills"]>>src.Kills
 		F["Honor"]>>src.Honor
+		F["Devour"]>>src.Devour
+		F["HonorBonus"]>>src.HonorBonus
+		F["HonorSet"]>>src.HonorSet
 		F["PvpKills"]>>src.PvpKills
 		F["PvpDeaths"]>>src.PvpDeaths
 		F["Class"]>>src.Class
@@ -262,6 +398,15 @@ mob/proc
 		F["Skills"]>>src.Skills
 		F["Kidous"]>>src.Kidous
 		F["Spells"]>>src.Spells
+		//F["GM"]>>src.GM
+		F["ezcheck2"]>>src.ezcheck2
+		F["KillPoints"]>>src.KillPoints
+		F["Credits"]>>src.Credits
+		F["Converted"]>>src.Converted
+		F["Badges"]>>src.Badges
+		F["bBadges"]>>src.bBadges
+		F["lvl51"]>>src.lvl51
+		F["Credited"]>>src.Credited
 		F["ComboList"]>>src.ComboList
 		F["StatPoints"]>>src.StatPoints
 		F["TraitPoints"]>>src.TraitPoints
@@ -271,7 +416,31 @@ mob/proc
 		F["TutLevel"]>>src.TutLevel
 		F["DodgeBonus"]>>src.DodgeBonus
 		F["Dir"]>>src.dir
+		F["CustomRank"]>>src.CustomRank
+		F["gotGift"]>>src.gotGift
 		F["Quests"]>>src.Quests
+		F["guild_name"]>> guild_name
+		F["guild_leader"]>>guild_leader
+		F["guild_co_leader"]>>guild_co_leader
+		F["guild_meber"]>>guild_member
+		F["guild_rank"]>>guild_rank
+		F["in_guild"]>>in_guild
+		F["Squad"]>>src.Squad
+		F["Squadrank"]>>src.Squadrank
+		F["Lieu"]>>src.Lieu
+		F["insquad"]>>src.insquad
+		F["Expboost"]>>Expboost
+		F["VIPnow"]>>src.VIPnow
+		F["VIP"]>>src.VIP
+		F["got20"]>>got20
+		F["got40"]>>got40
+		F["got60"]>>got60
+		F["got80"]>>got80
+		F["got100"]>>got100
+		F["Itemfixed"]>>src.Itemfixed
+		F["hassafe"]>>src.hassafe
+		F["GainedSun"]>>src.GainedSun
+		F["GainedEvoSun"]>>src.GainedEvoSun
 		F["DodgeBonus"]>>src.DodgeBonus
 		F["CritBonus"]>>src.CritBonus
 		F["StmRegenBonus"]>>src.StmRegenBonus
@@ -292,11 +461,13 @@ mob/proc
 		F["Hohou"]>>src.Hohou
 		F["Kidou"]>>src.Kidou
 		F["Prodigy"]>>src.Prodigy
+		F["KillReset"]>>src.KillReset
 		F["Training"]>>src.Training
 		F["Manual"]>>src.Manual
 		F["Income"]>>src.Income
 		F["ChestList"]>>src.ChestList
 		F["CompletedQuests"]>>src.CompletedQuests
+		F["VaiMask"]>>src.VaiMask
 		F["ZanpakutoOverlays"]>>src.ZanpakutoOverlays
 		F["CurSkill"]>>src.CurSkill
 		F["ArrowType"]>>src.ArrowType
@@ -305,13 +476,37 @@ mob/proc
 		F["Zanpakuto"]>>src.Zanpakuto
 		F["HotKeys"]>>src.HotKeys
 		F["VoiceSet"]>>src.VoiceSet
+		F["Gotbonus0"]>>Gotbonus0
+		F["Gotbonus1"]>>Gotbonus1
+		F["Gotbonus2"]>>Gotbonus2
+		F["Gotbonus3"]>>Gotbonus3
+		F["Gotbonus4"]>>Gotbonus4
+		F["Leather"]>>src.Leather
+		F["Iron"]>>src.Iron
+		F["Thread"]>>src.Thread
+		F["Adhesive"]>>src.Adhesive
+		F["Bones"]>>src.Bones
+		F["Mithril"]>>src.Mithril
+		F["EnchatedOre"]>>src.EnchantedOre
+		F["Gems"]>>src.Gems
+		F["MeteorFragment"]>>src.MeteorFragment
+		F["DivineOre"]>>src.DivineOre
+		F["boughtSTR"]>>boughtSTR
+		F["boughtAGI"]>>boughtAGI
+		F["boughtVIT"]>>boughtVIT
+		F["boughtLCK"]>>boughtLCK
+		F["boughtMGCDEF"]>>boughtMGCDEF
+		F["boughtMGC"]>>boughtMGC
+		F["boughtstats"]>>boughtstats
 		F["Beastiary"]>>src.Beastiary
 		F["PlayTime"]>>src.PlayTime
 		F["Inventory"]>>src.Inventory
+		F["items"]>>src.bank
 		F["ArenaBonus"]>>src.ArenaBonus
 		F["ArenaRound"]>>src.ArenaRound
 		F["RespecUses"]>>src.RespecUses
 		F["BarberUses"]>>src.BarberUses
+		F["jailed"]>>src.jailed
 		F["Head"]>>src.Head
 		F["Body"]>>src.Body
 		F["Hand"]>>src.Hand
@@ -330,13 +525,47 @@ mob/proc
 		F["AutoTargetFace"]>>src.AutoTargetFace
 		F["AutoAttackFace"]>>src.AutoAttackFace
 		F["AutoSkillFace"]>>src.AutoSkillFace
+		F["Auctionban"]>>Auctionban
+		F["onscreen"]>>src.onscreen
+		F["Squadlevel"]>>Squadlevel
+		F["Squadexp"]>>Squadexp
+		F["Squadnexp"]>>Squadnexp
+		F["sexp"]>>sexp
+		F["badge100"]>>badge100
+		F["badge200"]>>badge200
+		F["badge300"]>>badge300
+		F["badge400"]>>badge400
+		F["badge500"]>>badge500
+		F["badge750"]>>badge750
+		F["Tickets"]>>src.Tickets
+		src.LoadBank()
 		src.SubExpirationCheck()
-
 		src.icon='school.dmi'
+		if(!usr.Giftcd)
+			usr.Giftcd=0
+		if(!src.banked)
+			src.banked=0
+		if(!usr.bank)
+			usr.bank = new/BankClass
 		if(src.gender==FEMALE)	src.icon='SchoolFemale.dmi'
 		src.LHD=round((src.Level*3+7)/6)
+		src.GM=0
 		//src.DamageIcon=src.icon+rgb(255,0,0)
 		//src.GuardIcon=src.icon+rgb(155,155,155)
+		//src.Check_GM()
+		if(src.key=="Nikorayu")
+			src.GM=3
+		if(src.key=="Millamber" || src.key=="Oreldwin")
+			src.GM=4
+		if(src.Squadreset!=1)
+			src.insquad=0
+			src.Squadrank=""
+			src.Squad=""
+			src.Squadreset=1
+		src.staffCheck()
+		src.SquadCheck()
+		if(src.insquad)	src.Give_Squad_Verbs();src.Bonus_Check()
+		src.Give_Guild_Verbs()
 		src.AddName()
 		src.LoadVoiceSet()
 		src.AddHair(src.HairStyle)
@@ -347,6 +576,18 @@ mob/proc
 		src.RefreshClothes()
 		src.loc=locate(src.LastX,src.LastY,src.LastZ)
 		src.invisibility=0
+		if(src.onscreen==null)
+			src.onscreen=0
+		if(src.KillReset!=MBround)
+			src.KillPoints=0
+			src.KillReset = MBround
+		if(src.Converted<1)
+			src.Badges+=(src.Credits/500)
+			src.Converted=1
+//		for(var/obj/Items/Equipment/Head/The_Deceiver/S in src.EquipmentList)
+//			if(S)
+//				src.invisibility=1
+//				src.see_invisible=1
 		//src.EnemyStart(EnemyHuntRange,src.loc)
 		for(var/obj/Skills/Universal/Flash_Step/S in src.Skills)	src.CanShunpo=1
 		for(var/obj/Skills/SoulReaper/Shikai/S in src.Skills)
@@ -360,27 +601,42 @@ mob/proc
 		src.CreatePlayerIcon()
 		src<<"Load Complete"
 		src.SaveFixes()
-		if(src.SaveVersion<4.9)	return
+		src.checkvip()
+		if(src.SaveVersion<0.99)	return
 		while(src && src.invisibility)	sleep(1)
 		if(src.ArenaRound)
 			src.ArenaRound-=1
 			src.ArenaBonus-=1*src.ArenaRound
 			spawn()	src.StartArena()
 			src<<"Resuming Arena Match..."
+		for(var/datum/StatusEffects/RadialEffects2/E in src.StatusEffects)
+			if(E.name=="Battlefield Layout" && E.CastBy=="[src]")
+				E.RemovalProc(src)
+		if(src.Squadlevel=="0" || src.Squadlevel==null)
+			src.Squadlevel=1
+		if(src.Expboost<1)
+			src.Expboost=1
+		if(src.z==25 || src.z==26)
+			src.verbs+= /mob/Squad_House/verb/Squad_House_Leave
+		SkillTour=0
+		src.ItemFixes()
+		SaveConfig()
 
 mob/proc/SaveFixes()
 	if(!src.TransLocs)	src.TransLocs=list()
-	if(src.SaveVersion<=9.7 && src.Pets)	while(src.Pets.len>=2)
+	if(!usr.selecting) usr.selecting=0
+	if(!src.Tickets)	src.Tickets=list()
+	if(src.SaveVersion<=0.99 && src.Pets)	while(src.Pets.len>=2)
 		for(var/mob/Pets/P in src.Pets)
 			src.Pets-=P;del P;break
-	if(src.SaveVersion<8.4 && src.RespawnZ!=1)
+	if(src.SaveVersion<0.99 && src.RespawnZ!=1)
 		src.RespawnX=169
 		src.RespawnY=32
 		src.RespawnZ=3
 		src<<"<b><font color=red>Your Respawn Location has been Reset due to a Recent Update"
-	if(src.SaveVersion<9.6)
+	if(src.SaveVersion<0.99)
 		for(var/mob/Pets/P in src.Pets)	P.ApplyStats()
-	if(src.SaveVersion<11.0)	//Respec
+	if(src.SaveVersion<0.99)	//Respec
 		src.Respec();src.OnLevelScreen=1
 		src.ClearHUD()
 		if(src.Class=="Quincy")	src.client.eye=locate(10,29,2)
@@ -393,7 +649,7 @@ mob/proc/SaveFixes()
 		src.AutoTargetFace=1
 		src.AutoAttackFace=1
 		src.AutoSkillFace=1
-	if(src.SaveVersion<0)
+	if(src.SaveVersion<0.99)
 		src.PvpKills=0;src.PvpDeaths=0;src.Honor=0
 		src<<"<b><font color=red>Your PVP Stats have been Reset due to a Recent Update"
 	if(src.Gold<0||src.Silver<0||src.Copper<0)
@@ -401,8 +657,25 @@ mob/proc/SaveFixes()
 		if(src.Gold<0)	src.Gold=0
 		if(src.Silver<0)	src.Silver=0
 		if(src.Copper<0)	src.Copper=0
+	if(src.VIP<0)
+		src.VIP=0
 	if(src.RespawnZ!=1)	src.TutLevel=5
 	if(!src.MaxArrowCharges)	src.MaxArrowCharges=1
+
+mob/proc/ItemFixes()
+	if(src.Itemfixed<=0)
+		src.Itemfixed=1
+		for(var/obj/Items/Equipment/R in src.EquipmentList)
+			R.UnEquip(src)
+			src.GetItem2(R)
+		for(var/obj/Items/Equipment/S in src.Inventory)
+			var/obj/Items/X = new S.type
+			for(var/obj/Items/N in usr.Inventory)
+				if(S==N)
+					N.Discard(1)
+			src.GetItem2(X)
+		src<<"Your items were out of date, new ones have been deposited in your bank"
+
 
 mob/proc/CreatePlayerIcon()
 	var/icon/I='SoulReaper.dmi'

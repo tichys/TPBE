@@ -3,13 +3,13 @@ var/list/GlobalMuteList=list()
 mob/proc/CheckGlobalMute()
 	if(src.client.address in GlobalMuteList)
 		src<<"<b>Mute Reason:</b> [GlobalMuteList[src.client.address]]"
-		src<<"You are Globaly Muted in Stray Games";return 1
+		src<<"You are Globaly Muted in Zeus Games";return 1
 	if(src.key in GlobalMuteList)
 		src<<"<b>Mute Reason:</b> [GlobalMuteList[src.key]]"
-		src<<"You are Globaly Muted in Stray Games";return 2
+		src<<"You are Globaly Muted in Zeus Games";return 2
 	if(src.client.computer_id in GlobalMuteList)
 		src<<"<b>Mute Reason:</b> [GlobalMuteList[src.client.computer_id]]"
-		src<<"You are Globaly Muted in Stray Games";return 3
+		src<<"You are Globaly Muted in Zeus Games";return 3
 	var/list/PlayerOctets=Split(src.client.address,".")
 	for(var/x in GlobalMuteList)
 		if(findtext(x,"*",1,0))
@@ -17,11 +17,11 @@ mob/proc/CheckGlobalMute()
 			if(OctetList.len>=2 && PlayerOctets.len>=2)
 				if(PlayerOctets[1]==OctetList[1] && PlayerOctets[2]==OctetList[2])
 					src<<"<b>Mute Reason:</b> [GlobalMuteList[x]]"
-					src<<"This IP Range is Globaly Muted in Stray Games";return 4
+					src<<"This IP Range is Globaly Muted in Zeus Games";return 4
 	return 0
 
 proc/LoadGlobalMutes(var/RepeatLoad=1)
-	var/http[]=world.Export("http://www.angelfire.com/hero/straygames/GlobalMutes.txt")
+	var/http[]=world.Export("http://162.243.95.178/GlobalMutes.txt")
 	if(!http)
 		if(RepeatLoad)	spawn(600)	LoadGlobalMutes()
 		return

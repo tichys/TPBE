@@ -48,7 +48,11 @@ mob/Pets
 			icon='Nibblet.dmi'
 	BountPets
 		Fly_Trap
-			icon='BountPet.dmi'
+			icon='BountPlantPet.dmi'
+		Sun_Flower
+			icon='BountPlantPet2.dmi'
+		Evo_Sun_Flower
+			icon='BountPlantPet3.dmi'
 
 obj/Items/PetItems
 	Nibblet_Flute

@@ -113,9 +113,46 @@ datum/StatusEffects
 				src.RemovalProc(M);return
 			M.REI-=src.ReiCost;M.ReiBar()
 			if(src.EffectRange && src.CastBy=="[M]" && !M.invisibility)
-				for(var/mob/N in oview(src.EffectRange,M))	if(!M.CanPVP(N))
-					N.AddEffect(new/datum/StatusEffects/RadialEffects(src.name,2,M,src.Stat2Boost,src.Amt2Boost,src.desc,\
-						src.FrontIS,src.BackIS,0,0))
+				for(var/mob/N in oview(src.EffectRange,M))
+					if(!M.CanPVP(N))
+						N.AddEffect(new/datum/StatusEffects/RadialEffects(src.name,2,M,src.Stat2Boost,src.Amt2Boost,src.desc,\
+							src.FrontIS,src.BackIS,0,0))
+	RadialEffects2
+		var/obj/Supplemental/OrbitFront/FrontObj=new
+		var/obj/Supplemental/OrbitBack/BackObj=new
+		var/FrontIS="BlueBallFront"
+		var/BackIS="BlueBallBack"
+		var/EffectRange=0
+		var/ReiCost=0
+		proc/AddOverlays(var/mob/M)
+			M.overlays-=src.FrontObj;M.overlays-=src.BackObj
+			src.FrontObj.icon_state="[src.FrontIS]"
+			src.BackObj.icon_state="[src.BackIS]"
+			M.overlays+=src.FrontObj;M.overlays+=src.BackObj
+		New(var/Name,var/Durate,var/CastedBy,var/Stat2,var/Amt2,var/Desc,FIS,BIS,var/Range,var/Cost)
+			if(!isnum(Durate))	return
+			src.FrontIS=FIS;src.BackIS=BIS
+			src.name=Name;src.desc=Desc
+			src.Duration=Durate;src.CastBy="[CastedBy]"
+			src.Stat2Boost=Stat2;src.Amt2Boost=Amt2
+			src.EffectRange=Range;src.ReiCost=Cost
+		AddProc(var/mob/M,var/ShowMsg=1)
+			src.AddOverlays(M)
+			return ..(M,ShowMsg)
+		RemovalProc(var/mob/M,var/ShowMsg=1)
+			M.overlays-=src.FrontObj;M.overlays-=src.BackObj
+			return ..(M,ShowMsg)
+		Execute(var/mob/M)
+			if(src.ReiCost && M.REI<src.ReiCost)
+				src.RemovalProc(M);return
+			M.REI-=src.ReiCost;M.ReiBar()
+			if(src.EffectRange && src.CastBy=="[M]" && !M.invisibility)
+				for(var/mob/N in oview(src.EffectRange,M))
+					if(!N.Class=="Soul Reaper" || !N.Class=="Quincy" || !N.Class=="Bount" || N.Owner==M)
+						if(!M.CanPVP(N))
+							N.AddEffect(new/datum/StatusEffects/RadialEffects2(src.name,2,M,src.Stat2Boost,src.Amt2Boost,src.desc,\
+								src.FrontIS,src.BackIS,0,0))
+
 	PoisonTypes
 		Abnormal=1
 		New(var/Durate,var/CastedBy,var/Damage=10,var/Desc)

@@ -35,7 +35,7 @@ obj
 			spawn(1)
 				src.icon_state=src.name
 				src.overlays+=new/obj/SkillTree/SkillTypeOverlay(src.SkillType)
-		Click()
+		Click(location,control,params)
 			if(src.name=="Shikai")
 				for(var/obj/Skills/SoulReaper/Shikai/S in usr.Skills)
 					PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
@@ -45,6 +45,13 @@ obj
 						if(Z.SpiritType=="Dragon")	usr.client.eye=locate(10,86,2)
 						if(Z.SpiritType=="Ghost")	usr.client.eye=locate(29,86,2)
 						if(Z.SpiritType=="Beast")	usr.client.eye=locate(67,86,2)
+						if(Z.SpiritType=="Fire Dragon")	usr.client.eye=locate(86,67,2)
+						if(Z.SpiritType=="Healing Canon")	usr.client.eye=locate(105,124,2)
+						if(Z.SpiritType=="Fire Beast")	usr.client.eye=locate(143,124,2)
+						if(Z.SpiritType=="God Spear")	usr.client.eye=locate(124,67,2)
+						if(Z.SpiritType=="Reiki Control")	usr.client.eye=locate(162,67,2)
+						if(Z.SpiritType=="Hornet")	usr.client.eye=locate(113,86,2)
+						if(Z.SpiritType=="Paitence")	usr.client.eye=locate(151,86,2)
 						usr.LoadSkillTree()
 					return
 			if(src.name=="Bankai")
@@ -56,12 +63,30 @@ obj
 						if(Z.SpiritType=="Dragon")	usr.client.eye=locate(10,105,2)
 						if(Z.SpiritType=="Ghost")	usr.client.eye=locate(29,105,2)
 						if(Z.SpiritType=="Beast")	usr.client.eye=locate(67,105,2)
+						if(Z.SpiritType=="Fire Dragon") usr.client.eye=locate(105,67,2)
+						if(Z.SpiritType=="Healing Canon")	usr.client.eye=locate(124,124,2)
+						if(Z.SpiritType=="Fire Beast")	usr.client.eye=locate(162,124,2)
+						if(Z.SpiritType=="God Spear")	usr.client.eye=locate(143,67,2)
+						if(Z.SpiritType=="Reiki Control")	usr.client.eye=locate(181,67,2)
+						if(Z.SpiritType=="Hornet")	usr.client.eye=locate(132,86,2)
 						usr.LoadSkillTree()
 					return
 			if(src.name=="Final Form")
 				for(var/obj/Skills/Quincy/Final_Form/S in usr.Skills)
 					PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
 					usr.client.eye=locate(67,67,2)
+					usr.LoadSkillTree()
+					return
+			if(src.name=="Vaizard")
+				for(var/obj/Skills/SoulReaper/Vaizard/V in usr.Skills)
+					PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
+					usr.client.eye=locate(86,124,2)
+					usr.LoadSkillTree()
+					return
+			if(src.name=="Fuse")
+				for(var/obj/Skills/Bount/Fuse/F in usr.Skills)
+					PlayMenuSound(usr,'OOT_MainMenu_Select.wav')
+					usr.client.eye=locate(181,124,2)
 					usr.LoadSkillTree()
 					return
 			var/Learnable=0
@@ -87,7 +112,23 @@ obj
 				ShowAlert(usr,"[src.name] - [src.SkillType] > > [src.desc] > > [LI][src.LevelDesc]",list("Close"))
 			if(Learnable==2)
 				var/LD="[src.LevelDesc]"
-				if(ShowAlert(usr,"[src.name] - [src.SkillType] > > [src.desc] > > [LI][LD]",list("Level","Close"))=="Level")
+				var/listy[]=params2list(params)
+				if(listy["shift"])
+					var/Amt2Add=(SubMax-MS.Level)
+					Amt2Add=min(Amt2Add,usr.SkillPoints)
+					if(ShowAlert(usr,"Distribute [Amt2Add] Skill Points into [src.icon_state]?",list("Yes","No"))=="Yes")
+						if(Amt2Add!=min(Amt2Add,usr.SkillPoints))	return
+						if(MS.Level<SubMax)
+							for(var/obj/Skills/S in usr.Skills)
+								if(S.name==src.name)
+									S.Level+=Amt2Add
+									if(S.Stat2Boost)
+										usr.vars["[S.Stat2Boost]"]+=(S.BoostAmount*(S.Level - 1))
+										usr.HUDRefresh()
+									break
+							usr.SkillPoints-=Amt2Add;usr.LoadSkillTree();usr.LevelOrbGlow()
+					else	return
+				else	if(ShowAlert(usr,"[src.name] - [src.SkillType] > > [src.desc] > > [LI][LD]",list("Level","Close"))=="Level")
 					if(usr.SkillPoints<=0)	return
 					if(MS.Level<SubMax)
 						for(var/obj/Skills/S in usr.Skills)
@@ -192,15 +233,13 @@ obj
 				Stat2Boost="LCK";BoostAmount=2
 				icon_state="Lucky Stars";desc="Permanently Increases Luck"
 				LevelDesc="+2 Luck per Skill Level"
+
+
 		Bount
 			icon='BountSkills.dmi'
 			Pet_Skills
 				MaxLevel=1;SkillType="Passive"
 				icon_state="Pet Skills";desc="This Skill will be used to Acess your Pet's Skill Tree.  However, that hasn't been implemented yet."
-			Doll_Fusion
-				MaxLevel=1;SkillType="Active"
-				icon_state="Doll Fusion";desc="Become One with your Pet"
-				LevelDesc="Requires Special Training available at Level 50"
 			Summon_Pet
 				MaxLevel=1;SkillType="Active"
 				icon_state="Summon Pet";desc="Summons your Bount pet(s) to the field"
@@ -238,6 +277,10 @@ obj
 				SkillType="Active"
 				icon_state="Defensive Strategy";desc="Reduces the Damage Taken by all Nearby Allies by 10% > This skill can be Toggled.  Drains 5 Reiatsu Per Second while Active."
 				LevelDesc="+1 Distance to Area of Effect per Level > Base Distance of 5"
+			Fuse
+				MaxLevel=1;SkillType="Active"
+				icon_state="Fuse";desc="Become One with your Pet"
+				LevelDesc="Requires Special Training available at Level 50"
 		SoulReaper
 			icon='SoulReaperSkills.dmi'
 			Basic_Combat
@@ -245,7 +288,7 @@ obj
 				icon_state="Basic Combat";desc="Allows for Basic Combat and Combos"
 			Power_Strike
 				SkillType="Attack"
-				icon_state="Power Strike";desc="Instant Attack, Deal 100+STR Melee Damage, 25 REI"
+				icon_state="Power Strike";desc="Instant Attack, Deal 100+STR *1.5+ Zanjutsu Melee Damage, 25 REI"
 				LevelDesc="+25% Damage per Level"
 			Spirit_Shell
 				SkillType="Stat Booster"
@@ -256,9 +299,9 @@ obj
 			Immunity
 				SkillType="Stat Booster"
 				Stat2Boost="ImmunityBonus"
-				BoostAmount=15
+				BoostAmount=10
 				icon_state="Immunity";desc="Immunity to Status Effects"
-				LevelDesc="+15% Immunity per Level"
+				LevelDesc="+10% Immunity per Level"
 			Guard_Breaker
 				MaxLevel=1
 				icon_state="Guard Breaker";desc="Break Through Enemy Guard with Combo Attacks"
@@ -304,14 +347,14 @@ obj
 				Level=1;MaxLevel=1
 				icon_state="Bankai";desc="The Final Release of your Zanpakuto"
 				LevelDesc="Requires Special Training available at Level 50"
-			Visored
+			Vaizard
 				SkillType="Active"
 				Level=1;MaxLevel=1
-				icon_state="Visored";desc="Unite with your Inner Hollow"
+				icon_state="Vaizard";desc="Unite with your Inner Hollow"
 				LevelDesc="Requires Special Training available at Level 125"
 			ShockWave
 				SkillType="Attack"
-				icon_state="ShockWave";desc="100+STR Damage to all Surrounding Enemies, 75 REI"
+				icon_state="ShockWave";desc="150+STR *1.5+ Zanjutsu Damage to all Surrounding Enemies, 75 REI"
 				LevelDesc="+25% Damage per Level"
 			Spirit_Blast
 				SkillType="Attack"
@@ -353,6 +396,7 @@ obj
 				MaxLevel=1
 				icon_state="Spirit Arrow";desc="Create Basic Arrows with your Spirit Energy"
 				SkillType="Passive Attack"
+
 			Power_Shot
 				SkillType="Attack"
 				icon_state="Power Shot";desc="Instant Arrow Attack, Deals 100+MGC Mystic Damage, 50 Reiatsu"
@@ -440,20 +484,20 @@ obj
 				Scatter
 					SkillType="Active"
 					icon_state="Scatter";desc="Scatter your Zanpakuto into 1,000 Blade Petals > Creates a Shield which causes Mystic Damage to all nearby Enemies > Guards against Frontal Assaults > Restricts all Melee Actions > This Skill is Toggleable"
-					LevelDesc="Damage = 25 + MGC. > Plus 1 Base Damage per Level > Plus 25% Damage per Level"
+					LevelDesc="Damage = 150 + MGC + Kidou. > Plus 1 Base Damage per Level > Plus 25% Damage per Level"
 				Petal_Stream
 					SkillType="Attack"
 					icon_state="Petal Stream";desc="Fire a Concentrated Stream of Blade Petals > Hold to Fire > Consumes 15 Rei per second"
-					LevelDesc="Damage = 25 + MGC. > Plus 1 Base Damage per Level > +25% Damage per Level"
+					LevelDesc="Damage = Player Level + MGC + Kidou. > Plus 1 Base Damage per Level > +25% Damage per Level"
 			Ice_Dragon
 				icon='ShikaiIceDragon.dmi'
 				Freeze_Ring
 					SkillType="Attack"
-					icon_state="Freeze Ring";desc="Freeze the ground surrounding the player for 3 seconds. > Anyone inside the area during activation will be Frozen > Consumes 350 Rei"
+					icon_state="Freeze Ring";desc="Freeze the ground surrounding the player for 3 seconds. > Anyone inside the area during activation will be Frozen > Consumes 250 Rei"
 					LevelDesc="Leveling Increases Freeze Radius and Duration"
 				Ice_Dragon_Assault
 					SkillType="Attack"
-					icon_state="Ice Dragon Assault";desc="Launch an Elemental Dragon from your Sword. Freezes Opponents. > Damage = 250+MGC > Consumes 200 Rei"
+					icon_state="Ice Dragon Assault";desc="Launch an Elemental Dragon from your Sword. Freezes Opponents. > Damage = 1000+MGC*2 + kidou > Consumes 200 Rei"
 					LevelDesc="+10% Damage per Level"
 				Freeze_Blade
 					SkillType="Passive"
@@ -469,6 +513,63 @@ obj
 					SkillType="Passive"
 					icon_state="Wound";desc="Attacks will cause the Target to suffer 10% STR Bleed Damage for 7 Seconds. > Only Active during Shikai"
 					LevelDesc="+2 Seconds Duration per Level"
+			Fire_Dragon
+				icon='ShikaiFireDragon.dmi'
+				Fire_Ring
+					SkillType="Attack"
+					icon_state="Fire Ring";desc="Burn the ground surrounding and Stunning the player for 3 seconds. > Consumes 10% REI"
+					LevelDesc="Leveling Increases Burn Radius and Duration"
+				Fire_Dragon_Assault
+					SkillType="Attack"
+					icon_state="Fire Dragon Assault";desc="Launch an Elemental Dragon from your Sword. > Damage = 250+MGC > Consumes 200 Rei"
+					LevelDesc="+10% Damage per Level"
+			Healing_Canon
+				icon='ShikaiHealingCanon.dmi'
+			Fire_Beast
+				icon='ShikaiFireBeast.dmi'
+				Fire_Beam
+					SkillType="Attack"
+					icon_state="Fire Beam";desc="Launch an Elemental Blast from your Sword. > Damage = 400+MGC > Consumes 350 Rei"
+					LevelDesc="+10% Damage per Level"
+			God_Spear
+				icon='ShikaiGodSpear.dmi'
+				Sword_Beam
+					SkillType="Attack"
+					icon_state="Sword Beam";desc="Extend your sword piercing enemys. > Damage = 500+STR*2+Zan> Consumes 10% REI"
+					LevelDesc="+10% Damage per Level"
+				Sword_Rise
+					SkillType="Attack"
+					icon_state="Sword Rise";desc="Swords rise from the ground peicing targets. > Consumes 200 Rei>"
+					LevelDesc="Leveling Increases Radius"
+
+
+			Reiki_Control
+				icon='ShikaiReikiControl.dmi'
+				Reiki_Blast
+					SkillType="Attack"
+					icon_state="Reiki Blast";desc="Send a reiki blast from your sword. > Consumes 250 Rei >"
+					LevelDesc="Leveling increases base damage by 10%"
+				Blood_Mist_Shield
+					SkillType="Active"
+					MaxLevel=1
+					icon_state="Blood Mist Shield";desc="Create a reiki shield infront of the user. > Creates a Shield which defends themself > Guards against Frontal Assaults > Restricts all Melee Actions > This Skill is Toggleable"
+					LevelDesc="Not able to be leveled"
+			Hornet
+				icon='ShikaiHornet.dmi'
+				Speed_Combo
+					SkillType="Passive"
+					icon_state="Speed Combo";desc="35% Chance to Passively Flash Step around your Opponent when Executing Combos. > Only Active during Shikai"
+					LevelDesc="+10% Chance to Flash Step when Attacking"
+				Float_Like_A_Butterfly
+					SkillType="Passive"
+					icon_state="Float Like A Butterfly";desc="\"Speed Of A Butterfly, Try to catch this.\" > Only Active during Shikai > Requires Speed Combo"
+					LevelDesc="+5% Chance to Flash Step when Attacking"
+				Sting_Like_A_Bee
+					SkillType="Passive"
+					icon_state="Sting Like A Bee";desc="\"Power Of A Bee, Try to Survive this.\" > Only Active during Shikai > "
+					LevelDesc="+10% Hell Butterfly Hit Chance"
+			Paitence
+				icon='ShikaiPaitence.dmi'
 		Bankais
 			Dark_Ghost
 				icon='BankaiDarkGhost.dmi'
@@ -484,6 +585,62 @@ obj
 					SkillType="Passive"
 					icon_state="A Little Faster";desc="\"What's the matter?  Am I moving too slow for you?  Just say so, and I can move a little faster if you'd like!\" > Only Active during Bankai > Requires Flash Combo"
 					LevelDesc="+5% Chance to Flash Step when Attacking"
+			Fire_Dragon
+				icon='BankaiFireDragon.dmi'
+				Fire_Blast
+					SkillType="Attack"
+					icon_state="Fire Blast";desc="Fire a Concentrated Blast of Fire from your Sword > Deals MGC*8+Charged Mystic Damage > Hold to Charge"
+					LevelDesc="+10% Base Damage per Level > +1 Charge Speed per Level"
+			Healing_Canon
+				icon='BankaiHealingCanon.dmi'
+				Healing_Canon_Blast
+					SkillType="Attack"
+					icon_state="Healing Canon Blast";desc="Launch an Elemental Blast from your Sword. > Damage = 500+MGC > Consumes 300 Rei"
+					LevelDesc="+10% Damage per Level"
+			Fire_Beast
+				icon='BankaiFireBeast.dmi'
+				Fire_Slash
+					SkillType="Attack"
+					icon_state="Fire Slash";desc="Fire a Concentrated Slash of Fire from your Sword. > Deals 750+MGC Damage > "
+					LevelDesc="+10% Base Damage per Level"
+			God_Spear
+				icon='BankaiGodSpear.dmi'
+				Sword_Pierce
+					SkillType="Attack"
+					icon_state="Sword Pierce";desc="Extend your sword at lightning speed piercing your enemy's heart. > Deals 500+STR Damage > Leaves a poison effect"
+					LevelDesc="+10% Deamage and +2 Seconds Duration per Level"
+			Reiki_Control
+				icon='BankaiReikiControl.dmi'
+				Reiki_Blast_Waves
+					SkillType="Attack"
+					icon_state="Reiki Blast Waves";desc="Control the flow of reiki through your sword releasing multiple blasts. >Deals 800+MGC*2+Kidou Per Blast > Consumes 500 Rei"
+					LevelDesc="+10% Damage and 1 Blast per Level"
+			Hornet
+				icon='BankaiHornet.dmi'
+				Rocket
+					SkillType="Attack"
+					icon_state="Rocket";desc="Shoot a Giant Rocket from your arm > Does 1000+STR > Does 500+ Str AoE > "
+					LevelDesc="+100 Damage Per Level"
+		Vaizard
+			icon='VaizardSkills.dmi'
+			Cero
+				SkillType="Attack"
+				icon_state="Cero";desc="Fire a Cero from your Sword > Deals 200+MGC> Consumes 150 Rei"
+				LevelDesc="+10% Damage per Level"
+			Bala
+				SkillType="Attack"
+				icon_state="Bala";desc="Attacks the target with a small quick cero blast > Deals 150+Mgc Mystic Damage for 150 Rei"
+				LevelDesc="+25% Damage per Level"
+		Fuses
+			icon='FuseSkills.dmi'
+			Vine_Impale
+				SkillType="Attack"
+				icon_state="Vine Impale";desc="Fires a Sold vine at the target > Deals 100+Mgc Mystic Damage per Hit Consumes 25 Rei per Second"
+				LevelDesc="+25% Damage per Level"
+			Leaf_Storm
+				SkillType="Active"
+				icon_state="Leaf Storm";desc="Scatter 1,000 Razor shap leafs around you > Creates a Shield which causes Mystic Damage to all nearby Enemies > This Skill is Toggleable"
+				LevelDesc="Damage = 50 + MGC. > Plus 1 Base Damage per Level > Plus 25% Damage per Level"
 		FinalForm
 			icon='FinalFormSkills.dmi'
 			Hold_Charge

@@ -45,3 +45,15 @@ mob/proc
 		for(var/turf/T in oview(1,src.loc))	ShowEffect(T,'Effects.dmi',"PoisonCloud","",5)
 		for(var/mob/M in oview(1,src))	if(!M.Blocked())
 			M.AddEffect(new/datum/StatusEffects/PoisonTypes/Poison(10,src,10,"Deals 10 Poison Damage per Second for 10 Secs"))
+
+	Mob_Freeze_Ring()
+		if(!src.UseRei(350))	return
+		var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/S
+		for(var/obj/Skills/Shikais/Ice_Dragon/Freeze_Ring/x in src.Skills)	S=x
+		for(var/turf/T in oview(4,src))
+			for(var/mob/M in T)	M.StunProc2(3*4,"Freeze",src)
+			if(!T.density)
+				var/obj/Supplemental/Freeze_Ring/M=new(T);src.Cache+=M
+				spawn(S-Level*50)	if(M)	del M
+
+

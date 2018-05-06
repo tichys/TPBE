@@ -10,15 +10,18 @@ mob/proc
 			if(!src.Shikai && !src.Bankai)	{QuestShow(src,"Shikai to Use this Skill");return}
 		if(Skill2Call in BankaiSkillNames)
 			if(!src.Bankai)	{QuestShow(src,"Bankai to Use this Skill");return}
+		if(Skill2Call in VaizardSkillNames)
+			if(!src.Vaizard)	{QuestShow(src,"Must Be Hollowfied to Use this Skill.");return}
 		if(src.Stunned)	return
 		if(src.Chatting)	return
 		if(src.SkillBeingCharged)	return
 		for(var/obj/O in src.Skills+src.Kidous+src.Spells)
 			if(O.name==Skill2Call)
-				if(O:CoolDown)
-					//QuestShow(src,"[O:CoolDown/10] Second CoolDown");return
-					return
-				O:CoolDown=O:MaxCoolDown;break
+				if(O.name!="Petal Stream")
+					if(O:CoolDown)
+						//QuestShow(src,"[O:CoolDown/10] Second CoolDown");return
+						return
+					O:CoolDown=O:MaxCoolDown;break
 		if(src.Target)
 			if(MyGetDist(src,src.Target)<=src.SightRange)
 				if(src.AutoSkillFace)	src.dir=get_dir(src,src.Target)
@@ -51,13 +54,16 @@ mob/verb
 			if(src.Class=="Soul Reaper")	src.Attack(2)
 			if(src.Class=="Quincy")	src.PullArrow()
 			if(src.Class=="Bount")
-				for(var/mob/Pets/P in src.Pets)	if(MyGetDist(src,P)<=9)
-					P.ActivateAI()
+				for(var/mob/Pets/P in src.Pets)
+					if(MyGetDist(src,P)<=9)
+						P.ActivateAI()
 	HighAttack()
 		set hidden=1
 		src.overlays-=PressF
 		if(src.Chatting)
 			for(var/obj/HUD/OnScreenText/Next/T in src.client.screen)	T.Click(src)
+			return
+		if(OnLevelScreen ==1)
 			return
 		for(var/obj/NPC/N in get_step(src,src.dir))
 			for(var/datum/QuestDatum/D in src.Quests)
@@ -72,6 +78,7 @@ mob/verb
 			if(src.Class=="Soul Reaper")	src.Attack(3)
 			if(src.Class=="Quincy")	src.FireArrow()
 			if(src.Class=="Bount")	src.Attack(3)
+
 	Defend()
 		set hidden=1
 		if(!src.CanBlock())	return
@@ -89,6 +96,8 @@ mob/verb
 	EnterBody()
 		set hidden=1
 		if(!src.SpiritForm)	return
+		if(src.Transforming) return
+		if(src.z==13)	{QuestShow(src,"Cannot be Activated inside the Tournament Arena");return}
 		if(src.icon_state=="CreateArrow"||src.icon_state=="PullArrow")	return
 		src.Revert()
 
@@ -103,13 +112,19 @@ mob/verb
 				src.TargetMob(M)
 	AutoTarget()
 		set hidden=1
+		if(usr.OnLevelScreen == 1)
+			return
 		for(var/mob/Enemy/M in oview(src,src.SightRange))
+			if(M.invisibility>src.see_invisible)
+				return
 			src.TargetMob(null)
 			if(src.AutoTargetFace)	src.dir=get_dir(src,M)
 			src.TargetMob(M);return
 
 mob/proc/FlashAssault(var/mob/M)
 	for(var/obj/Skills/SoulReaper/Flash_Assault/F in src.Skills)
+		if(M.invisibility>src.see_invisible)
+			return
 		if(MyGetDist(src,M)>=2 && MyGetDist(src,M)<=F.Level*2)
 			var/turf/T=get_step(M,get_dir(src,M))
 			if(T && T.Enter(src))
@@ -141,6 +156,7 @@ mob/verb/CancelTarget()
 	if(usr.icon_state=="Stance")	usr.icon_state=""
 
 mob/proc/TargetMob(var/mob/Enemy/M)
+	if("Blood Mist Shield" in src.ToggledSkills)	return
 	if(src.client)	for(var/image/I in src.client.images)	if(I.name=="TargetUnder")	{src.client.images-=I;del I}
 	if(!M)	{src.Target=null;return}
 	if(istype(M,/mob/Enemy))
@@ -161,7 +177,10 @@ mob/proc/CanBlock()
 	if(!src.SpiritForm)	return
 	if(src.SkillBeingCharged)	return
 	if(src.Class!="Soul Reaper")	return
+	if(src.Zanpakuto && src.Bankai)
+		if(src.Zanpakuto.SpiritType=="Hornet")	return
 	if("Scatter" in src.ToggledSkills)	return
+	if("Blood Mist Shield" in src.ToggledSkills)	return
 	if(!src.CanMove && src.ComboCount<=1)	return
 	return 1
 
@@ -177,6 +196,24 @@ obj/Projectile
 			icon='IceDragon.dmi'
 		FireDragon
 			icon='FireDragon.dmi'
+	Blasts
+		CanonBlast
+			icon='HealingCanon.dmi'
+		FireBeam
+			icon='FireBeast.dmi'
+		SwordBeam
+			icon='GodSpear.dmi'
+		ReikiBlast
+			icon='Benihime.dmi'
+	Ceros
+		Cero
+			icon='Cero.dmi'
+	BalaBlast
+		icon='SkillEffects.dmi'
+		icon_state="Bala"
+	Suzume
+		icon='Hornet.dmi'
+		icon_state="Rocket"
 	FireBall
 		icon='Effects.dmi'
 		icon_state="Red Flame Cannon"
@@ -192,6 +229,12 @@ obj/Projectile
 		Black_Getsuga
 			icon='Effects.dmi'
 			icon_state="BlackGetsuga"
+		Fire_Slash_Move
+			icon='FireBeast.dmi'
+			icon_state="FireSlash"
+		Fire_Blast
+			icon='Effects.dmi'
+			icon_state="FireBlast"
 		New(var/Nstr,var/Ndist,var/Ndir,var/atom/Nloc,var/Nowner,var/Ncenter)
 			src.Center=Ncenter
 			if(src.Center)	src.icon_state="invis"
@@ -251,6 +294,16 @@ obj/Projectile
 			src:Center.Bump(M);return ..()
 		if(src.type!=M.type)
 			if(istype(src,/obj/Projectile/Dragons))	MyFlick("Destroy",src)
+			if(istype(src,/obj/Projectile/Blasts))	MyFlick("Destroy",src)
+			if(istype(src,/obj/Projectile/Ceros))	MyFlick("Destroy",src)
+			if(istype(src,/obj/Projectile/Suzume))	MyFlick("Destroy",src)
+				//for(var/mob/M2 in oview(1,src.loc))
+				//	var/Damage;Damage=250
+				//	src.Owner.InstantAttack(M2,"Explosion",Damage,0,"Fire")
+				//for(var/turf/T in oview(1,src.loc))
+					//if(!T.density)
+						//var/obj/Supplemental/Suzume_Destroy/MT=new(T)
+						//spawn(10)	del MT
 			else	MyFlick("[src.name]Hit",src)
 			if(!istype(src,/obj/Projectile/ThreeWide))	src.loc=locate(M.x,M.y,M.z)
 		else
@@ -379,13 +432,19 @@ mob/proc
 			src.TurnMode=0;src.CanMove=1
 	Attack(var/Height)
 		if("Scatter" in src.ToggledSkills)	return
+		if("Blood Mist Shield" in src.ToggledSkills)	return
+		if(src.Zanpakuto && src.Bankai)
+			if(src.Zanpakuto.SpiritType=="Hornet")	return
 		if(src.SkillBeingCharged)	return
 		if(src.Blocking)	return
 		if(src.Stunned)	return
 		var/Button="S"
 		if(Height==2)	Button="D"
 		if(Height==3)	Button="F"
-		if(src.icon=='Bankai.dmi' && src.ComboReady)	goto ComboUp
+		if(src.Zanpakuto&&src.Shikai)
+			var/obj/Zanpakuto/Z=src.Zanpakuto
+			if(Z.SpiritType=="Hornet" && src.ComboReady)	goto ComboUp
+		if(src.icon=='IchBankai.dmi' && src.ComboReady)	goto ComboUp
 		if("[Button][src.ComboCount+1]" in src.ComboList)
 			if(src.ComboCount>=1 && src.ComboReady)	goto ComboUp
 		if(!src.CanMove)	return
@@ -406,9 +465,17 @@ mob/proc
 				if(src.AutoAttackFace)	src.dir=get_dir(src,src.Target)
 		if(src.client)
 			PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
-			src.icon_state="Stance"
-			if(src.icon=='Bankai.dmi')	MyFlick("Combo",src)
-			else if(src.Class=="Bount")	MyFlick("Attack",src)
+			if(src.Zanpakuto && src.Shikai)
+				var/obj/Zanpakuto/Z=src.Zanpakuto
+				if(Z.SpiritType=="Hornet")
+					src.icon_state="SuzumeStance"
+				else	src.icon_state="Stance"
+			if(src.icon=='IchBankai.dmi')	MyFlick("Combo",src)
+			if(src.Zanpakuto && src.Shikai)
+				var/obj/Zanpakuto/Z=src.Zanpakuto
+				if(Z.SpiritType=="Hornet")
+					MyFlick("SuzumeSlash",src)
+			if(src.Class=="Bount")	MyFlick("Attack",src)
 			else	MyFlick("[Button][src.ComboCount]",src)
 		//else	MyFlick("Attack",src)
 		for(var/mob/M in get_step(src,src.dir))
@@ -426,13 +493,57 @@ mob/proc
 							if(!NT.Enter(src))	{TurfList-=NT;goto RePick}
 							ShowEffect(src.loc,'Effects.dmi',"Warp","",5,NewDir=get_dir(src,NT))
 							src.loc=NT;src.dir=get_dir(src,M)
+			if(src.Shikai && src.Zanpakuto.SpiritType=="Hornet")
+				for(var/obj/Skills/Shikais/Hornet/Speed_Combo/F in src.Skills)
+					var/Bonus=0;for(var/obj/Skills/Shikais/Hornet/Float_Like_A_Butterfly/F2 in src.Skills)	Bonus+=F2.Level * 2
+					if(rand(1,100)<=10+((F.Level-1)*2)+Bonus)
+						var/list/TurfList=block(locate(M.x-1,M.y-1,M.z),locate(M.x+1,M.y+1,M.z))-M.loc-src.loc-get_step(M,M.dir)
+						RePick
+						var/turf/NT
+						if(TurfList.len)	NT=pick(TurfList)
+						if(NT)
+							if(!NT.Enter(src))	{TurfList-=NT;goto RePick}
+							ShowEffect(src.loc,'Effects.dmi',"Warp","",5,NewDir=get_dir(src,NT))
+							src.loc=NT;src.dir=get_dir(src,M)
 			if(src.OverDriveOn)
 				src.KnockBack(M,src);src.KnockBackFollow(M)
-			var/damage=src.STR+rand(-5,5)
+			var/damage=src.STR/2+rand(-5,5) //change strength
 			if(!M.client)	damage*=PveDam
 			if(src.OverDriveOn)	damage+=damage*0.2
+			if(src.Zanpakuto)
+				if(src.Shikai || src.Bankai)
+					var/obj/Zanpakuto/Z=src.Zanpakuto
+					if(Z.SpiritType=="Healing Canon")
+						var/Heal=0
+						Heal=damage
+						damage=0
+						ShowEffect(M,'Effects.dmi',"Soul Glow Cross","",10,0,1)
+						M.STM=min(M.MaxSTM,M.STM+Heal)
+						M.StmBar();DamageShow(M,Heal,'HealNums.dmi')
+						goto HEALED
+					if(Z.SpiritType=="Hornet")
+						for(var/obj/Skills/Shikais/Hornet/Sting_Like_A_Bee/F in src.Skills)
+							if(rand(1,100)<=20+((F.Level-1)*10))
+								damage*=2
+								ShowEffect(M,'Effects.dmi',"HellButterfly","",10,0,1)
+					if(Z.SpiritType=="Paitence")
+						if(M.Slowed==1)
+							goto suki
+						else
+							M.Slowed=1
+							M.MovementSpeed*=13
+							M.CanShunpo=0
+							src.ShieldBonus+=70
+							spawn(200)
+								M.MovementSpeed/=13
+								M.CanShunpo=1
+								M.Slowed=0
+								src.ShieldBonus-=70
+
+			suki
 			src.Damage(M,damage,src.Element,1,"Melee")
 		for(var/obj/Bankai/Chains/C in get_step(src,src.dir))	src.DamageChain(C,src.STR+rand(-5,5))
+		HEALED
 		var/SpawnTime=Height*5
 		if(src.client)
 			SpawnTime=15
@@ -448,6 +559,9 @@ mob/proc
 			if(src.client)
 				for(var/obj/HUD/ComboSysHud/C in src.client.screen)
 					if(C.icon_state!="Hit")	C.icon_state="No"
+
+
+
 	Guard()
 		if(!src.CanBlock())	return
 		src.CanMove=0
@@ -462,7 +576,11 @@ mob/proc
 			if(!src.Blocking)	return
 			src.CanMove=1
 			src.Blocking=0
-			if(src.icon_state=="Block")	src.icon_state="Stance"
+			if(src.icon_state=="Block")
+				var/obj/Zanpakuto/Z=src.Zanpakuto
+				if(src.Zanpakuto && src.Shikai && Z.SpiritType=="Hornet")
+					src.icon_state="SuzumeStance"
+				else	src.icon_state="Stance"
 	BarrageProc(var/Damage,var/Dist,var/Numbar)
 		for(var/i=1,i<=Numbar,i++)
 			MyFlick("FireArrow",src)

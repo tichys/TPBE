@@ -84,7 +84,6 @@ They are also in charge of storing a mass amount of information known to Seireit
 The 13th Division is the ones that actually send out patrols on a daily, frequent basis to survey Seireitei. If a threat occurs, they find and take care of it, sometimes with help from other divisions. They also work together with various divisions.
 If a threat is a large enough, the 13th Division is in charge of sending out Soul Reaper, assembling them, assigning them duties, and other things. Their job is similar to the 10th, except on a smaller basis.
 */
-
 var/list/CaptainOne=list()
 var/list/CaptainTwo=list()
 var/list/CaptainThree=list()
@@ -1000,7 +999,7 @@ obj/NPC
 
 mob/Squad_Captain
 	verb
-		Squad_Invite()
+		/*Squad_Invite()
 			set category = "Squad"
 			var/list/Menu = list()
 			for(var/mob/Player/M in world)
@@ -1018,7 +1017,7 @@ mob/Squad_Captain
 						world << "<b><font color = yellow>Squad Info: [M] has joined Squad [usr.Squad]!"
 					if("No")
 						usr << "[M] has declined!"
-						return
+						return*/
 		Squad_Mute()
 			set category = "Squad"
 			set name="Mute/Unmute Member"
@@ -1717,7 +1716,7 @@ mob/verb/Gotei13_Captains()
 		html+="<title><font size=4>Gotei 13</title>"
 		html+="<center><table border=1 bgcolor=black bordercolor=gray>"
 		html+="<tr><td colspan=6><center><b><font color=green size =5>Gotei 13 Captains"
-		html+="<tr><td><font color=gray size=3><b>Squad 1  Captain-Commander :<font color = red size =3>  [One]</td></tr>\n"
+		html+="<tr><td><font color=gray size=3><b>Squad 1  Captain :<font color = red size =3>  [One]</td></tr>\n"
 		html+="<tr><td><font color=gray size=3><b>Squad 2  Captain :<font color = red size =3>  [Two]</td></tr>\n"
 		html+="<tr><td><font color=gray size=3><b>Squad 3  Captain : <font color = red size =3> [Three]</td></tr>\n"
 		html+="<tr><td><font color=gray size=3><b>Squad 4  Captain : <font color = red size =3> [Four]</td></tr>\n"
@@ -1853,7 +1852,7 @@ mob/proc/SquadCheck()
 			src.verbs += typesof(/mob/Squad_Verbs/verb)
 			src.verbs += /mob/Squad_Verbs/Special/verb/Squad1_Members
 			src.insquad=1
-			src.Squadrank="Captain - Commander"
+			src.Squadrank="Captain"
 			src.Squad="One"
 			return
 	if(src.key in CaptainTwo)

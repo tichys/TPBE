@@ -6,8 +6,10 @@ mob/proc/Emote(var/T)
 		usr<<"Available Commands:	/Help	/Music	/Sit	/Stand	/Wave	/Follow	/Me"
 		return
 	if(T=="/wave")
+		if(src.Class=="Bount" && src.Fused)	return
 		usr.dir=SOUTH;MyFlick("Wave",usr)
 	if(T=="/sit" && usr.icon_state=="")
+		if(src.Class=="Bount" && src.Fused)	return
 		usr.dir=SOUTH;usr.icon_state="Sitting"
 	if(T=="/stand" && usr.icon_state=="Sitting")
 		usr.icon_state=""
@@ -15,6 +17,7 @@ mob/proc/Emote(var/T)
 		if(usr.Target)	walk_to(usr,usr.Target,1,2)
 		else	QuestShow(usr,"Invalid Target")
 	if(T=="/music")
+		if(src.Class=="Bount" && src.Fused)	return
 		if(!usr.SpiritForm)	{QuestShow(usr,"Spirit Form Required");return}
 		usr.MusicMode=!usr.MusicMode
 		if(usr.MusicMode)
@@ -46,7 +49,12 @@ mob/verb/ActivateOverDrive()
 	set hidden=1
 	if(usr.OverDriveOn || usr.OverDriveStr<32)	return
 	usr.OverDriveOn=1
-	if(!usr.icon_state && usr.Class!="Quincy")	usr.icon_state="Stance"
+	if(!usr.icon_state && usr.Class!="Quincy")
+		if(src.Zanpakuto && src.Shikai)
+			var/obj/Zanpakuto/Z=src.Zanpakuto
+			if(Z.SpiritType=="Hornet")
+				src.icon_state="SuzumeStance"
+			else	src.icon_state="Stance"
 	usr.overlays-=OverDriveAura;usr.overlays+=OverDriveAura
 	PlayTimedSound(view(usr,9),'Energy.wav',32)
 	while(usr && usr.OverDriveStr>0)

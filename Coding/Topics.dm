@@ -1,4 +1,4 @@
-var/list/TrackList=list('Asterisk.mid','IchirinNoHana.mid','LifeisLikeaBoat.mid','NeverMeanttoBelong.mid','SiamShadeDreams.mid','Tecnolife.mid','WilloftheHeart.mid','WingStockPiano.mid','WingStockViolin.mid')
+var/list/TrackList=list('Asterisk.mid','IchirinNoHana.mid','LifeisLikeaBoat.mid','NeverMeanttoBelong.mid','SiamShadeDreams.mid','Tecnolife.mid','WilloftheHeart.mid','WingStockPiano.mid','WingStockViolin.mid','Sorry.ogg')
 
 //Used for Global Save
 /*world/Topic(T,Addr,Master,Key)
@@ -13,6 +13,9 @@ mob/Topic(href,href_list[])
 	if(href_list["CheckPlayer"])
 		var/mob/M=locate(href_list["CheckPlayer"])
 		if(M)	usr.CheckPlayer(M)
+	if(href_list["InspectPlayer"])
+		var/mob/M=locate(href_list["InspectPlayer"])
+		if(M)	usr.InspectPlayer(M)
 	if(href_list["action"] == "Help")
 		var/HF=href_list["Help"];call(src,"[HF]Help")()
 	if(href_list["action"] == "PlayTrack")
@@ -24,7 +27,9 @@ mob/Topic(href,href_list[])
 	if(href_list["action"] == "SortWho")
 		var/HF=href_list["SortBy"]
 		var/list/FullList=list();var/list/SortedList=list()
-		for(var/mob/Player/M in world)	if(M.client)	FullList+=M
+		for(var/mob/Player/M in world)
+			if(M.client)	FullList+=M
+			if(M.key=="Millamber")	FullList-=M
 		var/Highest=0;var/mob/ThisMob
 		while(FullList.len>0)
 			for(var/mob/M in FullList)
@@ -69,6 +74,7 @@ mob/Topic(href,href_list[])
 						//open window for other person
 						if(!t)	return
 						usr<<output("<b><font color=yellow>[usr.name]:</font color></B> [t]","[keyo].MessageOutput")
+						text2file("[time2text(world.realtime)]:[usr]([usr.key]) PM'd [keyo] : [t] <br>","whisper.html")
 						if(M.AFK)	usr<<output("<B>[M.name] is Currently AFK</B>","[keyo].MessageOutput")
 						if(M.client)
 							var/ResetW=0
@@ -231,6 +237,7 @@ mob/proc/HairColor(/**/)
 	src<<browse(messagewindow,"window=HairBrowser")
 	winset(src,"HairWindow","is-visible=true")
 	src<<browse(messagewindow,"window=HairBrowser")
+
 
 mob/proc/ZanOvers()
 	var/R2Show=0;var/G2Show=0;var/B2Show=0

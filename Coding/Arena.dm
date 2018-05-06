@@ -16,12 +16,13 @@ mob/proc/StartArena()
 mob/proc/MatchStart()
 	if(!src.Arena)	return
 	src.dir=EAST;src.loc=locate(src.Arena.x-3,src.Arena.y,src.Arena.z)
-	src.ArenaBonus+=1*src.ArenaRound
+	src.ArenaBonus+=5*src.ArenaRound
 	src.ArenaRound+=1
 	var/NewType=pick(HollowTypes)
 	if(src.ArenaRound%10==0)
 		NewType=pick(typesof(/mob/Enemy/Bosses)-text2path("/mob/Enemy/Bosses"))
 	var/mob/Enemy/Hollows/M=new NewType
+
 
 	var/AR=src.ArenaRound
 	var/Mmsg="Moving on to Round [AR]!  Next up it looks like we have a level [AR] [M.name]!  Will our contestant stand and fight!?"
@@ -47,9 +48,10 @@ mob/proc/MatchStart()
 		if(!src)	return
 		if(!src.Arena)	return
 		src.loc=locate(100,12,8)
+		src.Honor+=src.ArenaRound*2
 		src.GiveGold(0,0,src.ArenaBonus)
 		src.LevelCheck()
 		UpdateArenaScores(src.name,src.ArenaRound-1)
-		QuestShow(src,"[src.ArenaBonus] Bonus Copper Received!")
+		QuestShow(src,"[src.ArenaBonus] Bonus Copper/Honor Received!")
 		src.Arena.User=null;src.Arena=null
 		src.ArenaBonus=0;src.ArenaRound=0

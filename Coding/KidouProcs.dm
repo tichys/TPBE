@@ -24,6 +24,9 @@ obj/Damaging
 	Roaring_Thunder_Burn
 		Element="Fire"
 		icon_state="Roaring Thunder Burn"
+	Vine_Impale
+		Element="Earth"
+		icon_state="Vine Impale"
 	New(var/NewDir,var/NewLoc,var/NewOwner,var/NewStr)
 		src.dir=NewDir;src.loc=NewLoc
 		src.Owner=NewOwner;src.STR=NewStr
@@ -76,6 +79,8 @@ mob/proc
 	Red_Flame_Cannon()
 		var/Damage;for(var/obj/Kidous/Hadous/Red_Flame_Cannon/K in src.Kidous)	Damage=(150+src.Kidou+src.MGC)*((0.25*(K.Level-1))+1)
 		src.FireBall(150,Damage,"Red Flame Cannon")
+
+
 	Blue_Fireball()
 		if(!src.CanMove)	return
 		var/Blasts=0
@@ -106,7 +111,7 @@ mob/proc/InstantAttack(var/mob/Target,var/IS,var/Damage,var/ReiCost,var/Element)
 	if(!Target)	{QuestShow(src,"Invalid Target");return}
 	if(!(Target in oview(src,src.SightRange)))	{QuestShow(src,"Target out of Range");return}
 	if(!src.UseRei(ReiCost))	return
-	var/atom/Stepy=new/mob(usr.loc)
+	var/atom/Stepy=new/mob(src.loc)
 	if(step_to(Stepy,Target,0))
 		MyFlick("Blast",src)
 		PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
@@ -116,10 +121,14 @@ mob/proc/InstantAttack(var/mob/Target,var/IS,var/Damage,var/ReiCost,var/Element)
 	if(Stepy!=usr)	del Stepy
 
 mob/proc/FireBall(var/ReiCost,var/AttackPower,var/IS,var/mob/NTarget)
+	if("Blood Mist Shield" in src.ToggledSkills)	return
 	if(ReiCost && !src.UseRei(ReiCost))	return
 	src.CanMove=0
 	MyFlick("F2",src)
-	src.icon_state="Stance"
+	var/obj/Zanpakuto/Z=src.Zanpakuto
+	if(src.Zanpakuto && src.Shikai && Z.SpiritType=="Hornet")
+		src.icon_state="SuzumeStance"
+	else	src.icon_state="Stance"
 	PlayVoice(view(src,src.SightRange),pick(src.AttVoices))
 	var/obj/Projectile/FireBall/F=new(AttackPower,10,src.dir,src.loc,src,NTarget)
 	F.icon_state="[IS]"
@@ -127,6 +136,7 @@ mob/proc/FireBall(var/ReiCost,var/AttackPower,var/IS,var/mob/NTarget)
 
 mob/var/InfBeamCost=0
 mob/proc/InfBeamAttack(var/ReiCost,var/MoveStance,var/Se2Play,var/Damage,var/AttackType)
+	if("Blood Mist Shield" in src.ToggledSkills)	return
 	if(!src.CanMove)	return
 	if(!src.UseRei(ReiCost))	return
 	src.InfBeamCost=ReiCost
